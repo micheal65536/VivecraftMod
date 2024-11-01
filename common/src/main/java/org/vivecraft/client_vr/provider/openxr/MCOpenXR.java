@@ -38,6 +38,7 @@ import org.vivecraft.common.utils.lwjgl.Vector3f;
 import org.vivecraft.common.utils.math.Matrix4f;
 import org.vivecraft.common.utils.math.Vector3;
 
+import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
@@ -987,7 +988,7 @@ public class MCOpenXR extends MCVR {
             XrSwapchainCreateInfo swapchainCreateInfo = XrSwapchainCreateInfo.calloc(stack);
             swapchainCreateInfo.type(XR10.XR_TYPE_SWAPCHAIN_CREATE_INFO);
             swapchainCreateInfo.next(NULL);
-            swapchainCreateInfo.createFlags(0);
+            swapchainCreateInfo.createFlags(XR10.XR_SWAPCHAIN_CREATE_STATIC_IMAGE_BIT);
             swapchainCreateInfo.usageFlags(XR10.XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT);
             swapchainCreateInfo.format(chosenFormat);
             swapchainCreateInfo.sampleCount(1);
@@ -1207,24 +1208,24 @@ public class MCOpenXR extends MCVR {
         }
 
         for (VRInputAction vrinputaction : this.inputActions.values()) {
-            long action = createAction(vrinputaction.name, vrinputaction.name, vrinputaction.type, new XrActionSet(this.actionSetHandles.get(vrinputaction.actionSet), instance));
+            long action = createAction(vrinputaction.name, vrinputaction.name, vrinputaction.type, new XrActionSet(this.actionSetHandles.get(vrinputaction.actionSet), instance), null);
             vrinputaction.setHandle(action);
         }
 
         setupControllers();
 
         XrActionSet actionSet = new XrActionSet(this.actionSetHandles.get(VRInputActionSet.GLOBAL), instance);
-        this.haptics[0] = createAction("/actions/global/out/righthaptic", "/actions/global/out/righthaptic", "haptic", actionSet);
-        this.haptics[1] = createAction("/actions/global/out/lefthaptic", "/actions/global/out/lefthaptic", "haptic", actionSet);
+        this.haptics[0] = createAction("/actions/global/out/righthaptic", "/actions/global/out/righthaptic", "haptic", actionSet, null);
+        this.haptics[1] = createAction("/actions/global/out/lefthaptic", "/actions/global/out/lefthaptic", "haptic", actionSet, null);
 
     }
 
     private void setupControllers() {
         XrActionSet actionSet = new XrActionSet(this.actionSetHandles.get(VRInputActionSet.GLOBAL), instance);
-        this.grip[0] = createAction("/actions/global/in/righthand", "/actions/global/in/righthand", "pose", actionSet);
-        this.grip[1] = createAction("/actions/global/in/lefthand", "/actions/global/in/lefthand", "pose", actionSet);
-        this.aim[0] = createAction("/actions/global/in/righthandaim", "/actions/global/in/righthandaim", "pose", actionSet);
-        this.aim[1] = createAction("/actions/global/in/lefthandaim", "/actions/global/in/lefthandaim", "pose", actionSet);
+        this.grip[0] = createAction("/actions/global/in/righthand", "/actions/global/in/righthand", "pose", actionSet, null);
+        this.grip[1] = createAction("/actions/global/in/lefthand", "/actions/global/in/lefthand", "pose", actionSet, null);
+        this.aim[0] = createAction("/actions/global/in/righthandaim", "/actions/global/in/righthandaim", "pose", actionSet, null);
+        this.aim[1] = createAction("/actions/global/in/lefthandaim", "/actions/global/in/lefthandaim", "pose", actionSet, null);
     }
 
     private void loadDefaultBindings() {
@@ -1340,7 +1341,7 @@ public class MCOpenXR extends MCVR {
         });
     }
 
-    private long createAction(String name, String localisedName, String type, XrActionSet actionSet) {
+    private long createAction(String name, String localisedName, String type, XrActionSet actionSet, @Nullable String[] subactionPaths) {
         try (MemoryStack stack = MemoryStack.stackPush()){
             String s = name.split("/")[name.split("/").length -1].toLowerCase();
             XrActionCreateInfo hands = XrActionCreateInfo.calloc(stack);
@@ -1355,7 +1356,17 @@ public class MCOpenXR extends MCVR {
                 case "haptic" -> hands.actionType(XR10.XR_ACTION_TYPE_VIBRATION_OUTPUT);
             }
             hands.countSubactionPaths(0);
-            hands.subactionPaths(null);
+            if(subactionPaths != null) {
+                LongBuffer buffer = stackCallocLong(subactionPaths.length);
+                for(String path : subactionPaths) {
+                    buffer.put(getPath(path));
+                }
+                hands.countSubactionPaths(subactionPaths.length);
+                hands.subactionPaths(buffer.rewind());
+            } else {
+                hands.countSubactionPaths(0);
+                hands.subactionPaths(null);
+            }
             hands.localizedActionName(memUTF8(s));
             PointerBuffer buffer = stackCallocPointer(1);
 
