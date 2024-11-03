@@ -47,6 +47,14 @@ public class IrisRenderingPipelineVRMixin {
         }
     }
 
+    @Group(name = "one shadowRenderTargets", min = 1, max = 1)
+    @Inject(target = @Desc(value = "lambda$new$3", owner = IrisRenderingPipeline.class, ret = ShadowRenderTargets.class, args = PackShadowDirectives.class), at = @At("HEAD"), cancellable = true, remap = false, expect = 0)
+    private void vivecraft$onlyOneShadowTargetSupplier180b5(CallbackInfoReturnable<ShadowRenderTargets> cir) {
+        if (!RenderPassType.isVanilla() && ((PipelineManagerExtension) Iris.getPipelineManager()).vivecraft$getShadowRenderTargets() != null) {
+            cir.setReturnValue((ShadowRenderTargets) ((PipelineManagerExtension) Iris.getPipelineManager()).vivecraft$getShadowRenderTargets());
+        }
+    }
+
     @Inject(method = "shouldDisableVanillaEntityShadows()Z", at = @At("HEAD"), cancellable = true, remap = false)
     private void vivecraft$shouldDisableEntityShadows(CallbackInfoReturnable<Boolean> cir) {
         if (!RenderPassType.isVanilla() && (shadowRenderer != null || ((PipelineManagerExtension) Iris.getPipelineManager()).vivecraft$getShadowRenderTargets() != null)) {
