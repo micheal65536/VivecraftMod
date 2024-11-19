@@ -880,14 +880,9 @@ public class MCOpenXR extends MCVR {
 
             session = new XrSession(sessionPtr.get(0), instance);
 
-            XrSessionBeginInfo sessionBeginInfo = XrSessionBeginInfo.calloc(stack);
-            sessionBeginInfo.type(XR10.XR_TYPE_SESSION_BEGIN_INFO);
-            sessionBeginInfo.next(NULL);
-            sessionBeginInfo.primaryViewConfigurationType(XR10.XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO);
-
-            error = XR10.xrBeginSession(session, sessionBeginInfo);
-            logError(error, "xrBeginSession",  "");
-            this.isActive = true;
+            while (!this.isActive) {
+                pollVREvents();
+            }
 
         }
     }
@@ -988,7 +983,7 @@ public class MCOpenXR extends MCVR {
             XrSwapchainCreateInfo swapchainCreateInfo = XrSwapchainCreateInfo.calloc(stack);
             swapchainCreateInfo.type(XR10.XR_TYPE_SWAPCHAIN_CREATE_INFO);
             swapchainCreateInfo.next(NULL);
-            swapchainCreateInfo.createFlags(XR10.XR_SWAPCHAIN_CREATE_STATIC_IMAGE_BIT);
+            swapchainCreateInfo.createFlags(0);
             swapchainCreateInfo.usageFlags(XR10.XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT);
             swapchainCreateInfo.format(chosenFormat);
             swapchainCreateInfo.sampleCount(1);
@@ -1355,7 +1350,6 @@ public class MCOpenXR extends MCVR {
                 case "pose" -> hands.actionType(XR10.XR_ACTION_TYPE_POSE_INPUT);
                 case "haptic" -> hands.actionType(XR10.XR_ACTION_TYPE_VIBRATION_OUTPUT);
             }
-            hands.countSubactionPaths(0);
             if(subactionPaths != null) {
                 LongBuffer buffer = stackCallocLong(subactionPaths.length);
                 for(String path : subactionPaths) {

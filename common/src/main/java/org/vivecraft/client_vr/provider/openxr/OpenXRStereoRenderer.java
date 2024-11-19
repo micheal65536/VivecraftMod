@@ -12,11 +12,7 @@ import org.vivecraft.client_vr.VRTextureTarget;
 import org.vivecraft.client_vr.provider.VRRenderer;
 import org.vivecraft.client_vr.render.RenderConfigException;
 
-import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-
-import static org.lwjgl.system.MemoryUtil.memAddress;
-import static org.lwjgl.system.MemoryUtil.memUTF8;
 
 public class OpenXRStereoRenderer extends VRRenderer {
     private final MCOpenXR openxr;
@@ -129,9 +125,10 @@ public class OpenXRStereoRenderer extends VRRenderer {
         GL31.glBlitFramebuffer(0,0, getRightEyeTarget().viewWidth, getRightEyeTarget().viewHeight, 0,0, rightFramebuffers[swapIndex].viewWidth, rightFramebuffers[swapIndex].viewHeight, GL31.GL_STENCIL_BUFFER_BIT | GL31.GL_COLOR_BUFFER_BIT, GL31.GL_NEAREST);
 
         try (MemoryStack stack = MemoryStack.stackPush()){
-            PointerBuffer layers = stack.callocPointer(1);
-            int error;
             if (this.openxr.shouldRender) {
+                PointerBuffer layers = stack.callocPointer(1);
+                int error;
+
                 error = XR10.xrReleaseSwapchainImage(
                     openxr.swapchain,
                     XrSwapchainImageReleaseInfo.calloc(stack)
@@ -144,17 +141,18 @@ public class OpenXRStereoRenderer extends VRRenderer {
                     .views(projectionLayerViews);
 
                 layers.put(compositionLayerProjection);
-            }
-            layers.flip();
 
-            error = XR10.xrEndFrame(
-                openxr.session,
-                XrFrameEndInfo.calloc(stack)
-                    .type(XR10.XR_TYPE_FRAME_END_INFO)
-                    .displayTime(openxr.time)
-                    .environmentBlendMode(XR10.XR_ENVIRONMENT_BLEND_MODE_OPAQUE)
-                    .layers(layers));
-            this.openxr.logAll(error, "xrEndFrame", "");
+                layers.flip();
+
+                error = XR10.xrEndFrame(
+                    openxr.session,
+                    XrFrameEndInfo.calloc(stack)
+                        .type(XR10.XR_TYPE_FRAME_END_INFO)
+                        .displayTime(openxr.time)
+                        .environmentBlendMode(XR10.XR_ENVIRONMENT_BLEND_MODE_OPAQUE)
+                        .layers(layers));
+                this.openxr.logAll(error, "xrEndFrame", "");
+            }
 
             projectionLayerViews.close();
         }

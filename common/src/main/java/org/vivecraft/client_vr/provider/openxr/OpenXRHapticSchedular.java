@@ -26,7 +26,7 @@ public class OpenXRHapticSchedular extends HapticScheduler {
             info.action(new XrAction(MCOpenXR.get().haptics[i], actionSet));
 
             XrHapticVibration vibration = XrHapticVibration.calloc(stack);
-            vibration.type(XR10.XR_ACTION_TYPE_VIBRATION_OUTPUT);
+            vibration.type(XR10.XR_TYPE_HAPTIC_VIBRATION);
             vibration.next(NULL);
             vibration.duration((long) (durationSeconds * 1_000_000_000));
             vibration.frequency(frequency);
