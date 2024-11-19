@@ -70,7 +70,7 @@ public class OpenXRStereoRenderer extends VRRenderer {
         super.setupRenderConfiguration(render);
         
         if (!render) {
-            return;
+            //return;
         }
         this.projectionLayerViews = XrCompositionLayerProjectionView.calloc(2);
         try (MemoryStack stack = MemoryStack.stackPush()){
@@ -125,7 +125,7 @@ public class OpenXRStereoRenderer extends VRRenderer {
         GL31.glBlitFramebuffer(0,0, getRightEyeTarget().viewWidth, getRightEyeTarget().viewHeight, 0,0, rightFramebuffers[swapIndex].viewWidth, rightFramebuffers[swapIndex].viewHeight, GL31.GL_STENCIL_BUFFER_BIT | GL31.GL_COLOR_BUFFER_BIT, GL31.GL_NEAREST);
 
         try (MemoryStack stack = MemoryStack.stackPush()){
-            if (this.openxr.shouldRender) {
+            if (true) {
                 PointerBuffer layers = stack.callocPointer(1);
                 int error;
 
