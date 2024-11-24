@@ -32,10 +32,11 @@ subprojects {
         implementation("org.lwjgl:lwjgl-openvr:3.3.2:natives-macos")
         implementation("org.lwjgl:lwjgl-openvr:3.3.2:natives-windows")
 
-        implementation("org.lwjgl:lwjgl-openxr:3.3.2")
+        // Use custom OpenXR lib for Android and GLES bindings
+        implementation("QuestCraftPlusPlus:lwjgl3:3.3.2:lwjgl-openxr-3.3.2")
         implementation("org.lwjgl:lwjgl-openxr:3.3.2:natives-linux")
-        //implementation("org.lwjgl:lwjgl-openxr:3.3.2:natives-macos")
         implementation("org.lwjgl:lwjgl-openxr:3.3.2:natives-windows")
+
     }
 
     tasks.withType(JavaCompile) {
@@ -124,7 +125,6 @@ allprojects {
         maven { url = "https://storage.googleapis.com/devan-maven/" }
         maven { url = "https://maven.shedaniel.me/" }
         maven { url = "https://aperlambda.github.io/maven" }
-        maven { url = "https://maven.kotlindiscord.com/repository/terraformers/" }
         maven { url = "https://mvn.devos.one/releases/" }
         maven { url = "https://mvn.devos.one/snapshots/" }
         maven { url = "https://maven.terraformersmc.com/" }
@@ -146,17 +146,16 @@ allprojects {
         exclusiveContent {
             forRepository {
                 ivy {
-                    name = "Discord"
-                    url = "https://cdn.discordapp.com/attachments/"
+                    name = "GitHub"
+                    url = "https://github.com/"
                     patternLayout {
-                        artifact '/[organisation]/[module]/[revision].[ext]'
+                        artifact '/[organisation]/[module]/releases/download/[revision]/[classifier].jar'
                     }
                     metadataSources { artifact() }
                 }
             }
             filter {
-                // discords are always just numbers
-                includeGroupByRegex "^\\d*\$"
+
             }
         }
     }
