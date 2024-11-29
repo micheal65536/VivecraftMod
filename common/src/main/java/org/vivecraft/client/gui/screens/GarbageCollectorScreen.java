@@ -17,9 +17,10 @@ import org.vivecraft.client_vr.ClientDataHolderVR;
 
 public class GarbageCollectorScreen extends Screen {
 
+    private static final String GUIDE_URL = "https://github.com/Vivecraft/VivecraftMod/wiki/Memory-and-GC-Setup";
+
     private final Screen lastScreen;
     private final String currentGarbageCollector;
-    private final static String guideURL = "https://github.com/Vivecraft/VivecraftMod/wiki/Memory-and-GC-Setup";
 
     public GarbageCollectorScreen(String currentGarbageCollector) {
         super(Component.translatable("vivecraft.messages.gctitle"));
@@ -27,9 +28,10 @@ public class GarbageCollectorScreen extends Screen {
         this.currentGarbageCollector = currentGarbageCollector;
     }
 
+    @Override
     protected void init() {
         Component message = Component.translatable("vivecraft.messages.gcinfo",
-            Component.literal(currentGarbageCollector).withStyle(s -> s.withColor(ChatFormatting.RED)),
+            Component.literal(this.currentGarbageCollector).withStyle(s -> s.withColor(ChatFormatting.RED)),
             Component.literal("ZGC"),
             Component.literal(Integer.toString(6)),
             Component.literal("-XX:+UseZGC").withStyle(s -> s
@@ -40,7 +42,7 @@ public class GarbageCollectorScreen extends Screen {
                 .withUnderlined(true)
                 .withColor(ChatFormatting.GREEN)
                 .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, CommonComponents.GUI_OPEN_IN_BROWSER))
-                .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, guideURL))));
+                .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, GUIDE_URL))));
         this.addRenderableWidget(new TextScrollWidget(this.width / 2 - 155, 30, 310, this.height - 30 - 60, message));
 
         this.addRenderableWidget(new Button.Builder(Component.translatable("vivecraft.gui.dontshowagain"), (p) -> {
@@ -59,22 +61,22 @@ public class GarbageCollectorScreen extends Screen {
             .build());
 
         this.addRenderableWidget(new Button.Builder(Component.translatable("vivecraft.gui.openguide"),
-            ConfirmLinkScreen.confirmLink(this, guideURL))
+            ConfirmLinkScreen.confirmLink(this, GUIDE_URL))
             .pos(this.width / 2 - 75, this.height - 32)
             .size(150, 20)
             .build());
     }
 
     @Override
-    public void render(@NotNull GuiGraphics guiGraphics, int i, int j, float f) {
-        this.renderBackground(guiGraphics, i, j, f);
-        guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 15, 16777215);
-        super.render(guiGraphics, i, j, f);
+    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
+        guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 15, 0xFFFFFF);
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
     }
 
     @Override
     public void onClose() {
         ClientDataHolderVR.getInstance().incorrectGarbageCollector = "";
-        this.minecraft.setScreen(lastScreen);
+        this.minecraft.setScreen(this.lastScreen);
     }
 }
