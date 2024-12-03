@@ -11,7 +11,9 @@ import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.VRTextureTarget;
 import org.vivecraft.client_vr.provider.VRRenderer;
 import org.vivecraft.client_vr.render.RenderConfigException;
+import org.vivecraft.client_vr.render.helpers.RenderHelper;
 
+import java.io.IOException;
 import java.nio.IntBuffer;
 
 public class OpenXRStereoRenderer extends VRRenderer {
@@ -52,18 +54,18 @@ public class OpenXRStereoRenderer extends VRRenderer {
             for (int i = 0; i < imageCount; i++) {
                 XrSwapchainImageOpenGLKHR openxrImage = swapchainImageBuffer.get(i);
                 leftFramebuffers[i] = new VRTextureTarget("L Eye " + i, width, height, openxrImage.image(), 0);
-                this.checkGLError("Left Eye framebuffer setup");
+                RenderHelper.checkGLError("Left Eye framebuffer setup");
                 rightFramebuffers[i] = new VRTextureTarget("R Eye " + i, width, height, openxrImage.image(), 1);
-                this.checkGLError("Right Eye framebuffer setup");
+                RenderHelper.checkGLError("Right Eye framebuffer setup");
             }
 
-            this.rightFramebuffer = new VRTextureTarget("R Eye mirror", width, height, true, false, -1, true, true, ClientDataHolderVR.getInstance().vrSettings.vrUseStencil);
-            this.leftFramebuffer = new VRTextureTarget("L Eye mirror", width, height, true, false, -1, true, true, ClientDataHolderVR.getInstance().vrSettings.vrUseStencil);
+            this.rightFramebuffer = new VRTextureTarget("R Eye mirror", width, height, true, -1, true, true, ClientDataHolderVR.getInstance().vrSettings.vrUseStencil);
+            this.leftFramebuffer = new VRTextureTarget("L Eye mirror", width, height, true, -1, true, true, ClientDataHolderVR.getInstance().vrSettings.vrUseStencil);
         }
     }
 
     @Override
-    public void setupRenderConfiguration(boolean render) throws Exception {
+    public void setupRenderConfiguration(boolean render) throws IOException, RenderConfigException {
         super.setupRenderConfiguration(render);
         
         if (!render) {
@@ -168,6 +170,11 @@ public class OpenXRStereoRenderer extends VRRenderer {
     @Override
     public RenderTarget getRightEyeTarget() {
         return rightFramebuffer;
+    }
+
+    @Override
+    public String getName() {
+        return "OpenXR";
     }
 
     @Override

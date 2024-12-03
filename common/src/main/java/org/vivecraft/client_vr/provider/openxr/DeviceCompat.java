@@ -41,7 +41,7 @@ public interface DeviceCompat {
 
         @Override
         public void initOpenXRLoader(MemoryStack stack) {
-            VRSettings.logger.info("Platform: {}", System.getProperty("os.version"));
+            VRSettings.LOGGER.info("Platform: {}", System.getProperty("os.version"));
         }
 
         @Override
@@ -114,7 +114,7 @@ public interface DeviceCompat {
 
         @Override
         public void initOpenXRLoader(MemoryStack stack) {
-            VRSettings.logger.info("Platform: {}", System.getProperty("os.version"));
+            VRSettings.LOGGER.info("Platform: {}", System.getProperty("os.version"));
             VLoader.setupAndroid();
             XrLoaderInitInfoAndroidKHR initInfo = XrLoaderInitInfoAndroidKHR.calloc(stack).set(
                 KHRLoaderInitAndroid.XR_TYPE_LOADER_INIT_INFO_ANDROID_KHR,

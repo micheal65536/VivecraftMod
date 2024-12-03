@@ -15,7 +15,7 @@ import org.lwjgl.opengl.GL31;
 import org.lwjgl.openxr.*;
 import org.lwjgl.system.MemoryStack;
 import org.vivecraft.client.VivecraftVRMod;
-import org.vivecraft.client.utils.Utils;
+import org.vivecraft.client.utils.MathUtils;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.gameplay.screenhandlers.KeyboardHandler;
 import org.vivecraft.client_vr.gameplay.screenhandlers.RadialHandler;
@@ -25,7 +25,6 @@ import org.vivecraft.client_vr.provider.MCVR;
 import org.vivecraft.client_vr.provider.VRRenderer;
 import org.vivecraft.client_vr.provider.control.VRInputAction;
 import org.vivecraft.client_vr.provider.control.VRInputActionSet;
-import org.vivecraft.client_vr.render.RenderConfigException;
 import org.vivecraft.client_vr.render.RenderPass;
 import org.vivecraft.client_vr.settings.VRSettings;
 import org.vivecraft.client_xr.render_pass.RenderPassManager;
@@ -44,7 +43,7 @@ import static org.lwjgl.system.MemoryUtil.*;
 
 public class MCOpenXR extends MCVR {
 
-    private static MCOpenXR ome;
+    private static MCOpenXR OME;
     public XrInstance instance;
     public XrSession session;
     public XrSpace xrAppSpace;
@@ -78,7 +77,7 @@ public class MCOpenXR extends MCVR {
 
     public MCOpenXR(Minecraft mc, ClientDataHolderVR dh) {
         super(mc, dh, VivecraftVRMod.INSTANCE);
-        ome = this;
+        OME = this;
         this.hapticScheduler = new OpenXRHapticSchedular();
 
     }
@@ -86,11 +85,6 @@ public class MCOpenXR extends MCVR {
     @Override
     public String getName() {
         return "OpenXR";
-    }
-
-    @Override
-    public String getID() {
-        return "openxr";
     }
 
     @Override
@@ -287,7 +281,7 @@ public class MCOpenXR extends MCVR {
                 this.aimSource[0] = new Vec3(space_location.pose().position$().x(), space_location.pose().position$().y(), space_location.pose().position$().z());
                 this.controllerHistory[0].add(this.getAimSource(0));
                 this.controllerForwardHistory[0].add(this.getAimSource(0));
-                Vec3 vec33 = this.controllerRotation[0].transform(this.up).toVector3d();
+                Vec3 vec33 = this.controllerRotation[0].transform(UP).toVector3d();
                 this.controllerUpHistory[0].add(vec33);
                 this.controllerTracking[0] = true;
             } else {
@@ -302,7 +296,7 @@ public class MCOpenXR extends MCVR {
                 this.aimSource[1] = new Vec3(space_location.pose().position$().x(), space_location.pose().position$().y(), space_location.pose().position$().z());
                 this.controllerHistory[1].add(this.getAimSource(1));
                 this.controllerForwardHistory[1].add(this.getAimSource(1));
-                Vec3 vec32 = this.controllerRotation[1].transform(this.up).toVector3d();
+                Vec3 vec32 = this.controllerRotation[1].transform(UP).toVector3d();
                 this.controllerUpHistory[1].add(vec32);
                 this.controllerTracking[1] = true;
             } else {
@@ -317,8 +311,8 @@ public class MCOpenXR extends MCVR {
                 this.handRotation[1] = hmdRotation;
                 this.controllerRotation[0] = hmdRotation;
                 this.controllerRotation[1] = hmdRotation;
-                this.aimSource[1] = this.getCenterEyePosition();
-                this.aimSource[0] = this.getCenterEyePosition();
+                this.aimSource[1] = this.getEyePosition(RenderPass.CENTER);
+                this.aimSource[0] = this.getEyePosition(RenderPass.CENTER);
 
                 if (this.mc.screen == null) {
                     Vec3 vec31 = this.getAimVector(1);
@@ -427,7 +421,7 @@ public class MCOpenXR extends MCVR {
 
         if (matrix4f == null) {
             org.vivecraft.common.utils.math.Matrix4f matrix4f2 = this.hmdPose;
-            Vector3 vector31 = Utils.convertMatrix4ftoTranslationVector(matrix4f2);
+            Vector3 vector31 = MathUtils.convertMatrix4ftoTranslationVector(matrix4f2);
 
             if (this.dh.vrSettings.seated || this.dh.vrSettings.allowStandingOriginOffset) {
                 if (this.dh.vr.isHMDTracking()) {
@@ -437,7 +431,7 @@ public class MCOpenXR extends MCVR {
 
             return vector31.toVector3d();
         } else {
-            Vector3 vector3 = Utils.convertMatrix4ftoTranslationVector(matrix4f);
+            Vector3 vector3 = MathUtils.convertMatrix4ftoTranslationVector(matrix4f);
 
             if (this.dh.vrSettings.seated || this.dh.vrSettings.allowStandingOriginOffset) {
                 if (this.dh.vr.isHMDTracking()) {
@@ -623,7 +617,7 @@ public class MCOpenXR extends MCVR {
             }
         }
 
-        if (KeyboardHandler.Showing || RadialHandler.isShowing()) {
+        if (KeyboardHandler.SHOWING || RadialHandler.isShowing()) {
             arraylist.add(VRInputActionSet.KEYBOARD);
         }
 
@@ -740,6 +734,7 @@ public class MCOpenXR extends MCVR {
                 this.initializeOpenXRSession();
                 this.initializeOpenXRSpace();
                 this.initializeOpenXRSwapChain();
+                this.initInputAndApplication();
             } catch (Exception e) {
                 e.printStackTrace();
                 this.initSuccess = false;
@@ -840,7 +835,7 @@ public class MCOpenXR extends MCVR {
     }
 
     public static MCOpenXR get() {
-        return ome;
+        return OME;
     }
 
     private void initializeOpenXRSession() {
@@ -874,10 +869,10 @@ public class MCOpenXR extends MCVR {
             int maxHeight = graphicsProperties.maxSwapchainImageHeight();
             int maxLayerCount = graphicsProperties.maxLayerCount();
 
-            VRSettings.logger.info("Found device with id:  {}", systemID);
-            VRSettings.logger.info("Headset Name: {}, Vendor: {}", MCOpenXR.get().systemName, vendor);
-            VRSettings.logger.info("Headset Orientation Tracking: {}, Position Tracking: {}", orientationTracking, positionTracking);
-            VRSettings.logger.info("Headset Max Width: {}, Max Height: {}, Max Layer Count: {}", maxWidth, maxHeight, maxLayerCount);
+            VRSettings.LOGGER.info("Found device with id:  {}", systemID);
+            VRSettings.LOGGER.info("Headset Name: {}, Vendor: {}", MCOpenXR.get().systemName, vendor);
+            VRSettings.LOGGER.info("Headset Orientation Tracking: {}, Position Tracking: {}", orientationTracking, positionTracking);
+            VRSettings.LOGGER.info("Headset Max Width: {}, Max Height: {}, Max Layer Count: {}", maxWidth, maxHeight, maxLayerCount);
 
             //Create session
             XrSessionCreateInfo info = XrSessionCreateInfo.calloc(stack);
@@ -1028,13 +1023,6 @@ public class MCOpenXR extends MCVR {
         return b;
     }
 
-
-    @Override
-    public boolean postinit() throws RenderConfigException {
-        this.initInputAndApplication();
-        return inputInitialized;
-    }
-
     private void initInputAndApplication() {
         this.populateInputActions();
 
@@ -1049,11 +1037,11 @@ public class MCOpenXR extends MCVR {
 
     @Override
     public Matrix4f getControllerComponentTransform(int var1, String var2) {
-        return Utils.Matrix4fSetIdentity(new Matrix4f());
+        return new Matrix4f();
     }
 
     @Override
-    public boolean hasThirdController() {
+    public boolean hasCameraTracker() {
         return false;
     }
 
@@ -1181,7 +1169,7 @@ public class MCOpenXR extends MCVR {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             int error;
             for (String headset: XRBindings.supportedHeadsets()) {
-                VRSettings.logger.info("loading defaults for {}", headset);
+                VRSettings.LOGGER.info("loading defaults for {}", headset);
                 Pair<String, String>[] defaultBindings = XRBindings.getBinding(headset).toArray(new Pair[0]);
                 XrActionSuggestedBinding.Buffer bindings = XrActionSuggestedBinding.calloc(defaultBindings.length + 6, stack); //TODO different way of adding controller poses
 
@@ -1189,7 +1177,7 @@ public class MCOpenXR extends MCVR {
                     Pair<String, String> pair = defaultBindings[i];
                     VRInputAction binding = this.getInputActionByName(pair.getLeft());
                     if (binding.handle == 0L) {
-                        VRSettings.logger.error("Handle for '{}'/'{}' is null", pair.getLeft(), pair.getRight());
+                        VRSettings.LOGGER.error("Handle for '{}'/'{}' is null", pair.getLeft(), pair.getRight());
                         continue;
                     }
                     bindings.get(i).set(
@@ -1435,7 +1423,7 @@ public class MCOpenXR extends MCVR {
      */
     protected void logError(int xrResult, String caller, String... args) {
         if (xrResult < 0) {
-            VRSettings.logger.error("{} for {} errored: {}", caller, String.join(" ", args), getResultName(xrResult));
+            VRSettings.LOGGER.error("{} for {} errored: {}", caller, String.join(" ", args), getResultName(xrResult));
         }
     }
 }
