@@ -4,16 +4,15 @@ import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.network.chat.Component;
 import net.minecraft.util.Tuple;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
-import org.vivecraft.client_vr.ClientDataHolderVR;
-import org.vivecraft.client_vr.VRTextureTarget;
 import org.vivecraft.client_vr.provider.MCVR;
 import org.vivecraft.client_vr.provider.VRRenderer;
 import org.vivecraft.client_vr.render.RenderConfigException;
 import org.vivecraft.client_vr.render.RenderPass;
+import org.vivecraft.client_vr.render.helpers.RenderHelper;
+import org.vivecraft.client_vr.settings.VRSettings;
 
 public class NullVRStereoRenderer extends VRRenderer {
 
@@ -28,26 +27,18 @@ public class NullVRStereoRenderer extends VRRenderer {
 
     @Override
     public Tuple<Integer, Integer> getRenderTextureSizes() {
-        if (this.resolution != null) {
-            return this.resolution;
-        } else {
+        if (this.resolution == null) {
             this.resolution = new Tuple<>(2048, 2048);
-            System.out.println("NullVR Render Res " + this.resolution.getA() + " x " + this.resolution.getB());
+            VRSettings.LOGGER.info("Vivecraft: NullVR Render Res {}x{}", this.resolution.getA(), this.resolution.getB());
             this.ss = -1.0F;
-            System.out.println("NullVR Supersampling: " + this.ss);
-
-            return this.resolution;
+            VRSettings.LOGGER.info("Vivecraft: NullVR Supersampling: {}", this.ss);
         }
+        return this.resolution;
     }
 
     @Override
-    public Matrix4f getProjectionMatrix(int eyeType, float nearClip, float farClip) {
-        return new Matrix4f().setPerspective(90.0F, 1.0F, nearClip, farClip);
-    }
-
-    @Override
-    public String getLastError() {
-        return "";
+    protected Matrix4f getProjectionMatrix(int eyeType, float nearClip, float farClip) {
+        return new Matrix4f().setPerspective((float) Math.toRadians(110.0F), 1.0F, nearClip, farClip);
     }
 
     @Override
@@ -67,30 +58,11 @@ public class NullVRStereoRenderer extends VRRenderer {
         RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
         GlStateManager._texImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, lwidth, lheight, 0, GL11.GL_RGBA, GL11.GL_INT, null);
         RenderSystem.bindTexture(i);
-
-        ClientDataHolderVR dataholder = ClientDataHolderVR.getInstance();
-        if (this.LeftEyeTextureId == -1) {
-            throw new RenderConfigException("Failed to initialise stereo rendering plugin: " + this.getName(), Component.literal(this.getLastError()));
-        }
-
-        this.checkGLError("Render Texture setup");
-
-        if (this.framebufferEye0 == null) {
-            this.framebufferEye0 = new VRTextureTarget("L Eye", lwidth, lheight, false, false, this.LeftEyeTextureId, false, true, false);
-            dataholder.print(this.framebufferEye0.toString());
-            this.checkGLError("Left Eye framebuffer setup");
-        }
-
-        if (this.framebufferEye1 == null) {
-            this.framebufferEye1 = new VRTextureTarget("R Eye", lwidth, lheight, false, false, this.RightEyeTextureId, false, true, false);
-            dataholder.print(this.framebufferEye1.toString());
-            this.checkGLError("Right Eye framebuffer setup");
-        }
+        this.lastError = RenderHelper.checkGLError("create VR textures");
     }
 
     @Override
-    public void endFrame() {
-    }
+    public void endFrame() {}
 
     @Override
     public boolean providesStencilMask() {
@@ -119,18 +91,9 @@ public class NullVRStereoRenderer extends VRRenderer {
     }
 
     @Override
-    public boolean isInitialized() {
-        return this.vr.initSuccess;
-    }
+    protected void destroyBuffers() {
+        super.destroyBuffers();
 
-    @Override
-    public String getinitError() {
-        return this.vr.initStatus;
-    }
-
-    @Override
-    public void destroy() {
-        super.destroy();
         if (this.framebufferEye0 != null) {
             this.framebufferEye0.destroyBuffers();
             this.framebufferEye0 = null;
@@ -140,6 +103,7 @@ public class NullVRStereoRenderer extends VRRenderer {
             this.framebufferEye1.destroyBuffers();
             this.framebufferEye1 = null;
         }
+
         if (this.LeftEyeTextureId > -1) {
             TextureUtil.releaseTextureId(this.LeftEyeTextureId);
             this.LeftEyeTextureId = -1;

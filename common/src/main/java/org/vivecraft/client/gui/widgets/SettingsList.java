@@ -4,10 +4,7 @@ import com.google.common.collect.ImmutableList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.ContainerObjectSelectionList;
-import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarratedElementType;
@@ -16,7 +13,8 @@ import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.util.Mth;
+import javax.annotation.Nullable;
 import org.vivecraft.client.gui.framework.GuiVROptionSlider;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.settings.VRSettings;
@@ -42,6 +40,41 @@ public class SettingsList extends ContainerObjectSelectionList<SettingsList.Base
         }
     }
 
+    /**
+     * override because the vanilla implementation is buggy, and the faulty {@code getEntryAtPosition} method is final
+     */
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (this.isValidMouseClick(button)) {
+            this.updateScrollingState(mouseX, mouseY, button);
+            if (this.isMouseOver(mouseX, mouseY)) {
+                SettingsList.BaseEntry hovered = this.getEntryAtPositionFixed(mouseX, mouseY);
+                if (hovered != null && hovered.mouseClicked(mouseX, mouseY, button)) {
+                    if (this.getFocused() != hovered && this.getFocused() != null) {
+                        // unselect old entry
+                        this.getFocused().setFocused(null);
+                    }
+
+                    this.setFocused(hovered);
+                    this.setDragging(true);
+                    return true;
+                }
+            }
+        }
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    /**
+     * fixed version of {@link AbstractSelectionList#getEntryAtPosition(double, double)}
+     * just checks if the position is left of the scrollbar, instead of some weird left limit
+     */
+    private SettingsList.BaseEntry getEntryAtPositionFixed(double mouseX, double mouseY) {
+        int listY = Mth.floor(mouseY - this.getY()) - this.headerHeight + (int) this.getScrollAmount() - 4;
+        int hoveredItem = listY / this.itemHeight;
+        return mouseX < this.getScrollbarPosition() && hoveredItem >= 0 && listY >= 0 &&
+            hoveredItem < this.getItemCount() ? this.children().get(hoveredItem) : null;
+    }
+
     @Override
     protected int getScrollbarPosition() {
         return super.getScrollbarPosition() + 8;
@@ -53,7 +86,7 @@ public class SettingsList extends ContainerObjectSelectionList<SettingsList.Base
     }
 
     public static BaseEntry ConfigToEntry(ConfigBuilder.ConfigValue<?> configValue, Component name) {
-        AbstractWidget widget = configValue.getWidget(ResettableEntry.valueButtonWidth, 20).get();
+        AbstractWidget widget = configValue.getWidget(ResettableEntry.VALUE_BUTTON_WIDTH, 20).get();
         return new ResettableEntry(name, widget, configValue);
     }
 
@@ -85,7 +118,7 @@ public class SettingsList extends ContainerObjectSelectionList<SettingsList.Base
             // slider button
             widget = new GuiVROptionSlider(option.returnEnumOrdinal(),
                 0, 0,
-                WidgetEntry.valueButtonWidth, 20,
+                WidgetEntry.VALUE_BUTTON_WIDTH, 20,
                 option, true);
             widget.setTooltip(tooltip);
         } else {
@@ -95,7 +128,7 @@ public class SettingsList extends ContainerObjectSelectionList<SettingsList.Base
                         dh.vrSettings.setOptionValue(option);
                         button.setMessage(Component.literal(dh.vrSettings.getButtonDisplayString(option, true)));
                     })
-                .size(WidgetEntry.valueButtonWidth, 20)
+                .size(WidgetEntry.VALUE_BUTTON_WIDTH, 20)
                 .tooltip(tooltip)
                 .build();
         }
@@ -116,13 +149,13 @@ public class SettingsList extends ContainerObjectSelectionList<SettingsList.Base
         }
 
         @Override
-        public void render(GuiGraphics guiGraphics, int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
-            guiGraphics.drawString(Minecraft.getInstance().font, this.name, Minecraft.getInstance().screen.width / 2 - this.width / 2, j + m - Minecraft.getInstance().font.lineHeight - 1, 0xFFFFFF);
+        public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
+            guiGraphics.drawString(Minecraft.getInstance().font, this.name, Minecraft.getInstance().screen.width / 2 - this.width / 2, top + height - Minecraft.getInstance().font.lineHeight - 1, 0xFFFFFF);
         }
 
         @Override
         @Nullable
-        public ComponentPath nextFocusPath(FocusNavigationEvent focusNavigationEvent) {
+        public ComponentPath nextFocusPath(FocusNavigationEvent event) {
             return null;
         }
 
@@ -148,10 +181,10 @@ public class SettingsList extends ContainerObjectSelectionList<SettingsList.Base
     }
 
     public static class ResettableEntry extends WidgetEntry {
+        public static final int VALUE_BUTTON_WIDTH = 125;
+
         private final Button resetButton;
         private final BooleanSupplier canReset;
-
-        public static final int valueButtonWidth = 125;
 
         public ResettableEntry(Component name, AbstractWidget valueWidget, ConfigBuilder.ConfigValue<?> configValue) {
             super(name, valueWidget);
@@ -166,12 +199,12 @@ public class SettingsList extends ContainerObjectSelectionList<SettingsList.Base
         }
 
         @Override
-        public void render(GuiGraphics guiGraphics, int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
-            super.render(guiGraphics, i, j, k, l, m, n, o, bl, f);
-            this.resetButton.setX(k + 230);
-            this.resetButton.setY(j);
-            this.resetButton.active = canReset.getAsBoolean();
-            this.resetButton.render(guiGraphics, n, o, f);
+        public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
+            super.render(guiGraphics, index, top, left, width, height, mouseX, mouseY, hovering, partialTick);
+            this.resetButton.setX(left + 230);
+            this.resetButton.setY(top);
+            this.resetButton.active = this.canReset.getAsBoolean();
+            this.resetButton.render(guiGraphics, mouseX, mouseY, partialTick);
         }
 
         @Override
@@ -194,7 +227,7 @@ public class SettingsList extends ContainerObjectSelectionList<SettingsList.Base
     public static class WidgetEntry extends BaseEntry {
         protected AbstractWidget valueWidget;
 
-        public static final int valueButtonWidth = 145;
+        public static final int VALUE_BUTTON_WIDTH = 145;
 
         public WidgetEntry(Component name, AbstractWidget valueWidget) {
             super(name);
@@ -202,11 +235,11 @@ public class SettingsList extends ContainerObjectSelectionList<SettingsList.Base
         }
 
         @Override
-        public void render(GuiGraphics guiGraphics, int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
-            guiGraphics.drawString(Minecraft.getInstance().font, this.name, k + 90 - 140, j + m / 2 - Minecraft.getInstance().font.lineHeight / 2, 0xFFFFFF);
-            this.valueWidget.setX(k + 105);
-            this.valueWidget.setY(j);
-            this.valueWidget.render(guiGraphics, n, o, f);
+        public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
+            guiGraphics.drawString(Minecraft.getInstance().font, this.name, left + 90 - 140, top + height / 2 - Minecraft.getInstance().font.lineHeight / 2, 0xFFFFFF);
+            this.valueWidget.setX(left + 105);
+            this.valueWidget.setY(top);
+            this.valueWidget.render(guiGraphics, mouseX, mouseY, partialTick);
         }
 
         @Override
@@ -237,7 +270,7 @@ public class SettingsList extends ContainerObjectSelectionList<SettingsList.Base
 
 
         public boolean isActive() {
-            return active;
+            return this.active;
         }
 
         public void setActive(boolean active) {
