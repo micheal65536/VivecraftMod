@@ -18,12 +18,14 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
 import org.vivecraft.client.VivecraftVRMod;
 import org.vivecraft.client.Xplat;
+import org.vivecraft.common.utils.MathUtils;
 import org.vivecraft.client_vr.BlockTags;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.ItemTags;
-import org.vivecraft.client_vr.Vec3History;
+import org.vivecraft.client_vr.Vector3fHistory;
 import org.vivecraft.client_vr.provider.ControllerType;
 import org.vivecraft.client_vr.settings.VRSettings;
 import org.vivecraft.mod_compat_vr.bettercombat.BetterCombatHelper;
@@ -32,15 +34,14 @@ import org.vivecraft.mod_compat_vr.epicfight.EpicFightHelper;
 import java.util.List;
 
 public class SwingTracker extends Tracker {
-    private final Vec3[] lastWeaponEndAir = new Vec3[]{new Vec3(0.0D, 0.0D, 0.0D), new Vec3(0.0D, 0.0D, 0.0D)};
+    private final Vec3[] lastWeaponEndAir = new Vec3[]{Vec3.ZERO, Vec3.ZERO};
     private final boolean[] lastWeaponSolid = new boolean[2];
     public final Vec3[] miningPoint = new Vec3[2];
     public final Vec3[] attackingPoint = new Vec3[2];
-    public final Vec3History[] tipHistory = new Vec3History[]{new Vec3History(), new Vec3History()};
+    public final Vector3fHistory[] tipHistory = new Vector3fHistory[]{new Vector3fHistory(), new Vector3fHistory()};
     public boolean[] canAct = new boolean[2];
     public int disableSwing = 3;
-    private double speedThresh = 3.0D;
-    private final Vec3 forward = new Vec3(0.0D, 0.0D, -1.0D);
+    private float speedThresh = 3.0F;
 
     public SwingTracker(Minecraft mc, ClientDataHolderVR dh) {
         super(mc, dh);
@@ -100,10 +101,10 @@ public class SwingTracker extends Tracker {
 
     @Override
     public void doProcess(LocalPlayer player) {
-        this.speedThresh = 3.0D;
+        this.speedThresh = 3.0F;
 
         if (player.isCreative()) {
-            this.speedThresh *= 1.5D;
+            this.speedThresh *= 1.5F;
         }
 
         this.mc.getProfiler().push("updateSwingAttack");
@@ -111,7 +112,7 @@ public class SwingTracker extends Tracker {
         for (int c = 0; c < 2; c++) {
             if (!this.dh.climbTracker.isGrabbingLadder(c)) {
                 Vec3 handPos = this.dh.vrPlayer.vrdata_world_pre.getController(c).getPosition();
-                Vec3 handDirection = this.dh.vrPlayer.vrdata_world_pre.getHand(c).getCustomVector(this.forward);
+                Vector3f handDirection = this.dh.vrPlayer.vrdata_world_pre.getHand(c).getCustomVector(MathUtils.BACK);
                 ItemStack itemstack = player.getItemInHand(c == 0 ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
                 Item item = itemstack.getItem();
                 boolean isTool = false;
@@ -157,16 +158,18 @@ public class SwingTracker extends Tracker {
 
                 weaponLength *= this.dh.vrPlayer.vrdata_world_pre.worldScale;
 
-                this.miningPoint[c] = handPos.add(handDirection.scale(weaponLength));
+                Vector3f weaponEnd = handDirection.mul(weaponLength, new Vector3f());
+                this.miningPoint[c] = handPos.add(weaponEnd.x, weaponEnd.y, weaponEnd.z);
 
                 // do speed calc in actual room coords
-                Vec3 tip = this.dh.vrPlayer.vrdata_room_pre.getController(c).getPosition().add(this.dh.vrPlayer.vrdata_room_pre.getHand(c).getCustomVector(this.forward).scale(0.3D));
+                Vector3f tip = this.dh.vrPlayer.vrdata_room_pre.getController(c).getPositionF()
+                    .add(this.dh.vrPlayer.vrdata_room_pre.getHand(c).getCustomVector(MathUtils.BACK).mul(0.3F));
                 this.tipHistory[c].add(tip);
 
                 // at a 0.3m offset on index controllers a speed of 3m/s is an intended smack, 7 m/s is about as high as your arm can go.
-                float speed = (float) this.tipHistory[c].averageSpeed(0.33D);
+                float speed = this.tipHistory[c].averageSpeed(0.33D);
                 boolean inAnEntity = false;
-                this.canAct[c] = (double) speed > this.speedThresh && !this.lastWeaponSolid[c];
+                this.canAct[c] = speed > this.speedThresh && !this.lastWeaponSolid[c];
 
                 // Check EntityCollisions first
                 boolean entityAct = this.canAct[c];
@@ -182,7 +185,8 @@ public class SwingTracker extends Tracker {
 
                 this.attackingPoint[c] = this.constrain(handPos, this.miningPoint[c]);
 
-                Vec3 weaponTip = handPos.add(handDirection.scale(weaponLength + entityReachAdd));
+                Vector3f weaponEntityEnd = handDirection.mul(weaponLength + entityReachAdd, new Vector3f());
+                Vec3 weaponTip = handPos.add(weaponEntityEnd.x, weaponEntityEnd.y, weaponEntityEnd.z);
                 // no hitting through blocks
                 weaponTip = this.constrain(handPos, weaponTip);
 
@@ -282,7 +286,7 @@ public class SwingTracker extends Tracker {
                         // roomscale mining
                         else {
                             // faster swings do more damage
-                            totalHits = (int) ((double) totalHits + Math.min((double) speed - this.speedThresh, 4.0D));
+                            totalHits = (int) (totalHits + Math.min(speed - this.speedThresh, 4.0F));
                             //this.mc.physicalGuiManager.preClickAction();
 
                             // this will either destroy the block if in creative or set it as the current block.

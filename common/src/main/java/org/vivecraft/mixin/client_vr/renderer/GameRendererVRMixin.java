@@ -200,7 +200,7 @@ public abstract class GameRendererVRMixin
         if (!VRState.VR_RUNNING) {
             return original.call(instance, partialTick);
         } else {
-            return vivecraft$DATA_HOLDER.vrPlayer.vrdata_world_render.getController(0).getDirection();
+            return new Vec3(vivecraft$DATA_HOLDER.vrPlayer.vrdata_world_render.getController(0).getDirection());
         }
     }
 
@@ -254,9 +254,9 @@ public abstract class GameRendererVRMixin
             };
 
             fovy = switch (vivecraft$DATA_HOLDER.currentPass) {
-                case THIRD -> (float) Math.toRadians(vivecraft$DATA_HOLDER.vrSettings.mixedRealityFov);
-                case CAMERA -> (float) Math.toRadians(vivecraft$DATA_HOLDER.vrSettings.handCameraFov);
-                case SCOPEL, SCOPER -> (float) Math.toRadians(70F / 8F);
+                case THIRD -> Mth.DEG_TO_RAD * vivecraft$DATA_HOLDER.vrSettings.mixedRealityFov;
+                case CAMERA -> Mth.DEG_TO_RAD * vivecraft$DATA_HOLDER.vrSettings.handCameraFov;
+                case SCOPEL, SCOPER -> Mth.DEG_TO_RAD * (70F / 8F);
                 default -> fovy;
             };
         }

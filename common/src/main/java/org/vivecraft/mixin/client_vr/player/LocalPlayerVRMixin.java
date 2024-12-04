@@ -205,12 +205,12 @@ public abstract class LocalPlayerVRMixin extends LocalPlayer_PlayerVRMixin imple
 
     @ModifyArg(method = "updateAutoJump", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;sin(F)F"))
     private float vivecraft$modifyAutoJumpSin(float original) {
-        return VRState.VR_RUNNING ? ClientDataHolderVR.getInstance().vrPlayer.vrdata_world_pre.getBodyYaw() * ((float) Math.PI / 180) : original;
+        return VRState.VR_RUNNING ? ClientDataHolderVR.getInstance().vrPlayer.vrdata_world_pre.getBodyYawRad() : original;
     }
 
     @ModifyArg(method = "updateAutoJump", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;cos(F)F"))
     private float vivecraft$modifyAutoJumpCos(float original) {
-        return VRState.VR_RUNNING ? ClientDataHolderVR.getInstance().vrPlayer.vrdata_world_pre.getBodyYaw() * ((float) Math.PI / 180) : original;
+        return VRState.VR_RUNNING ? ClientDataHolderVR.getInstance().vrPlayer.vrdata_world_pre.getBodyYawRad() : original;
     }
 
     @Inject(method = "handleEntityEvent", at = @At("HEAD"))
@@ -337,7 +337,7 @@ public abstract class LocalPlayerVRMixin extends LocalPlayer_PlayerVRMixin imple
                         direction = direction.xRot(vrplayer.vrdata_world_pre.hmd.getPitchRad());
                     }
 
-                    direction = direction.yRot(-jkatvr.getYaw() * ((float) Math.PI / 180F) + vrplayer.vrdata_world_pre.rotation_radians);
+                    direction = direction.yRot(-jkatvr.getYaw() * Mth.DEG_TO_RAD + vrplayer.vrdata_world_pre.rotation_radians);
                 } else if (ClientDataHolderVR.INFINADECK) {
                     jinfinadeck.query();
                     speed = jinfinadeck.getSpeed() * jinfinadeck.walkDirection() * this.vivecraft$dataholder.vrSettings.movementSpeedMultiplier;
@@ -347,7 +347,7 @@ public abstract class LocalPlayerVRMixin extends LocalPlayer_PlayerVRMixin imple
                         direction = direction.xRot(vrplayer.vrdata_world_pre.hmd.getPitchRad());
                     }
 
-                    direction = direction.yRot(-jinfinadeck.getYaw() * ((float) Math.PI / 180F) + vrplayer.vrdata_world_pre.rotation_radians);
+                    direction = direction.yRot(-jinfinadeck.getYaw() * Mth.DEG_TO_RAD + vrplayer.vrdata_world_pre.rotation_radians);
                 } else if (this.vivecraft$dataholder.vrSettings.seated) {
                     int c = 0;
                     if (this.vivecraft$dataholder.vrSettings.seatedUseHMD) {
@@ -378,8 +378,8 @@ public abstract class LocalPlayerVRMixin extends LocalPlayer_PlayerVRMixin imple
                             case HMD -> direction.yRot(-vrplayer.vrdata_world_pre.hmd.getYawRad());
                             case RUN_IN_PLACE -> direction.yRot((float) -this.vivecraft$dataholder.runTracker.getYaw())
                                 .scale(this.vivecraft$dataholder.runTracker.getSpeed());
-                            case ROOM -> direction.yRot((180.0F + this.vivecraft$dataholder.vrSettings.worldRotation) *
-                                ((float) Math.PI / 180F));
+                            case ROOM -> direction.yRot(
+                                (180.0F + this.vivecraft$dataholder.vrSettings.worldRotation) * Mth.DEG_TO_RAD);
                             default -> direction;
                         };
                     }
@@ -464,7 +464,8 @@ public abstract class LocalPlayerVRMixin extends LocalPlayer_PlayerVRMixin imple
     @Override
     @Unique
     public float vivecraft$getMuhSpeedFactor() {
-        return this.vivecraft$moveMulIn.lengthSqr() > 0.0D ?
+        // this shouldn't ever be null, but mixins doesn't always apply the default value
+        return this.vivecraft$moveMulIn != null && this.vivecraft$moveMulIn.lengthSqr() > 0.0D ?
             this.getBlockSpeedFactor() * (float) (this.vivecraft$moveMulIn.x + this.vivecraft$moveMulIn.z) * 0.5F :
             this.getBlockSpeedFactor();
     }
@@ -472,7 +473,8 @@ public abstract class LocalPlayerVRMixin extends LocalPlayer_PlayerVRMixin imple
     @Override
     @Unique
     public float vivecraft$getMuhJumpFactor() {
-        return this.vivecraft$moveMulIn.lengthSqr() > 0.0D ?
+        // this shouldn't ever be null, but mixins doesn't always apply the default value
+        return this.vivecraft$moveMulIn != null && this.vivecraft$moveMulIn.lengthSqr() > 0.0D ?
             this.getBlockJumpFactor() * (float) this.vivecraft$moveMulIn.y : this.getBlockJumpFactor();
     }
 
