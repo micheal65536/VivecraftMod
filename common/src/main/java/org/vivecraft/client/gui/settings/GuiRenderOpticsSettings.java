@@ -12,7 +12,7 @@ import org.vivecraft.client_vr.settings.VRSettings;
 import org.vivecraft.mod_compat_vr.ShadersHelper;
 
 public class GuiRenderOpticsSettings extends GuiVROptionsBase {
-    private static final VRSettings.VrOptions[] openVRDisplayOptions = new VRSettings.VrOptions[]{
+    private static final VRSettings.VrOptions[] VR_DISPLAY_OPTIONS = new VRSettings.VrOptions[]{
         VRSettings.VrOptions.RENDER_SCALEFACTOR,
         VRSettings.VrOptions.MIRROR_DISPLAY,
         VRSettings.VrOptions.FSAA,
@@ -22,19 +22,19 @@ public class GuiRenderOpticsSettings extends GuiVROptionsBase {
         VRSettings.VrOptions.MIRROR_SCREENSHOT_CAMERA,
         VRSettings.VrOptions.RELOAD_EXTERNAL_CAMERA
     };
-    private static final VRSettings.VrOptions[] UDOptions = new VRSettings.VrOptions[]{
+    private static final VRSettings.VrOptions[] UNDISTORTED_OPTIONS = new VRSettings.VrOptions[]{
         VRSettings.VrOptions.MONO_FOV,
         VRSettings.VrOptions.MIRROR_CENTER_SMOOTH
     };
-    private static final VRSettings.VrOptions[] TUDOptions = new VRSettings.VrOptions[]{
+    private static final VRSettings.VrOptions[] THIRD_OPTIONS = new VRSettings.VrOptions[]{
         VRSettings.VrOptions.MIXED_REALITY_FOV,
         VRSettings.VrOptions.MIXED_REALITY_RENDER_CAMERA_MODEL
     };
-    private static final VRSettings.VrOptions[] CROPOptions = new VRSettings.VrOptions[]{
+    private static final VRSettings.VrOptions[] CROP_OPTIONS = new VRSettings.VrOptions[]{
         VRSettings.VrOptions.MIRROR_EYE,
         VRSettings.VrOptions.MIRROR_CROP
     };
-    private static final VRSettings.VrOptions[] SOptions = new VRSettings.VrOptions[]{
+    private static final VRSettings.VrOptions[] SINGLE_OPTIONS = new VRSettings.VrOptions[]{
         VRSettings.VrOptions.MIRROR_EYE
     };
     private final VROptionEntry[] MROptions = new VROptionEntry[]{new VROptionEntry(
@@ -58,8 +58,8 @@ public class GuiRenderOpticsSettings extends GuiVROptionsBase {
     @Override
     public void init() {
         this.vrTitle = "vivecraft.options.screen.stereorendering";
-        VRSettings.VrOptions[] buttons = new VRSettings.VrOptions[openVRDisplayOptions.length];
-        System.arraycopy(openVRDisplayOptions, 0, buttons, 0, openVRDisplayOptions.length);
+        VRSettings.VrOptions[] buttons = new VRSettings.VrOptions[VR_DISPLAY_OPTIONS.length];
+        System.arraycopy(VR_DISPLAY_OPTIONS, 0, buttons, 0, VR_DISPLAY_OPTIONS.length);
 
         for (int i = 0; i < buttons.length; i++) {
             VRSettings.VrOptions option = buttons[i];
@@ -78,10 +78,10 @@ public class GuiRenderOpticsSettings extends GuiVROptionsBase {
 
         switch(this.dataHolder.vrSettings.displayMirrorMode) {
             case MIXED_REALITY -> super.init(this.MROptions, false);
-            case FIRST_PERSON -> super.init(UDOptions, false);
-            case THIRD_PERSON -> super.init(TUDOptions, false);
-            case CROPPED -> super.init(CROPOptions, false);
-            case SINGLE -> super.init(SOptions, false);
+            case FIRST_PERSON -> super.init(UNDISTORTED_OPTIONS, false);
+            case THIRD_PERSON -> super.init(THIRD_OPTIONS, false);
+            case CROPPED -> super.init(CROP_OPTIONS, false);
+            case SINGLE -> super.init(SINGLE_OPTIONS, false);
         }
 
         super.init(this.postEffects, false);

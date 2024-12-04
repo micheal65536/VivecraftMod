@@ -1,10 +1,12 @@
 package org.vivecraft.client_vr.provider.control;
 
+import org.joml.Vector2f;
+import org.joml.Vector2fc;
 import org.vivecraft.client.VivecraftVRMod;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.provider.ControllerType;
-import org.vivecraft.common.utils.lwjgl.Vector2f;
-import org.vivecraft.common.utils.math.Vector2;
+import org.vivecraft.client_vr.provider.openvr_lwjgl.MCOpenVR;
+import org.vivecraft.client_vr.provider.openvr_lwjgl.VRInputAction;
 
 public class TrackpadSwipeSampler {
     private static final int UP = 0;
@@ -25,12 +27,12 @@ public class TrackpadSwipeSampler {
         }
     }
 
-    public void update(ControllerType hand, Vector2 position) {
-        VRInputAction trackpad = ClientDataHolderVR.getInstance().vr.getInputAction(VivecraftVRMod.INSTANCE.keyTrackpadTouch);
+    public void update(ControllerType hand, Vector2fc position) {
+        VRInputAction trackpad = MCOpenVR.get().getInputAction(VivecraftVRMod.INSTANCE.keyTrackpadTouch);
         trackpad.setCurrentHand(hand);
 
         if (trackpad.isButtonPressed()) {
-            this.buffer[this.index].set(position.getX(), position.getY());
+            this.buffer[this.index].set(position.x(), position.y());
 
             if (++this.index >= this.buffer.length) {
                 this.index = 0;

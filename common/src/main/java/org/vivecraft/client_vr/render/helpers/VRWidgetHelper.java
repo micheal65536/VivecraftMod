@@ -1,12 +1,8 @@
 package org.vivecraft.client_vr.render.helpers;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.*;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
-import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
@@ -21,7 +17,7 @@ import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix3f;
 import org.joml.Vector3f;
-import org.vivecraft.client.utils.Utils;
+import org.vivecraft.client.utils.ClientUtils;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.extensions.GameRendererExtension;
 import org.vivecraft.client_vr.gameplay.trackers.CameraTracker;
@@ -124,15 +120,14 @@ public class VRWidgetHelper {
 
         // orient and scale model
         poseStack.translate(widgetOffset.x, widgetOffset.y, widgetOffset.z);
-        poseStack.mulPoseMatrix(DATA_HOLDER.vrPlayer.vrdata_world_render.getEye(renderPass).getMatrix().toMCMatrix());
+
+        poseStack.mulPoseMatrix(DATA_HOLDER.vrPlayer.vrdata_world_render.getEye(renderPass).getMatrix());
         scale = scale * DATA_HOLDER.vrPlayer.vrdata_world_render.worldScale;
         poseStack.scale(scale, scale, scale);
 
         // show orientation
         if (DEBUG) {
-            poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
-            RenderHelper.renderDebugAxes(0, 0, 0, 0.08F);
-            poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+            DebugRenderHelper.renderLocalAxes(poseStack);
         }
 
         // apply model offset
@@ -141,7 +136,7 @@ public class VRWidgetHelper {
 
         // lighting for the model
         BlockPos blockpos = BlockPos.containing(DATA_HOLDER.vrPlayer.vrdata_world_render.getEye(renderPass).getPosition());
-        int combinedLight = Utils.getCombinedLightWithMin(MC.level, blockpos, 0);
+        int combinedLight = ClientUtils.getCombinedLightWithMin(MC.level, blockpos, 0);
 
         RenderSystem.enableDepthTest();
         RenderSystem.defaultBlendFunc();
@@ -164,8 +159,7 @@ public class VRWidgetHelper {
         PoseStack poseStack2 = new PoseStack();
         RenderHelper.applyVRModelView(DATA_HOLDER.currentPass, poseStack2);
         poseStack2.last().pose().identity();
-        poseStack2.last().normal().mul(new Matrix3f(
-            DATA_HOLDER.vrPlayer.vrdata_world_render.getEye(renderPass).getMatrix().toMCMatrix()));
+        poseStack2.last().normal().mul(new Matrix3f(DATA_HOLDER.vrPlayer.vrdata_world_render.getEye(renderPass).getMatrix()));
 
         MC.getBlockRenderer().getModelRenderer().renderModel(poseStack2.last(), bufferBuilder, null, MC.getModelManager().getModel(model), 1.0F, 1.0F, 1.0F, combinedLight, OverlayTexture.NO_OVERLAY);
         tesselator.end();

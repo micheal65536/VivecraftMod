@@ -9,6 +9,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
 import org.vivecraft.client.VivecraftVRMod;
 import org.vivecraft.client.network.ClientNetworking;
 import org.vivecraft.client_vr.ClientDataHolderVR;
@@ -16,9 +17,12 @@ import org.vivecraft.client_vr.settings.AutoCalibration;
 import org.vivecraft.client_vr.settings.VRSettings;
 
 public class JumpTracker extends Tracker {
-    public Vec3[] latchStart = new Vec3[]{new Vec3(0.0D, 0.0D, 0.0D), new Vec3(0.0D, 0.0D, 0.0D)};
-    public Vec3[] latchStartOrigin = new Vec3[]{new Vec3(0.0D, 0.0D, 0.0D), new Vec3(0.0D, 0.0D, 0.0D)};
-    public Vec3[] latchStartPlayer = new Vec3[]{new Vec3(0.0D, 0.0D, 0.0D), new Vec3(0.0D, 0.0D, 0.0D)};
+    // in room space
+    public Vector3f[] latchStart = new Vector3f[]{new Vector3f(), new Vector3f()};
+
+    // in world space
+    public Vec3[] latchStartOrigin = new Vec3[]{Vec3.ZERO, Vec3.ZERO};
+    public Vec3[] latchStartPlayer = new Vec3[]{Vec3.ZERO, Vec3.ZERO};
     private boolean c0Latched = false;
     private boolean c1Latched = false;
 
@@ -119,13 +123,14 @@ public class JumpTracker extends Tracker {
                 jump = true;
             }
 
-            Vec3 rPos = this.dh.vrPlayer.vrdata_room_pre.getController(0).getPosition();
-            Vec3 lPos = this.dh.vrPlayer.vrdata_room_pre.getController(1).getPosition();
-            Vec3 now = rPos.add(lPos).scale(0.5D);
+            Vector3f now = this.dh.vrPlayer.vrdata_room_pre.getController(0).getPositionF().lerp(
+                this.dh.vrPlayer.vrdata_room_pre.getController(1).getPositionF(),
+                0.5F
+            );
 
             if (ok[0] && !this.c0Latched) {
                 // grabbed right
-                this.latchStart[0] = now;
+                this.latchStart[0].set(now);
                 this.latchStartOrigin[0] = this.dh.vrPlayer.vrdata_world_pre.origin;
                 this.latchStartPlayer[0] = this.mc.player.position();
                 this.dh.vr.triggerHapticPulse(0, 1000);
@@ -139,7 +144,7 @@ public class JumpTracker extends Tracker {
 
             if (ok[1] && !this.c1Latched) {
                 // grabbed left
-                this.latchStart[1] = now;
+                this.latchStart[1].set(now);
                 this.latchStartOrigin[1] = this.dh.vrPlayer.vrdata_world_pre.origin;
                 this.latchStartPlayer[1] = this.mc.player.position();
                 this.dh.vr.triggerHapticPulse(1, 1000);
@@ -149,8 +154,8 @@ public class JumpTracker extends Tracker {
             this.c1Latched = ok[1];
 
             int c = 0;
-            Vec3 delta = now.subtract(this.latchStart[c]);
-            delta = delta.yRot(this.dh.vrPlayer.vrdata_world_pre.rotation_radians);
+            Vector3f delta = now.sub(this.latchStart[c], new Vector3f());
+            delta = delta.rotateY(this.dh.vrPlayer.vrdata_world_pre.rotation_radians);
 
             if (!jump && this.isjumping()) {
                 // bzzzzzz
@@ -160,28 +165,28 @@ public class JumpTracker extends Tracker {
 
             if (jump) {
                 this.dh.climbTracker.forceActivate = true;
-                Vec3 movement = this.dh.vr.controllerHistory[0].netMovement(0.3D)
+                Vector3f movement = this.dh.vr.controllerHistory[0].netMovement(0.3D)
                     .add(this.dh.vr.controllerHistory[1].netMovement(0.3D));
 
-                double speed = (this.dh.vr.controllerHistory[0].averageSpeed(0.3D) + this.dh.vr.controllerHistory[1].averageSpeed(0.3D)) / 2.0D;
+                float speed = this.dh.vr.controllerHistory[0].averageSpeed(0.3D) + this.dh.vr.controllerHistory[1].averageSpeed(0.3D) * 0.5F;
 
-                movement = movement.scale((double) 0.33F * speed);
+                movement.mul(0.33F * speed);
 
                 // cap
                 final float limit = 0.66F;
 
                 if (movement.length() > limit) {
-                    movement = movement.scale(limit / movement.length());
+                    movement.mul(limit / movement.length());
                 }
 
                 if (player.hasEffect(MobEffects.JUMP)) {
-                    movement = movement.scale((double) player.getEffect(MobEffects.JUMP).getAmplifier() + 1.5D);
+                    movement.mul(player.getEffect(MobEffects.JUMP).getAmplifier() + 1.5F);
                 }
 
-                movement = movement.yRot(this.dh.vrPlayer.vrdata_world_pre.rotation_radians);
-                Vec3 lastPosition = this.mc.player.position().subtract(delta);
+                movement.rotateY(this.dh.vrPlayer.vrdata_world_pre.rotation_radians);
+                Vec3 lastPosition = this.mc.player.position().subtract(delta.x, delta.y, delta.z);
 
-                if (delta.y < 0.0D && movement.y < 0.0D) {
+                if (delta.y < 0.0F && movement.y < 0.0F) {
                     player.setDeltaMovement(
                         player.getDeltaMovement().x - movement.x * 1.25D,
                         -movement.y,
@@ -205,13 +210,13 @@ public class JumpTracker extends Tracker {
                 Vec3 thing = this.latchStartOrigin[0]
                     .subtract(this.latchStartPlayer[0])
                     .add(this.mc.player.position())
-                    .subtract(delta);
+                    .subtract(delta.x, delta.y, delta.z);
                 this.dh.vrPlayer.setRoomOrigin(thing.x, thing.y, thing.z, false);
             }
         }
         if ((!climbeyEquipped || ClientDataHolderVR.getInstance().vrSettings.realisticJumpEnabled == VRSettings.RealisticJump.ON) &&
             this.dh.vr.hmdPivotHistory.netMovement(0.25D).y > 0.1D &&
-            this.dh.vr.hmdPivotHistory.latest().y - AutoCalibration.getPlayerHeight() > this.dh.vrSettings.jumpThreshold)
+            this.dh.vr.hmdPivotHistory.latest().y() - AutoCalibration.getPlayerHeight() > this.dh.vrSettings.jumpThreshold)
         {
             player.jumpFromGround();
         }

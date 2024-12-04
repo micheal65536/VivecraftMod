@@ -12,8 +12,8 @@ import net.minecraft.client.resources.language.ClientLanguage;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.phys.Vec3;
-import org.joml.Vector2f;
+import net.minecraft.util.Mth;
+import org.joml.*;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.openvr.*;
@@ -21,9 +21,10 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import org.vivecraft.client.VivecraftVRMod;
 import org.vivecraft.client.utils.FileUtils;
-import org.vivecraft.client.utils.MathUtils;
-import org.vivecraft.client.utils.Utils;
+import org.vivecraft.common.utils.MathUtils;
+import org.vivecraft.client.utils.ClientUtils;
 import org.vivecraft.client_vr.ClientDataHolderVR;
+import org.vivecraft.client_vr.VRState;
 import org.vivecraft.client_vr.gameplay.screenhandlers.GuiHandler;
 import org.vivecraft.client_vr.gameplay.screenhandlers.KeyboardHandler;
 import org.vivecraft.client_vr.gameplay.screenhandlers.RadialHandler;
@@ -35,13 +36,12 @@ import org.vivecraft.client_vr.render.RenderConfigException;
 import org.vivecraft.client_vr.settings.VRSettings;
 import org.vivecraft.client_vr.utils.external.jinfinadeck;
 import org.vivecraft.client_vr.utils.external.jkatvr;
-import org.vivecraft.common.utils.math.Matrix4f;
-import org.vivecraft.common.utils.math.Vector3;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.OutputStreamWriter;
+import java.lang.Math;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
@@ -126,7 +126,7 @@ public class MCOpenVR extends MCVR {
 
     // Last updated 10/29/2023
     // Hard-coded list of languages Steam supports
-    private static final Map<String, String> steamLanguages = Map.ofEntries(
+    private static final Map<String, String> STEAM_LANGUAGES = Map.ofEntries(
         Map.entry("english", "en_US"),
         Map.entry("bulgarian", "bg_BG"),
         Map.entry("schinese", "zh_CN"),
@@ -160,7 +160,7 @@ public class MCOpenVR extends MCVR {
 
     // Steam uses some incorrect language codes, this remaps to those
     // SteamVR itself is also not translated into all languages Steam supports yet, so in those cases English may be used regardless
-    private static final Map<String, String> steamLanguageWrongMappings = Map.ofEntries(
+    private static final Map<String, String> STEAM_LANGUAGE_WRONG_MAPPINGS = Map.ofEntries(
         Map.entry("cs_CZ", "cs_CS"),
         Map.entry("da_DK", "da_DA"),
         Map.entry("el_GR", "el_EL"),
@@ -204,11 +204,11 @@ public class MCOpenVR extends MCVR {
         }
 
         this.poseMatrices = new Matrix4f[k_unMaxTrackedDeviceCount];
-        this.deviceVelocity = new Vec3[k_unMaxTrackedDeviceCount];
+        this.deviceVelocity = new Vector3f[k_unMaxTrackedDeviceCount];
 
         for (int i = 0; i < k_unMaxTrackedDeviceCount; i++) {
             this.poseMatrices[i] = new Matrix4f();
-            this.deviceVelocity[i] = new Vec3(0.0D, 0.0D, 0.0D);
+            this.deviceVelocity[i] = new Vector3f();
         }
 
         // allocate memory
@@ -301,7 +301,7 @@ public class MCOpenVR extends MCVR {
     }
 
     @Override
-    public Vector2f getPlayAreaSize() {
+    public Vector2fc getPlayAreaSize() {
         if (OpenVR.VRChaperone == null || OpenVR.VRChaperone.GetPlayAreaSize == 0L) {
             return null;
         } else {
@@ -568,12 +568,12 @@ public class MCOpenVR extends MCVR {
         boolean gotRegistryValue = false;
         if (Util.getPlatform() == Util.OS.WINDOWS) {
             // Try to read the user's Steam language setting from the registry
-            String language = Utils.readWinRegistry("HKCU\\SOFTWARE\\Valve\\Steam\\Language");
+            String language = ClientUtils.readWinRegistry("HKCU\\SOFTWARE\\Valve\\Steam\\Language");
             if (language != null) {
                 gotRegistryValue = true;
                 VRSettings.LOGGER.info("Vivecraft: Steam language setting: {}", language);
-                if (!language.equals("english") && steamLanguages.containsKey(language)) {
-                    languages.add(steamLanguages.get(language));
+                if (!language.equals("english") && STEAM_LANGUAGES.containsKey(language)) {
+                    languages.add(STEAM_LANGUAGES.get(language));
                 }
             } else {
                 VRSettings.LOGGER.warn("Vivecraft: Unable to read Steam language setting");
@@ -583,10 +583,10 @@ public class MCOpenVR extends MCVR {
         if (!gotRegistryValue && !this.mc.options.languageCode.startsWith("en_")) {
             // Try to find a Steam language matching the user's in-game language selection
             String ucLanguageCode = this.mc.options.languageCode.substring(0, this.mc.options.languageCode.indexOf('_')) + this.mc.options.languageCode.substring(this.mc.options.languageCode.indexOf('_')).toUpperCase();
-            if (steamLanguages.containsValue(ucLanguageCode)) {
+            if (STEAM_LANGUAGES.containsValue(ucLanguageCode)) {
                 languages.add(ucLanguageCode);
             } else {
-                Optional<String> langCode = steamLanguages.values().stream().filter(s -> ucLanguageCode.substring(0, ucLanguageCode.indexOf('_')).equals(s.substring(0, s.indexOf('_')))).findFirst();
+                Optional<String> langCode = STEAM_LANGUAGES.values().stream().filter(s -> ucLanguageCode.substring(0, ucLanguageCode.indexOf('_')).equals(s.substring(0, s.indexOf('_')))).findFirst();
                 langCode.ifPresent(languages::add);
             }
         }
@@ -618,7 +618,7 @@ public class MCOpenVR extends MCVR {
             localeMap.put(ACTION_LEFT_HAPTIC, "Left Hand Haptic");
             localeMap.put(ACTION_RIGHT_HAPTIC, "Right Hand Haptic");
 
-            localeMap.put("language_tag", steamLanguageWrongMappings.getOrDefault(langCode, langCode));
+            localeMap.put("language_tag", STEAM_LANGUAGE_WRONG_MAPPINGS.getOrDefault(langCode, langCode));
             localeList.add(localeMap);
         }
         map.put("localization", localeList);
@@ -716,7 +716,7 @@ public class MCOpenVR extends MCVR {
     }
 
     @Override
-    public Matrix4f getControllerComponentTransform(int controllerIndex, String componentName) {
+    public Matrix4fc getControllerComponentTransform(int controllerIndex, String componentName) {
         return this.controllerComponentTransforms != null &&
             this.controllerComponentTransforms.containsKey(componentName) &&
             this.controllerComponentTransforms.get(componentName)[controllerIndex] != null ?
@@ -724,7 +724,7 @@ public class MCOpenVR extends MCVR {
             new Matrix4f();
     }
 
-    private Matrix4f getControllerComponentTransformFromButton(int controllerIndex, long button) {
+    private Matrix4fc getControllerComponentTransformFromButton(int controllerIndex, long button) {
         return this.controllerComponentNames != null && this.controllerComponentNames.containsKey(button) ?
             this.getControllerComponentTransform(controllerIndex, this.controllerComponentNames.get(button)) :
             new Matrix4f();
@@ -832,8 +832,8 @@ public class MCOpenVR extends MCVR {
                         continue;
                     }
 
-                    Matrix4f localTransform = new Matrix4f();
-                    OpenVRUtil.convertSteamVRMatrix3ToMatrix4f(renderModelComponentState.mTrackingToComponentLocal(), localTransform);
+                    Matrix4f localTransform = OpenVRUtil.convertSteamVRMatrix3ToMatrix4f(
+                        renderModelComponentState.mTrackingToComponentLocal(), new Matrix4f());
                     this.controllerComponentTransforms.get(component)[c] = localTransform;
 
                     if (c == LEFT_CONTROLLER && isRifts && component.equals(k_pch_Controller_Component_HandGrip)) {
@@ -844,18 +844,18 @@ public class MCOpenVR extends MCVR {
                     if (!failed && c == RIGHT_CONTROLLER) {
                         // calculate gun angle
                         try {
-                            Matrix4f tip = this.getControllerComponentTransform(RIGHT_CONTROLLER, k_pch_Controller_Component_Tip);
-                            Matrix4f hand = this.getControllerComponentTransform(RIGHT_CONTROLLER, k_pch_Controller_Component_HandGrip);
+                            Matrix4fc tip = this.getControllerComponentTransform(RIGHT_CONTROLLER, k_pch_Controller_Component_Tip);
+                            Matrix4fc hand = this.getControllerComponentTransform(RIGHT_CONTROLLER, k_pch_Controller_Component_HandGrip);
 
-                            Vector3 tipVec = tip.transform(FORWARD);
-                            Vector3 handVec = hand.transform(FORWARD);
+                            Vector3f tipVec = tip.transformDirection(MathUtils.BACK, new Vector3f());
+                            Vector3f handVec = hand.transformDirection(MathUtils.BACK, new Vector3f());
 
-                            double dot = Math.abs(tipVec.normalized().dot(handVec.normalized()));
+                            float dot = Math.abs(tipVec.dot(handVec));
 
-                            double angleRad = Math.acos(dot);
-                            double angleDeg = Math.toDegrees(angleRad);
+                            float angleRad = (float) Math.acos(dot);
+                            float angleDeg = Mth.RAD_TO_DEG * angleRad;
 
-                            this.gunStyle = angleDeg > 10.0D;
+                            this.gunStyle = angleDeg > 10.0F;
                             this.gunAngle = angleDeg;
                         } catch (Exception exception) {
                             failed = true;
@@ -1077,6 +1077,105 @@ public class MCOpenVR extends MCVR {
     }
 
     /**
+     * updates the KeyMapping state that is linked to the given VRInputAction
+     * @param action VRInputAction to process
+     */
+    private void processInputAction(VRInputAction action) {
+        if (action.isActive() && action.isEnabledRaw() &&
+            // try to prevent double left clicks
+            (!ClientDataHolderVR.getInstance().vrSettings.ingameBindingsInGui ||
+                !(action.actionSet == VRInputActionSet.INGAME &&
+                    action.keyBinding.key.getType() == InputConstants.Type.MOUSE &&
+                    action.keyBinding.key.getValue() == GLFW.GLFW_MOUSE_BUTTON_LEFT && this.mc.screen != null
+                )
+            ))
+        {
+            if (action.isButtonChanged()) {
+                if (action.isButtonPressed() && action.isEnabled()) {
+                    // We do this, so shit like closing a GUI by clicking a button won't
+                    // also click in the world immediately after.
+                    if (!this.ignorePressesNextFrame) {
+                        action.pressBinding();
+                    }
+                } else {
+                    action.unpressBinding();
+                }
+            }
+        } else {
+            action.unpressBinding();
+        }
+    }
+
+    /**
+     * checks the axis input of the VRInputAction linked to {@code keyMapping} and runs the callbacks when it's non 0
+     * @param keyMapping KeyMapping to check
+     * @param upCallback action to do when the axis input is positive
+     * @param downCallback action to do when the axis input is negative
+     */
+    private void processScrollInput(KeyMapping keyMapping, Runnable upCallback, Runnable downCallback) {
+        VRInputAction action = this.getInputAction(keyMapping);
+
+        if (action.isEnabled() && action.getLastOrigin() != k_ulInvalidInputValueHandle) {
+            float value = action.getAxis2D(false).y();
+            if (value != 0.0F) {
+                if (value > 0.0F) {
+                    upCallback.run();
+                } else if (value < 0.0F) {
+                    downCallback.run();
+                }
+            }
+        }
+    }
+
+    /**
+     * checks the trackpad input of the controller the {@code keyMapping} is on
+     * @param keyMapping KeyMapping to check
+     * @param leftCallback action to do when swiped to the left
+     * @param rightCallback action to do when swiped to the right
+     * @param upCallback action to do when swiped to the up
+     * @param downCallback action to do when swiped to the down
+     */
+    private void processSwipeInput(KeyMapping keyMapping, Runnable leftCallback, Runnable rightCallback, Runnable upCallback, Runnable downCallback) {
+        VRInputAction action = this.getInputAction(keyMapping);
+
+        if (action.isEnabled() && action.getLastOrigin() != k_ulInvalidInputValueHandle) {
+            ControllerType controller = this.findActiveBindingControllerType(keyMapping);
+
+            if (controller != null) {
+                // if that keyMapping is not tracked yet, create a new sampler
+                if (!this.trackpadSwipeSamplers.containsKey(keyMapping.getName())) {
+                    this.trackpadSwipeSamplers.put(keyMapping.getName(), new TrackpadSwipeSampler());
+                }
+
+                TrackpadSwipeSampler trackpadswipesampler = this.trackpadSwipeSamplers.get(keyMapping.getName());
+                trackpadswipesampler.update(controller, action.getAxis2D(false));
+
+                if (trackpadswipesampler.isSwipedUp() && upCallback != null) {
+                    this.triggerHapticPulse(controller, 0.001F, 400.0F, 0.5F);
+                    upCallback.run();
+                }
+
+                if (trackpadswipesampler.isSwipedDown() && downCallback != null) {
+                    this.triggerHapticPulse(controller, 0.001F, 400.0F, 0.5F);
+                    downCallback.run();
+                }
+
+                if (trackpadswipesampler.isSwipedLeft() && leftCallback != null) {
+                    this.triggerHapticPulse(controller, 0.001F, 400.0F, 0.5F);
+                    leftCallback.run();
+                }
+
+                if (trackpadswipesampler.isSwipedRight() && rightCallback != null) {
+                    this.triggerHapticPulse(controller, 0.001F, 400.0F, 0.5F);
+                    rightCallback.run();
+                }
+
+
+            }
+        }
+    }
+
+    /**
      * fetches all available VREvents from OpenVR
      */
     private void pollVREvents() {
@@ -1104,7 +1203,12 @@ public class MCOpenVR extends MCVR {
                          EVREventType_VREvent_TrackedDeviceRoleChanged,
                          EVREventType_VREvent_ModelSkinSettingsHaveChanged -> this.getXforms = true;
                     // OpenVR closed / told the app to exit
-                    case EVREventType_VREvent_Quit -> this.mc.stop();
+                    case EVREventType_VREvent_Quit -> {
+                        //this.mc.stop();
+                        VRState.VR_ENABLED = !VRState.VR_ENABLED;
+                        ClientDataHolderVR.getInstance().vrSettings.vrEnabled = VRState.VR_ENABLED;
+                        ClientDataHolderVR.getInstance().vrSettings.saveOptions();
+                    }
                 }
             }
         }
@@ -1161,11 +1265,11 @@ public class MCOpenVR extends MCVR {
                 if (pose.bPoseIsValid()) {
                     OpenVRUtil.convertSteamVRMatrix3ToMatrix4f(pose.mDeviceToAbsoluteTracking(), this.poseMatrices[deviceIndex]);
                     HmdVector3 velocity = pose.vVelocity();
-                    this.deviceVelocity[deviceIndex] = new Vec3(
+                    this.deviceVelocity[deviceIndex].set(
                         velocity.v(0),
                         velocity.v(1),
                         velocity.v(2));
-                    MathUtils.Matrix4fCopy(this.poseMatrices[deviceIndex], this.controllerPose[controller]);
+                    this.controllerPose[controller].set(this.poseMatrices[deviceIndex]);
                     this.controllerTracking[controller] = true;
                     // controller is tracking, don't execute the code below
                     return;
@@ -1223,7 +1327,7 @@ public class MCOpenVR extends MCVR {
             if (pose.bPoseIsValid()) {
                 OpenVRUtil.convertSteamVRMatrix3ToMatrix4f(pose.mDeviceToAbsoluteTracking(), this.poseMatrices[device]);
                 HmdVector3 velocity = pose.vVelocity();
-                this.deviceVelocity[device] = new Vec3(
+                this.deviceVelocity[device].set(
                     velocity.v(0),
                     velocity.v(1),
                     velocity.v(2));
@@ -1232,12 +1336,12 @@ public class MCOpenVR extends MCVR {
 
         // check headset tracking state
         if (this.hmdTrackedDevicePoses.get(k_unTrackedDeviceIndex_Hmd).bPoseIsValid()) {
-            MathUtils.Matrix4fCopy(this.poseMatrices[k_unTrackedDeviceIndex_Hmd], this.hmdPose);
+            this.hmdPose.set(this.poseMatrices[k_unTrackedDeviceIndex_Hmd]);
             this.headIsTracking = true;
         } else {
             this.headIsTracking = false;
-            this.hmdPose.SetIdentity();
-            this.hmdPose.M[1][3] = 1.62F;
+            this.hmdPose.identity();
+            this.hmdPose.m31(1.62F);
         }
 
         // Gotta do this here so we can get the poses

@@ -8,7 +8,7 @@ import org.vivecraft.client_vr.VRState;
 import org.vivecraft.client_vr.settings.VRSettings;
 
 public class GuiMixedRealitySettings extends GuiVROptionsBase {
-    static VRSettings.VrOptions[] MROptions = new VRSettings.VrOptions[]{
+    private static final VRSettings.VrOptions[] MR_OPTIONS = new VRSettings.VrOptions[]{
         VRSettings.VrOptions.MIXED_REALITY_UNITY_LIKE,
         VRSettings.VrOptions.MIXED_REALITY_RENDER_HANDS,
         VRSettings.VrOptions.MIXED_REALITY_ALPHA_MASK,
@@ -28,8 +28,8 @@ public class GuiMixedRealitySettings extends GuiVROptionsBase {
     @Override
     public void init() {
         this.vrTitle = "vivecraft.options.screen.mixedreality";
-        VRSettings.VrOptions[] newOptions = new VRSettings.VrOptions[MROptions.length];
-        System.arraycopy(MROptions, 0, newOptions, 0, MROptions.length);
+        VRSettings.VrOptions[] newOptions = new VRSettings.VrOptions[MR_OPTIONS.length];
+        System.arraycopy(MR_OPTIONS, 0, newOptions, 0, MR_OPTIONS.length);
 
         for (int i = 0; i < newOptions.length; ++i) {
             VRSettings.VrOptions optionToCheck = newOptions[i];
