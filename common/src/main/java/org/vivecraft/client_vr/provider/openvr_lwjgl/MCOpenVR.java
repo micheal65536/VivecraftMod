@@ -126,7 +126,7 @@ public class MCOpenVR extends MCVR {
 
     // Last updated 10/29/2023
     // Hard-coded list of languages Steam supports
-    private static final Map<String, String> steamLanguages = Map.ofEntries(
+    private static final Map<String, String> STEAM_LANGUAGES = Map.ofEntries(
         Map.entry("english", "en_US"),
         Map.entry("bulgarian", "bg_BG"),
         Map.entry("schinese", "zh_CN"),
@@ -160,7 +160,7 @@ public class MCOpenVR extends MCVR {
 
     // Steam uses some incorrect language codes, this remaps to those
     // SteamVR itself is also not translated into all languages Steam supports yet, so in those cases English may be used regardless
-    private static final Map<String, String> steamLanguageWrongMappings = Map.ofEntries(
+    private static final Map<String, String> STEAM_LANGUAGE_WRONG_MAPPINGS = Map.ofEntries(
         Map.entry("cs_CZ", "cs_CS"),
         Map.entry("da_DK", "da_DA"),
         Map.entry("el_GR", "el_EL"),
@@ -602,8 +602,8 @@ public class MCOpenVR extends MCVR {
             if (language != null) {
                 gotRegistryValue = true;
                 VRSettings.LOGGER.info("Vivecraft: Steam language setting: {}", language);
-                if (!language.equals("english") && steamLanguages.containsKey(language)) {
-                    languages.add(steamLanguages.get(language));
+                if (!language.equals("english") && STEAM_LANGUAGES.containsKey(language)) {
+                    languages.add(STEAM_LANGUAGES.get(language));
                 }
             } else {
                 VRSettings.LOGGER.warn("Vivecraft: Unable to read Steam language setting");
@@ -613,10 +613,10 @@ public class MCOpenVR extends MCVR {
         if (!gotRegistryValue && !this.mc.options.languageCode.startsWith("en_")) {
             // Try to find a Steam language matching the user's in-game language selection
             String ucLanguageCode = this.mc.options.languageCode.substring(0, this.mc.options.languageCode.indexOf('_')) + this.mc.options.languageCode.substring(this.mc.options.languageCode.indexOf('_')).toUpperCase();
-            if (steamLanguages.containsValue(ucLanguageCode)) {
+            if (STEAM_LANGUAGES.containsValue(ucLanguageCode)) {
                 languages.add(ucLanguageCode);
             } else {
-                Optional<String> langCode = steamLanguages.values().stream().filter(s -> ucLanguageCode.substring(0, ucLanguageCode.indexOf('_')).equals(s.substring(0, s.indexOf('_')))).findFirst();
+                Optional<String> langCode = STEAM_LANGUAGES.values().stream().filter(s -> ucLanguageCode.substring(0, ucLanguageCode.indexOf('_')).equals(s.substring(0, s.indexOf('_')))).findFirst();
                 langCode.ifPresent(languages::add);
             }
         }
@@ -648,7 +648,7 @@ public class MCOpenVR extends MCVR {
             localeMap.put(ACTION_LEFT_HAPTIC, "Left Hand Haptic");
             localeMap.put(ACTION_RIGHT_HAPTIC, "Right Hand Haptic");
 
-            localeMap.put("language_tag", steamLanguageWrongMappings.getOrDefault(langCode, langCode));
+            localeMap.put("language_tag", STEAM_LANGUAGE_WRONG_MAPPINGS.getOrDefault(langCode, langCode));
             localeList.add(localeMap);
         }
         map.put("localization", localeList);

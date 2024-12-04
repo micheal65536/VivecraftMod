@@ -7,7 +7,7 @@ import org.vivecraft.client.gui.framework.GuiVROptionsBase;
 import org.vivecraft.client_vr.settings.VRSettings;
 
 public class GuiOtherHUDSettings extends GuiVROptionsBase {
-    private static final VRSettings.VrOptions[] hudOptions = new VRSettings.VrOptions[]{
+    private static final VRSettings.VrOptions[] HUD_OPTIONS = new VRSettings.VrOptions[]{
         VRSettings.VrOptions.CROSSHAIR_SCALE,
         VRSettings.VrOptions.RENDER_CROSSHAIR_MODE,
         VRSettings.VrOptions.RENDER_BLOCK_OUTLINE_MODE,
@@ -16,11 +16,11 @@ public class GuiOtherHUDSettings extends GuiVROptionsBase {
         VRSettings.VrOptions.CROSSHAIR_SCALES_WITH_DISTANCE,
         VRSettings.VrOptions.CHAT_NOTIFICATIONS
     };
-    private static final VRSettings.VrOptions[] chat = new VRSettings.VrOptions[]{
+    private static final VRSettings.VrOptions[] CHAT = new VRSettings.VrOptions[]{
         VRSettings.VrOptions.CHAT_NOTIFICATION_SOUND
     };
 
-    private static final VRSettings.VrOptions[] messages = new VRSettings.VrOptions[]{
+    private static final VRSettings.VrOptions[] MESSAGES = new VRSettings.VrOptions[]{
         VRSettings.VrOptions.SHOW_UPDATES,
         VRSettings.VrOptions.UPDATE_TYPE,
         VRSettings.VrOptions.SHOW_PLUGIN,
@@ -35,14 +35,14 @@ public class GuiOtherHUDSettings extends GuiVROptionsBase {
     @Override
     public void init() {
         this.vrTitle = "vivecraft.options.screen.guiother";
-        super.init(hudOptions, true);
+        super.init(HUD_OPTIONS, true);
 
         if (this.dataHolder.vrSettings.chatNotifications == VRSettings.ChatNotifications.SOUND || this.dataHolder.vrSettings.chatNotifications == VRSettings.ChatNotifications.BOTH) {
-            super.init(chat, false);
+            super.init(CHAT, false);
         } else {
             super.init(new VRSettings.VrOptions[]{VRSettings.VrOptions.DUMMY}, false);
         }
-        super.init(messages, false);
+        super.init(MESSAGES, false);
 
         super.addDefaultButtons();
     }

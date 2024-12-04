@@ -9,7 +9,7 @@ import org.vivecraft.client_vr.gameplay.screenhandlers.KeyboardHandler;
 import org.vivecraft.client_vr.settings.VRSettings;
 
 public class GuiKeyboardSettings extends GuiVROptionsBase {
-    private static final VROptionEntry[] keyboardOptions = new VROptionEntry[]{
+    private static final VROptionEntry[] KEYBOARD_OPTIONS = new VROptionEntry[]{
         new VROptionEntry(VRSettings.VrOptions.PHYSICAL_KEYBOARD, (button, mousePos) -> {
             KeyboardHandler.setOverlayShowing(false);
             return false;
@@ -28,7 +28,7 @@ public class GuiKeyboardSettings extends GuiVROptionsBase {
     @Override
     public void init() {
         this.vrTitle = "vivecraft.options.screen.keyboard";
-        super.init(keyboardOptions, true);
+        super.init(KEYBOARD_OPTIONS, true);
         super.addDefaultButtons();
     }
 

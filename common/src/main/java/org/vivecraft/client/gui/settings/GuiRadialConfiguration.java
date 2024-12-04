@@ -13,7 +13,7 @@ import org.vivecraft.client.gui.framework.VROptionLayout;
 import org.vivecraft.client_vr.settings.VRSettings;
 
 public class GuiRadialConfiguration extends GuiVROptionsBase {
-    private static final VROptionLayout[] options = new VROptionLayout[]{
+    private static final VROptionLayout[] OPTIONS = new VROptionLayout[]{
         new VROptionLayout(VRSettings.VrOptions.RADIAL_MODE_HOLD, VROptionLayout.Position.POS_LEFT, 0.0F, true, "")
     };
     private String[] arr;
@@ -85,7 +85,7 @@ public class GuiRadialConfiguration extends GuiVROptionsBase {
                 .pos(this.width / 2 + 2, this.height / 6 - 10)
                 .build());
 
-            super.init(options, false);
+            super.init(OPTIONS, false);
 
             int numButtons = this.dataHolder.vrSettings.vrRadialButtons;
             int buttonWidthMin = 120;
