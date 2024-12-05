@@ -44,9 +44,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.lwjgl.openvr.VR.k_ulInvalidInputValueHandle;
-
 public abstract class MCVR {
+    public static final int LEFT_CONTROLLER = 1;
+    public static final int RIGHT_CONTROLLER = 0;
+    public static final int CAMERA_TRACKER = 2;
     protected Minecraft mc;
     protected ClientDataHolderVR dh;
     protected static MCVR ME;
@@ -1240,8 +1241,8 @@ public abstract class MCVR {
     private void processScrollInput(KeyMapping keyMapping, Runnable upCallback, Runnable downCallback) {
         VRInputAction action = this.getInputAction(keyMapping);
 
-        if (action.isEnabled() && action.getLastOrigin() != k_ulInvalidInputValueHandle) {
-            float value = action.getAxis2D(false).getY();
+        if (action.isEnabled() && action.getLastOrigin() != 0L) { /**  {@link org.lwjgl.openvr.VR.k_ulInvalidInputValueHandle} and {@link org.lwjgl.system.MemoryUtil.NULL} are both 0 */
+            float value = action.getAxis2D(false).y();
             if (value != 0.0F) {
                 if (value > 0.0F) {
                     upCallback.run();
@@ -1263,7 +1264,7 @@ public abstract class MCVR {
     private void processSwipeInput(KeyMapping keyMapping, Runnable leftCallback, Runnable rightCallback, Runnable upCallback, Runnable downCallback) {
         VRInputAction action = this.getInputAction(keyMapping);
 
-        if (action.isEnabled() && action.getLastOrigin() != k_ulInvalidInputValueHandle) {
+        if (action.isEnabled() && action.getLastOrigin() != 0L) { /**  {@link org.lwjgl.openvr.VR.k_ulInvalidInputValueHandle} and {@link org.lwjgl.system.MemoryUtil.NULL} are both 0 */
             ControllerType controller = this.findActiveBindingControllerType(keyMapping);
 
             if (controller != null) {
@@ -1294,8 +1295,6 @@ public abstract class MCVR {
                     this.triggerHapticPulse(controller, 0.001F, 400.0F, 0.5F);
                     rightCallback.run();
                 }
-
-
             }
         }
     }

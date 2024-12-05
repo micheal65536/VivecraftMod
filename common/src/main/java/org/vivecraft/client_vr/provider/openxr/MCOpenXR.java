@@ -2,12 +2,11 @@ package org.vivecraft.client_vr.provider.openxr;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.Mth;
-import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.Pair;
+import org.joml.Matrix4f;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 import org.lwjgl.PointerBuffer;
-import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL21;
 import org.lwjgl.opengl.GL30;
@@ -15,22 +14,16 @@ import org.lwjgl.opengl.GL31;
 import org.lwjgl.openxr.*;
 import org.lwjgl.system.MemoryStack;
 import org.vivecraft.client.VivecraftVRMod;
-import org.vivecraft.client.utils.MathUtils;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.gameplay.screenhandlers.KeyboardHandler;
 import org.vivecraft.client_vr.gameplay.screenhandlers.RadialHandler;
 import org.vivecraft.client_vr.provider.ControllerType;
-import org.vivecraft.client_vr.provider.InputSimulator;
 import org.vivecraft.client_vr.provider.MCVR;
 import org.vivecraft.client_vr.provider.VRRenderer;
 import org.vivecraft.client_vr.provider.control.VRInputAction;
 import org.vivecraft.client_vr.provider.control.VRInputActionSet;
 import org.vivecraft.client_vr.render.RenderPass;
 import org.vivecraft.client_vr.settings.VRSettings;
-import org.vivecraft.client_xr.render_pass.RenderPassManager;
-import org.vivecraft.common.utils.lwjgl.Vector3f;
-import org.vivecraft.common.utils.math.Matrix4f;
-import org.vivecraft.common.utils.math.Vector3;
 
 import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
@@ -79,7 +72,6 @@ public class MCOpenXR extends MCVR {
         super(mc, dh, VivecraftVRMod.INSTANCE);
         OME = this;
         this.hapticScheduler = new OpenXRHapticSchedular();
-
     }
 
     @Override
@@ -122,15 +114,6 @@ public class MCOpenXR extends MCVR {
     }
 
     @Override
-    protected void triggerBindingHapticPulse(KeyMapping binding, int duration) {
-        ControllerType controllertype = this.findActiveBindingControllerType(binding);
-
-        if (controllertype != null) {
-            this.triggerHapticPulse(controllertype, duration);
-        }
-    }
-
-    @Override
     protected ControllerType findActiveBindingControllerType(KeyMapping binding) {
         if (!this.inputInitialized) {
             return null;
@@ -165,7 +148,7 @@ public class MCOpenXR extends MCVR {
     public void poll(long var1) {
         if (this.initialized) {
             this.mc.getProfiler().push("events");
-            //pollVREvents();
+            this.pollVREvents();
 
             if (!this.dh.vrSettings.seated) {
                 this.mc.getProfiler().popPush("controllers");
@@ -191,11 +174,10 @@ public class MCOpenXR extends MCVR {
     }
 
     private void updatePose() {
-        RenderPassManager.setGUIRenderPass();
-
         if (mc == null) {
             return;
         }
+
         try (MemoryStack stack = MemoryStack.stackPush()) {
             XrFrameState frameState = XrFrameState.calloc(stack).type(XR10.XR_TYPE_FRAME_STATE);
 
@@ -236,153 +218,16 @@ public class MCOpenXR extends MCVR {
             if (error >= 0) {
                 OpenXRUtil.openXRPoseToMarix(space_location.pose(), this.hmdPose);
                 OpenXRUtil.openXRPoseToMarix(space_location.pose().orientation(), this.hmdRotation);
-
-                Vec3 vec3 = new Vec3(space_location.pose().position$().x(), space_location.pose().position$().y(), space_location.pose().position$().z());
-                this.hmdHistory.add(vec3);
-                Vector3 vector3 = this.hmdRotation.transform(new Vector3(0.0F, -0.1F, 0.1F));
-                this.hmdPivotHistory.add(new Vec3((double) vector3.getX() + vec3.x, (double) vector3.getY() + vec3.y, (double) vector3.getZ() + vec3.z));
                 headIsTracking = true;
             } else {
                 headIsTracking = false;
+                this.hmdPose.identity();
+                this.hmdPose.m31(1.6F);
             }
 
             //Eye positions
             OpenXRUtil.openXRPoseToMarix(viewBuffer.get(0).pose(), this.hmdPoseLeftEye);
             OpenXRUtil.openXRPoseToMarix(viewBuffer.get(1).pose(), this.hmdPoseRightEye);
-
-            //reverse
-            if (this.dh.vrSettings.reverseHands) {
-                XrSpace temp = gripSpace[0];
-                gripSpace[0] = gripSpace[1];
-                gripSpace[1] = temp;
-                temp = aimSpace[0];
-                aimSpace[0] = aimSpace[1];
-                aimSpace[1] = temp;
-            }
-
-            //Controller aim and grip poses
-            error = XR10.xrLocateSpace(gripSpace[0], xrAppSpace, time, space_location);
-            logError(error, "xrLocateSpace", "gripSpace[0]");
-            if (error >= 0) {
-                OpenXRUtil.openXRPoseToMarix(space_location.pose().orientation(), this.handRotation[0]);
-            }
-
-            error = XR10.xrLocateSpace(gripSpace[1], xrAppSpace, time, space_location);
-            logError(error, "xrLocateSpace", "gripSpace[1]");
-            if (error >= 0) {
-                OpenXRUtil.openXRPoseToMarix(space_location.pose().orientation(), this.handRotation[1]);
-            }
-
-            error = XR10.xrLocateSpace(aimSpace[0], xrAppSpace, time, space_location);
-            logError(error, "xrLocateSpace", "aimSpace[0]");
-            if (error >= 0) {
-                OpenXRUtil.openXRPoseToMarix(space_location.pose(), this.controllerPose[0]);
-                OpenXRUtil.openXRPoseToMarix(space_location.pose().orientation(), this.controllerRotation[0]);
-                this.aimSource[0] = new Vec3(space_location.pose().position$().x(), space_location.pose().position$().y(), space_location.pose().position$().z());
-                this.controllerHistory[0].add(this.getAimSource(0));
-                this.controllerForwardHistory[0].add(this.getAimSource(0));
-                Vec3 vec33 = this.controllerRotation[0].transform(UP).toVector3d();
-                this.controllerUpHistory[0].add(vec33);
-                this.controllerTracking[0] = true;
-            } else {
-                this.controllerTracking[0] = false;
-            }
-
-            error = XR10.xrLocateSpace(aimSpace[1], xrAppSpace, time, space_location);
-            logError(error, "xrLocateSpace", "aimSpace[1]");
-            if (error >= 0) {
-                OpenXRUtil.openXRPoseToMarix(space_location.pose(), this.controllerPose[1]);
-                OpenXRUtil.openXRPoseToMarix(space_location.pose().orientation(), this.controllerRotation[1]);
-                this.aimSource[1] = new Vec3(space_location.pose().position$().x(), space_location.pose().position$().y(), space_location.pose().position$().z());
-                this.controllerHistory[1].add(this.getAimSource(1));
-                this.controllerForwardHistory[1].add(this.getAimSource(1));
-                Vec3 vec32 = this.controllerRotation[1].transform(UP).toVector3d();
-                this.controllerUpHistory[1].add(vec32);
-                this.controllerTracking[1] = true;
-            } else {
-                this.controllerTracking[1] = false;
-            }
-
-            //TODO merge with updateAim so it's one method
-            if (this.dh.vrSettings.seated) {
-                this.controllerPose[0] = this.hmdPose.inverted().inverted();
-                this.controllerPose[1] = this.hmdPose.inverted().inverted();
-                this.handRotation[0] = hmdRotation;
-                this.handRotation[1] = hmdRotation;
-                this.controllerRotation[0] = hmdRotation;
-                this.controllerRotation[1] = hmdRotation;
-                this.aimSource[1] = this.getEyePosition(RenderPass.CENTER);
-                this.aimSource[0] = this.getEyePosition(RenderPass.CENTER);
-
-                if (this.mc.screen == null) {
-                    Vec3 vec31 = this.getAimVector(1);
-                    org.vivecraft.common.utils.lwjgl.Matrix4f matrix4f = new org.vivecraft.common.utils.lwjgl.Matrix4f();
-                    float f = 110.0F;
-                    float f1 = 180.0F;
-                    double d0 = this.mc.mouseHandler.xpos() / (double) this.mc.getWindow().getScreenWidth() * (double) f - (double) (f / 2.0F);
-                    int i = this.mc.getWindow().getScreenHeight();
-
-                    if (i % 2 != 0) {
-                        --i;
-                    }
-
-                    double d1 = -this.mc.mouseHandler.ypos() / (double) i * (double) f1 + (double) (f1 / 2.0F);
-                    double d2 = -d1;
-
-                    if (this.mc.isWindowActive()) {
-                        float f2 = this.dh.vrSettings.keyholeX;
-                        float f3 = 20.0F * this.dh.vrSettings.xSensitivity;
-                        int j = (int) ((double) (-f2 + f / 2.0F) * (double) this.mc.getWindow().getScreenWidth() / (double) f) + 1;
-                        int k = (int) ((double) (f2 + f / 2.0F) * (double) this.mc.getWindow().getScreenWidth() / (double) f) - 1;
-                        float f4 = ((float) Math.abs(d0) - f2) / (f / 2.0F - f2);
-                        double d3 = this.mc.mouseHandler.xpos();
-
-                        if (d0 < (double) (-f2)) {
-                            this.seatedRot += f3 * f4;
-                            this.seatedRot %= 360.0F;
-                            this.hmdForwardYaw = (float) Math.toDegrees(Math.atan2(vec31.x, vec31.z));
-                            d3 = j;
-                            d0 = -f2;
-                        } else if (d0 > (double) f2) {
-                            this.seatedRot -= f3 * f4;
-                            this.seatedRot %= 360.0F;
-                            this.hmdForwardYaw = (float) Math.toDegrees(Math.atan2(vec31.x, vec31.z));
-                            d3 = k;
-                            d0 = f2;
-                        }
-
-                        double d4 = 0.5D * (double) this.dh.vrSettings.ySensitivity;
-                        d2 = (double) this.aimPitch + d1 * d4;
-                        d2 = Mth.clamp(d2, -89.9D, 89.9D);
-                        InputSimulator.setMousePos(d3, i / 2);
-                        GLFW.glfwSetCursorPos(this.mc.getWindow().getWindow(), d3, i / 2);
-                        matrix4f.rotate((float) Math.toRadians(-d2), new Vector3f(1.0F, 0.0F, 0.0F));
-                        matrix4f.rotate((float) Math.toRadians(-180.0D + d0 - (double) this.hmdForwardYaw), new Vector3f(0.0F, 1.0F, 0.0F));
-                    }
-
-                    this.controllerRotation[0].M[0][0] = matrix4f.m00;
-                    this.controllerRotation[0].M[0][1] = matrix4f.m01;
-                    this.controllerRotation[0].M[0][2] = matrix4f.m02;
-                    this.controllerRotation[0].M[1][0] = matrix4f.m10;
-                    this.controllerRotation[0].M[1][1] = matrix4f.m11;
-                    this.controllerRotation[0].M[1][2] = matrix4f.m12;
-                    this.controllerRotation[0].M[2][0] = matrix4f.m20;
-                    this.controllerRotation[0].M[2][1] = matrix4f.m21;
-                    this.controllerRotation[0].M[2][2] = matrix4f.m22;
-
-                    this.handRotation[0].M[0][0] = matrix4f.m00;
-                    this.handRotation[0].M[0][1] = matrix4f.m01;
-                    this.handRotation[0].M[0][2] = matrix4f.m02;
-                    this.handRotation[0].M[1][0] = matrix4f.m10;
-                    this.handRotation[0].M[1][1] = matrix4f.m11;
-                    this.handRotation[0].M[1][2] = matrix4f.m12;
-                    this.handRotation[0].M[2][0] = matrix4f.m20;
-                    this.handRotation[0].M[2][1] = matrix4f.m21;
-                    this.handRotation[0].M[2][2] = matrix4f.m22;
-                }
-            }
-            Vec3 vec32 = this.getAimVector(0);
-            this.aimPitch = (float) Math.toDegrees(Math.asin(vec32.y / vec32.length()));
 
             if (this.inputInitialized) {
                 this.mc.getProfiler().push("updateActionState");
@@ -399,91 +244,64 @@ public class MCOpenXR extends MCVR {
 
                 //TODO Not needed it seems? Poses come from the action space
                 XrActionSet actionSet = new XrActionSet(this.actionSetHandles.get(VRInputActionSet.GLOBAL), instance);
-                this.readPoseData(this.grip[0], actionSet);
-                this.readPoseData(this.grip[1], actionSet);
-                this.readPoseData(this.aim[0], actionSet);
-                this.readPoseData(this.aim[1], actionSet);
+                this.readPoseData(this.grip[RIGHT_CONTROLLER], actionSet);
+                this.readPoseData(this.grip[LEFT_CONTROLLER], actionSet);
+                this.readPoseData(this.aim[RIGHT_CONTROLLER], actionSet);
+                this.readPoseData(this.aim[LEFT_CONTROLLER], actionSet);
 
                 this.mc.getProfiler().pop();
-            }
-        }
-    }
 
-    @Override
-    public Vec3 getEyePosition(RenderPass eye) {
-        org.vivecraft.common.utils.math.Matrix4f matrix4f = null;
+                //reverse
+                if (this.dh.vrSettings.reverseHands) {
+                    XrSpace temp = gripSpace[RIGHT_CONTROLLER];
+                    gripSpace[RIGHT_CONTROLLER] = gripSpace[LEFT_CONTROLLER];
+                    gripSpace[LEFT_CONTROLLER] = temp;
+                    temp = aimSpace[RIGHT_CONTROLLER];
+                    aimSpace[RIGHT_CONTROLLER] = aimSpace[LEFT_CONTROLLER];
+                    aimSpace[LEFT_CONTROLLER] = temp;
+                }
 
-        if (eye == RenderPass.LEFT) {
-            matrix4f = this.hmdPoseLeftEye;
-        } else if (eye == RenderPass.RIGHT) {
-            matrix4f = this.hmdPoseRightEye;
-        }
+                //Controller aim and grip poses
+                error = XR10.xrLocateSpace(gripSpace[RIGHT_CONTROLLER], xrAppSpace, time, space_location);
+                logError(error, "xrLocateSpace", "gripSpace[0]");
+                if (error >= 0) {
+                    OpenXRUtil.openXRPoseToMarix(space_location.pose().orientation(), this.handRotation[RIGHT_CONTROLLER]);
+                }
 
-        if (matrix4f == null) {
-            org.vivecraft.common.utils.math.Matrix4f matrix4f2 = this.hmdPose;
-            Vector3 vector31 = MathUtils.convertMatrix4ftoTranslationVector(matrix4f2);
+                error = XR10.xrLocateSpace(gripSpace[LEFT_CONTROLLER], xrAppSpace, time, space_location);
+                logError(error, "xrLocateSpace", "gripSpace[1]");
+                if (error >= 0) {
+                    OpenXRUtil.openXRPoseToMarix(space_location.pose().orientation(), this.handRotation[LEFT_CONTROLLER]);
+                }
 
-            if (this.dh.vrSettings.seated || this.dh.vrSettings.allowStandingOriginOffset) {
-                if (this.dh.vr.isHMDTracking()) {
-                    vector31 = vector31.add(this.dh.vrSettings.originOffset);
+                error = XR10.xrLocateSpace(aimSpace[RIGHT_CONTROLLER], xrAppSpace, time, space_location);
+                logError(error, "xrLocateSpace", "aimSpace[0]");
+                if (error >= 0) {
+                    OpenXRUtil.openXRPoseToMarix(space_location.pose(), this.controllerPose[RIGHT_CONTROLLER]);
+                    OpenXRUtil.openXRPoseToMarix(space_location.pose().orientation(), this.controllerRotation[RIGHT_CONTROLLER]);
+                    this.controllerTracking[RIGHT_CONTROLLER] = true;
+                } else {
+                    this.controllerTracking[RIGHT_CONTROLLER] = false;
+                }
+
+                error = XR10.xrLocateSpace(aimSpace[LEFT_CONTROLLER], xrAppSpace, time, space_location);
+                logError(error, "xrLocateSpace", "aimSpace[1]");
+                if (error >= 0) {
+                    OpenXRUtil.openXRPoseToMarix(space_location.pose(), this.controllerPose[LEFT_CONTROLLER]);
+                    OpenXRUtil.openXRPoseToMarix(space_location.pose().orientation(), this.controllerRotation[LEFT_CONTROLLER]);
+                    this.controllerTracking[LEFT_CONTROLLER] = true;
+                } else {
+                    this.controllerTracking[LEFT_CONTROLLER] = false;
                 }
             }
 
-            return vector31.toVector3d();
-        } else {
-            Vector3 vector3 = MathUtils.convertMatrix4ftoTranslationVector(matrix4f);
-
-            if (this.dh.vrSettings.seated || this.dh.vrSettings.allowStandingOriginOffset) {
-                if (this.dh.vr.isHMDTracking()) {
-                    vector3 = vector3.add(this.dh.vrSettings.originOffset);
-                }
-            }
-
-            return vector3.toVector3d();
-        }
-    }
-
-    @Override
-    public org.vivecraft.common.utils.math.Matrix4f getEyeRotation(RenderPass eye) {
-        org.vivecraft.common.utils.math.Matrix4f matrix4f;
-
-        if (eye == RenderPass.LEFT) {
-            matrix4f = this.hmdPoseLeftEye;
-        } else if (eye == RenderPass.RIGHT) {
-            matrix4f = this.hmdPoseRightEye;
-        } else {
-            matrix4f = null;
-        }
-
-        if (matrix4f != null) {
-            org.vivecraft.common.utils.math.Matrix4f matrix4f1 = new org.vivecraft.common.utils.math.Matrix4f();
-            matrix4f1.M[0][0] = matrix4f.M[0][0];
-            matrix4f1.M[0][1] = matrix4f.M[0][1];
-            matrix4f1.M[0][2] = matrix4f.M[0][2];
-            matrix4f1.M[0][3] = 0.0F;
-            matrix4f1.M[1][0] = matrix4f.M[1][0];
-            matrix4f1.M[1][1] = matrix4f.M[1][1];
-            matrix4f1.M[1][2] = matrix4f.M[1][2];
-            matrix4f1.M[1][3] = 0.0F;
-            matrix4f1.M[2][0] = matrix4f.M[2][0];
-            matrix4f1.M[2][1] = matrix4f.M[2][1];
-            matrix4f1.M[2][2] = matrix4f.M[2][2];
-            matrix4f1.M[2][3] = 0.0F;
-            matrix4f1.M[3][0] = 0.0F;
-            matrix4f1.M[3][1] = 0.0F;
-            matrix4f1.M[3][2] = 0.0F;
-            matrix4f1.M[3][3] = 1.0F;
-            return matrix4f1;
-        } else {
-            return this.hmdRotation;
+            this.updateAim();
         }
     }
 
     public void readNewData(VRInputAction action) {
-        String s = action.type;
-
-        switch (s) {
-            case "boolean":
+        switch (action.type) {
+            case "boolean" -> {
                 if (action.isHanded()) {
                     for (ControllerType controllertype1 : ControllerType.values()) {
                         this.readBoolean(action, controllertype1);
@@ -491,10 +309,9 @@ public class MCOpenXR extends MCVR {
                 } else {
                     this.readBoolean(action, null);
                 }
+            }
 
-                break;
-
-            case "vector1":
+            case "vector1" -> {
                 if (action.isHanded()) {
                     for (ControllerType controllertype : ControllerType.values()) {
                         this.readFloat(action, controllertype);
@@ -502,9 +319,9 @@ public class MCOpenXR extends MCVR {
                 } else {
                     this.readFloat(action, null);
                 }
-                break;
+            }
 
-            case "vector2":
+            case "vector2" -> {
                 if (action.isHanded()) {
                     for (ControllerType controllertype : ControllerType.values()) {
                         this.readVecData(action, controllertype);
@@ -512,9 +329,7 @@ public class MCOpenXR extends MCVR {
                 } else {
                     this.readVecData(action, null);
                 }
-                break;
-
-            case "vector3":
+            }
 
         }
     }
@@ -636,10 +451,6 @@ public class MCOpenXR extends MCVR {
         return !arraylist.isEmpty();
     }
 
-    private void updateControllerPose(int controller, long actionHandle) {
-
-    }
-
     long getActionSetHandle(VRInputActionSet actionSet) {
         return this.actionSetHandles.get(actionSet);
     }
@@ -745,11 +556,11 @@ public class MCOpenXR extends MCVR {
             //TODO Seated when no controllers
 
             System.out.println("OpenXR initialized & VR connected.");
-            this.deviceVelocity = new Vec3[64];
+            this.deviceVelocity = new Vector3f[64];
 
             for (int i = 0; i < this.poseMatrices.length; ++i) {
                 this.poseMatrices[i] = new Matrix4f();
-                this.deviceVelocity[i] = new Vec3(0.0D, 0.0D, 0.0D);
+                this.deviceVelocity[i] = new Vector3f();
             }
 
             this.initialized = true;
@@ -888,6 +699,7 @@ public class MCOpenXR extends MCVR {
             session = new XrSession(sessionPtr.get(0), instance);
 
             while (!this.isActive) {
+                System.out.println("waiting");
                 pollVREvents();
             }
 
@@ -1119,7 +931,7 @@ public class MCOpenXR extends MCVR {
 
     @Override
     public ControllerType getOriginControllerType(long i) {
-        if (i == aim[0]) {
+        if (i == aim[RIGHT_CONTROLLER]) {
             return ControllerType.RIGHT;
         }
         return ControllerType.LEFT;
@@ -1127,7 +939,7 @@ public class MCOpenXR extends MCVR {
 
     @Override
     public float getIPD() {
-        return (float) (this.getEyePosition(RenderPass.RIGHT).x - this.getEyePosition(RenderPass.LEFT).x);
+        return this.getEyePosition(RenderPass.RIGHT).x - this.getEyePosition(RenderPass.LEFT).x;
     }
 
     @Override
@@ -1152,17 +964,17 @@ public class MCOpenXR extends MCVR {
         setupControllers();
 
         XrActionSet actionSet = new XrActionSet(this.actionSetHandles.get(VRInputActionSet.GLOBAL), instance);
-        this.haptics[0] = createAction("/actions/global/out/righthaptic", "/actions/global/out/righthaptic", "haptic", actionSet, BOTH_HANDS);
-        this.haptics[1] = createAction("/actions/global/out/lefthaptic", "/actions/global/out/lefthaptic", "haptic", actionSet, BOTH_HANDS);
+        this.haptics[RIGHT_CONTROLLER] = createAction("/actions/global/out/righthaptic", "/actions/global/out/righthaptic", "haptic", actionSet, BOTH_HANDS);
+        this.haptics[LEFT_CONTROLLER] = createAction("/actions/global/out/lefthaptic", "/actions/global/out/lefthaptic", "haptic", actionSet, BOTH_HANDS);
 
     }
 
     private void setupControllers() {
         XrActionSet actionSet = new XrActionSet(this.actionSetHandles.get(VRInputActionSet.GLOBAL), instance);
-        this.grip[0] = createAction("/actions/global/in/righthand", "/actions/global/in/righthand", "pose", actionSet, BOTH_HANDS);
-        this.grip[1] = createAction("/actions/global/in/lefthand", "/actions/global/in/lefthand", "pose", actionSet, BOTH_HANDS);
-        this.aim[0] = createAction("/actions/global/in/righthandaim", "/actions/global/in/righthandaim", "pose", actionSet, BOTH_HANDS);
-        this.aim[1] = createAction("/actions/global/in/lefthandaim", "/actions/global/in/lefthandaim", "pose", actionSet, BOTH_HANDS);
+        this.grip[RIGHT_CONTROLLER] = createAction("/actions/global/in/righthand", "/actions/global/in/righthand", "pose", actionSet, BOTH_HANDS);
+        this.grip[LEFT_CONTROLLER] = createAction("/actions/global/in/lefthand", "/actions/global/in/lefthand", "pose", actionSet, BOTH_HANDS);
+        this.aim[RIGHT_CONTROLLER] = createAction("/actions/global/in/righthandaim", "/actions/global/in/righthandaim", "pose", actionSet, BOTH_HANDS);
+        this.aim[LEFT_CONTROLLER] = createAction("/actions/global/in/lefthandaim", "/actions/global/in/lefthandaim", "pose", actionSet, BOTH_HANDS);
     }
 
     private void loadDefaultBindings() {
@@ -1189,29 +1001,29 @@ public class MCOpenXR extends MCVR {
                 //TODO make this also changeable?
                 XrActionSet actionSet = new XrActionSet(actionSetHandles.get(VRInputActionSet.GLOBAL), instance);
                 bindings.get(defaultBindings.length).set(
-                    new XrAction(this.grip[0], actionSet),
+                    new XrAction(this.grip[RIGHT_CONTROLLER], actionSet),
                     getPath("/user/hand/right/input/grip/pose")
                 );
                 bindings.get(defaultBindings.length + 1).set(
-                    new XrAction(this.grip[1], actionSet),
+                    new XrAction(this.grip[LEFT_CONTROLLER], actionSet),
                     getPath("/user/hand/left/input/grip/pose")
                 );
                 bindings.get(defaultBindings.length + 2).set(
-                    new XrAction(this.aim[0], actionSet),
+                    new XrAction(this.aim[RIGHT_CONTROLLER], actionSet),
                     getPath("/user/hand/right/input/aim/pose")
                 );
                 bindings.get(defaultBindings.length + 3).set(
-                    new XrAction(this.aim[1], actionSet),
+                    new XrAction(this.aim[LEFT_CONTROLLER], actionSet),
                     getPath("/user/hand/left/input/aim/pose")
                 );
 
                 bindings.get(defaultBindings.length + 4).set(
-                    new XrAction(this.haptics[0], actionSet),
+                    new XrAction(this.haptics[RIGHT_CONTROLLER], actionSet),
                     getPath("/user/hand/right/output/haptic")
                 );
 
                 bindings.get(defaultBindings.length + 5).set(
-                    new XrAction(this.haptics[1], actionSet),
+                    new XrAction(this.haptics[LEFT_CONTROLLER], actionSet),
                     getPath("/user/hand/left/output/haptic")
                 );
 
@@ -1235,34 +1047,34 @@ public class MCOpenXR extends MCVR {
             logError(error, "xrAttachSessionActionSets",  "");
 
             XrActionSet actionSet = new XrActionSet(this.actionSetHandles.get(VRInputActionSet.GLOBAL), instance);
-            XrActionSpaceCreateInfo grip_left = XrActionSpaceCreateInfo.calloc(stack);
-            grip_left.type(XR10.XR_TYPE_ACTION_SPACE_CREATE_INFO);
-            grip_left.next(NULL);
-            grip_left.action(new XrAction(grip[0], actionSet));
-            grip_left.subactionPath(getPath("/user/hand/right"));
-            grip_left.poseInActionSpace(POSE_IDENTITY);
+            XrActionSpaceCreateInfo actionSpace = XrActionSpaceCreateInfo.calloc(stack);
+            actionSpace.type(XR10.XR_TYPE_ACTION_SPACE_CREATE_INFO);
+            actionSpace.next(NULL);
+            actionSpace.action(new XrAction(grip[RIGHT_CONTROLLER], actionSet));
+            actionSpace.subactionPath(getPath("/user/hand/right"));
+            actionSpace.poseInActionSpace(POSE_IDENTITY);
             PointerBuffer pp = stackCallocPointer(1);
-            error = XR10.xrCreateActionSpace(session, grip_left, pp);
+            error = XR10.xrCreateActionSpace(session, actionSpace, pp);
             logError(error, "xrCreateActionSpace",  "grip: /user/hand/right");
-            this.gripSpace[0] = new XrSpace(pp.get(0), session);
+            this.gripSpace[RIGHT_CONTROLLER] = new XrSpace(pp.get(0), session);
 
-            grip_left.action(new XrAction(grip[1], actionSet));
-            grip_left.subactionPath(getPath("/user/hand/left"));
-            error = XR10.xrCreateActionSpace(session, grip_left, pp);
+            actionSpace.action(new XrAction(grip[LEFT_CONTROLLER], actionSet));
+            actionSpace.subactionPath(getPath("/user/hand/left"));
+            error = XR10.xrCreateActionSpace(session, actionSpace, pp);
             logError(error, "xrCreateActionSpace",  "grip: /user/hand/left");
-            this.gripSpace[1] = new XrSpace(pp.get(0), session);
+            this.gripSpace[LEFT_CONTROLLER] = new XrSpace(pp.get(0), session);
 
-            grip_left.action(new XrAction(aim[0], actionSet));
-            grip_left.subactionPath(getPath("/user/hand/right"));
-            error = XR10.xrCreateActionSpace(session, grip_left, pp);
+            actionSpace.action(new XrAction(aim[RIGHT_CONTROLLER], actionSet));
+            actionSpace.subactionPath(getPath("/user/hand/right"));
+            error = XR10.xrCreateActionSpace(session, actionSpace, pp);
             logError(error, "xrCreateActionSpace",  "aim: /user/hand/right");
-            this.aimSpace[0] = new XrSpace(pp.get(0), session);
+            this.aimSpace[RIGHT_CONTROLLER] = new XrSpace(pp.get(0), session);
 
-            grip_left.action(new XrAction(aim[1], actionSet));
-            grip_left.subactionPath(getPath("/user/hand/left"));
-            error = XR10.xrCreateActionSpace(session, grip_left, pp);
+            actionSpace.action(new XrAction(aim[LEFT_CONTROLLER], actionSet));
+            actionSpace.subactionPath(getPath("/user/hand/left"));
+            error = XR10.xrCreateActionSpace(session, actionSpace, pp);
             logError(error, "xrCreateActionSpace",  "aim: /user/hand/left");
-            this.aimSpace[1] = new XrSpace(pp.get(0), session);
+            this.aimSpace[LEFT_CONTROLLER] = new XrSpace(pp.get(0), session);
 
         }
     }

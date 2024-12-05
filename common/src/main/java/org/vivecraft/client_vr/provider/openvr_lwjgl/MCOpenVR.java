@@ -63,10 +63,6 @@ import static org.lwjgl.openvr.VRSystem.*;
  * MCVR implementation to communicate with OpenVR/SteamVR
  */
 public class MCOpenVR extends MCVR {
-    public static final int LEFT_CONTROLLER = 1;
-    public static final int RIGHT_CONTROLLER = 0;
-    public static final int CAMERA_TRACKER = 2;
-
     protected static MCOpenVR OME;
 
     // action paths
@@ -1073,105 +1069,6 @@ public class MCOpenVR extends MCVR {
         if (error != EVRInputError_VRInputError_None) {
             throw new RenderConfigException(Component.translatable("vivecraft.messages.vriniterror"),
                 Component.literal("Failed to load action manifest: " + getInputErrorName(error)));
-        }
-    }
-
-    /**
-     * updates the KeyMapping state that is linked to the given VRInputAction
-     * @param action VRInputAction to process
-     */
-    private void processInputAction(VRInputAction action) {
-        if (action.isActive() && action.isEnabledRaw() &&
-            // try to prevent double left clicks
-            (!ClientDataHolderVR.getInstance().vrSettings.ingameBindingsInGui ||
-                !(action.actionSet == VRInputActionSet.INGAME &&
-                    action.keyBinding.key.getType() == InputConstants.Type.MOUSE &&
-                    action.keyBinding.key.getValue() == GLFW.GLFW_MOUSE_BUTTON_LEFT && this.mc.screen != null
-                )
-            ))
-        {
-            if (action.isButtonChanged()) {
-                if (action.isButtonPressed() && action.isEnabled()) {
-                    // We do this, so shit like closing a GUI by clicking a button won't
-                    // also click in the world immediately after.
-                    if (!this.ignorePressesNextFrame) {
-                        action.pressBinding();
-                    }
-                } else {
-                    action.unpressBinding();
-                }
-            }
-        } else {
-            action.unpressBinding();
-        }
-    }
-
-    /**
-     * checks the axis input of the VRInputAction linked to {@code keyMapping} and runs the callbacks when it's non 0
-     * @param keyMapping KeyMapping to check
-     * @param upCallback action to do when the axis input is positive
-     * @param downCallback action to do when the axis input is negative
-     */
-    private void processScrollInput(KeyMapping keyMapping, Runnable upCallback, Runnable downCallback) {
-        VRInputAction action = this.getInputAction(keyMapping);
-
-        if (action.isEnabled() && action.getLastOrigin() != k_ulInvalidInputValueHandle) {
-            float value = action.getAxis2D(false).y();
-            if (value != 0.0F) {
-                if (value > 0.0F) {
-                    upCallback.run();
-                } else if (value < 0.0F) {
-                    downCallback.run();
-                }
-            }
-        }
-    }
-
-    /**
-     * checks the trackpad input of the controller the {@code keyMapping} is on
-     * @param keyMapping KeyMapping to check
-     * @param leftCallback action to do when swiped to the left
-     * @param rightCallback action to do when swiped to the right
-     * @param upCallback action to do when swiped to the up
-     * @param downCallback action to do when swiped to the down
-     */
-    private void processSwipeInput(KeyMapping keyMapping, Runnable leftCallback, Runnable rightCallback, Runnable upCallback, Runnable downCallback) {
-        VRInputAction action = this.getInputAction(keyMapping);
-
-        if (action.isEnabled() && action.getLastOrigin() != k_ulInvalidInputValueHandle) {
-            ControllerType controller = this.findActiveBindingControllerType(keyMapping);
-
-            if (controller != null) {
-                // if that keyMapping is not tracked yet, create a new sampler
-                if (!this.trackpadSwipeSamplers.containsKey(keyMapping.getName())) {
-                    this.trackpadSwipeSamplers.put(keyMapping.getName(), new TrackpadSwipeSampler());
-                }
-
-                TrackpadSwipeSampler trackpadswipesampler = this.trackpadSwipeSamplers.get(keyMapping.getName());
-                trackpadswipesampler.update(controller, action.getAxis2D(false));
-
-                if (trackpadswipesampler.isSwipedUp() && upCallback != null) {
-                    this.triggerHapticPulse(controller, 0.001F, 400.0F, 0.5F);
-                    upCallback.run();
-                }
-
-                if (trackpadswipesampler.isSwipedDown() && downCallback != null) {
-                    this.triggerHapticPulse(controller, 0.001F, 400.0F, 0.5F);
-                    downCallback.run();
-                }
-
-                if (trackpadswipesampler.isSwipedLeft() && leftCallback != null) {
-                    this.triggerHapticPulse(controller, 0.001F, 400.0F, 0.5F);
-                    leftCallback.run();
-                }
-
-                if (trackpadswipesampler.isSwipedRight() && rightCallback != null) {
-                    this.triggerHapticPulse(controller, 0.001F, 400.0F, 0.5F);
-                    rightCallback.run();
-                }
-
-
-            }
         }
     }
 

@@ -6,7 +6,6 @@ import org.vivecraft.client.VivecraftVRMod;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.provider.ControllerType;
 import org.vivecraft.client_vr.provider.openvr_lwjgl.MCOpenVR;
-import org.vivecraft.client_vr.provider.openvr_lwjgl.VRInputAction;
 
 public class TrackpadSwipeSampler {
     private static final int UP = 0;
