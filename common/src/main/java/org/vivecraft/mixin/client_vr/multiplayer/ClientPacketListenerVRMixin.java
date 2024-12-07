@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientCommonPacketListenerImpl;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.CommonListenerCookie;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
@@ -12,6 +13,7 @@ import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,6 +29,8 @@ import org.vivecraft.client_vr.gameplay.screenhandlers.GuiHandler;
 import org.vivecraft.client_vr.provider.ControllerType;
 import org.vivecraft.client_vr.settings.VRSettings;
 import org.vivecraft.common.network.packets.VivecraftDataPacket;
+
+import java.util.Optional;
 
 @Mixin(ClientPacketListener.class)
 public abstract class ClientPacketListenerVRMixin extends ClientCommonPacketListenerImpl {
@@ -124,7 +128,8 @@ public abstract class ClientPacketListenerVRMixin extends ClientCommonPacketList
 
             if (dataholder.vrSettings.chatNotifications == VRSettings.ChatNotifications.SOUND || dataholder.vrSettings.chatNotifications == VRSettings.ChatNotifications.BOTH) {
                 Vec3 vec3 = dataholder.vrPlayer.vrdata_world_pre.getController(1).getPosition();
-                minecraft.level.playLocalSound(vec3.x(), vec3.y(), vec3.z(), BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.parse(dataholder.vrSettings.chatNotificationSound)), SoundSource.NEUTRAL, 0.3F, 0.1F, false);
+                BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.parse(dataholder.vrSettings.chatNotificationSound))
+                    .ifPresent(soundEvent -> minecraft.level.playLocalSound(vec3.x(), vec3.y(), vec3.z(), soundEvent.value(), SoundSource.NEUTRAL, 0.3F, 0.1F, false));
             }
         }
     }

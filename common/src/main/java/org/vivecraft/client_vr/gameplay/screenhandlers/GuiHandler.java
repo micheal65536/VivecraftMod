@@ -12,6 +12,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractSignEditScreen;
 import net.minecraft.client.gui.screens.inventory.BookEditScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.phys.*;
 import org.joml.Vector2f;
@@ -429,7 +430,7 @@ public class GuiHandler {
     }
 
     public static Vec3 applyGUIModelView(RenderPass currentPass, org.joml.Matrix4f pMatrixStack) {
-        mc.getProfiler().push("applyGUIModelView");
+        Profiler.get().push("applyGUIModelView");
         Vec3 vec3 = RenderHelper.getSmoothCameraPosition(currentPass, dh.vrPlayer.vrdata_world_render);
 
         if (mc.screen != null && guiPos_room == null) {
@@ -560,7 +561,7 @@ public class GuiHandler {
         float f2 = scale * dh.vrPlayer.vrdata_world_render.worldScale;
         pMatrixStack.scale(f2, f2, f2);
         guiScaleApplied = f2;
-        mc.getProfiler().pop();
+        Profiler.get().pop();
         return guipos;
     }
 }

@@ -1,6 +1,6 @@
 package org.vivecraft.client.extensions;
 
-import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.renderer.ShaderProgram;
 import org.lwjgl.opengl.GL30;
 
 public interface RenderTargetExtension {
@@ -19,5 +19,5 @@ public interface RenderTargetExtension {
 
     void vivecraft$isLinearFilter(boolean linearFilter);
 
-    void vivecraft$blitFovReduction(ShaderInstance instance, int width, int height);
+    void vivecraft$blitFovReduction(ShaderProgram instance, int width, int height);
 }

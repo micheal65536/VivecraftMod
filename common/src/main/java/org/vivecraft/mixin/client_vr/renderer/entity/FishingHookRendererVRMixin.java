@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.FishingHookRenderer;
+import net.minecraft.client.renderer.entity.state.FishingHookRenderState;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.Items;
@@ -18,7 +19,7 @@ import org.vivecraft.client_vr.render.helpers.RenderHelper;
 import org.vivecraft.client_xr.render_pass.RenderPassType;
 
 @Mixin(FishingHookRenderer.class)
-public abstract class FishingHookRendererVRMixin extends EntityRenderer<FishingHook> {
+public abstract class FishingHookRendererVRMixin extends EntityRenderer<FishingHook, FishingHookRenderState> {
 
     // dummy constructor
     protected FishingHookRendererVRMixin(EntityRendererProvider.Context context) {

@@ -48,8 +48,10 @@ public class XplatImpl implements Xplat {
     }
 
     public static boolean enableRenderTargetStencil(RenderTarget renderTarget) {
-        renderTarget.enableStencil();
-        return true;
+        // TODO 1.21.3 stencil not working
+        //renderTarget.enableStencil();
+        //return true;
+        return false;
     }
 
     public static Path getJarPath() {

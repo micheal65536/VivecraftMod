@@ -1,11 +1,13 @@
 package org.vivecraft.mixin.client.blaze3d;
 
+import com.mojang.blaze3d.ProjectionType;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.renderer.CompiledShaderProgram;
+import net.minecraft.client.renderer.ShaderProgram;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
@@ -18,6 +20,8 @@ import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.settings.VRSettings;
 import org.vivecraft.client_xr.render_pass.RenderPassType;
 import org.vivecraft.client_vr.render.VRShaders;
+
+import java.util.Objects;
 
 @Mixin(RenderTarget.class)
 public abstract class RenderTargetMixin implements RenderTargetExtension {
@@ -46,7 +50,7 @@ public abstract class RenderTargetMixin implements RenderTargetExtension {
     protected int colorTextureId;
 
     @Shadow
-    public abstract void clear(boolean onMacIn);
+    public abstract void clear();
 
     @Override
     public void vivecraft$setUseStencil(boolean useStencil) {
@@ -144,53 +148,51 @@ public abstract class RenderTargetMixin implements RenderTargetExtension {
     }
 
     @Override
-    public void vivecraft$blitFovReduction(ShaderInstance instance, int width, int height) {
+    public void vivecraft$blitFovReduction(ShaderProgram instance, int width, int height) {
         RenderSystem.assertOnRenderThread();
         RenderSystem.colorMask(true, true, true, false);
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
         RenderSystem.viewport(0, 0, width, height);
         RenderSystem.disableBlend();
-        Minecraft minecraft = Minecraft.getInstance();
+
+        CompiledShaderProgram program = Objects.requireNonNull(
+            RenderSystem.setShader(instance), "Vive blit shader not loaded");
         RenderSystem.setShaderTexture(0, this.colorTextureId);
-        if (instance == null) {
-            instance = minecraft.gameRenderer.blitShader;
-            instance.setSampler("DiffuseSampler", this.colorTextureId);
-        } else {
-            for (int k = 0; k < RenderSystemAccessor.getShaderTextures().length; ++k) {
-                int l = RenderSystem.getShaderTexture(k);
-                instance.setSampler("Sampler" + k, l);
-            }
+
+        for (int k = 0; k < RenderSystemAccessor.getShaderTextures().length; ++k) {
+            int l = RenderSystem.getShaderTexture(k);
+            program.bindSampler("Sampler" + k, l);
         }
         Matrix4f matrix4f = new Matrix4f().setOrtho(0, width, height, 0, 1000.0f, 3000.0f);
-        RenderSystem.setProjectionMatrix(matrix4f, VertexSorting.ORTHOGRAPHIC_Z);
-        if (instance.MODEL_VIEW_MATRIX != null) {
-            instance.MODEL_VIEW_MATRIX.set(new Matrix4f().translation(0.0f, 0.0f, -2000.0f));
+        RenderSystem.setProjectionMatrix(matrix4f, ProjectionType.ORTHOGRAPHIC);
+        if (program.MODEL_VIEW_MATRIX != null) {
+            program.MODEL_VIEW_MATRIX.set(new Matrix4f().translation(0.0f, 0.0f, -2000.0f));
         }
-        if (instance.PROJECTION_MATRIX != null) {
-            instance.PROJECTION_MATRIX.set(matrix4f);
+        if (program.PROJECTION_MATRIX != null) {
+            program.PROJECTION_MATRIX.set(matrix4f);
         }
-        instance.apply();
+        program.apply();
         float f = width;
         float g = height;
         float h = (float) this.viewWidth / (float) this.width;
         float k = (float) this.viewHeight / (float) this.height;
-        BufferBuilder bufferBuilder = RenderSystem.renderThreadTesselator().begin(VertexFormat.Mode.QUADS, instance.getVertexFormat());
-        if (instance.getVertexFormat() == DefaultVertexFormat.POSITION_TEX) {
+        BufferBuilder bufferBuilder = RenderSystem.renderThreadTesselator().begin(VertexFormat.Mode.QUADS, instance.vertexFormat());
+        if (instance.vertexFormat() == DefaultVertexFormat.POSITION_TEX) {
             bufferBuilder.addVertex(0.0F, g, 0.0F).setUv(0.0F, 0.0F);
             bufferBuilder.addVertex(f, g, 0.0F).setUv(h, 0.0F);
             bufferBuilder.addVertex(f, 0.0F, 0.0F).setUv(h, k);
             bufferBuilder.addVertex(0.0F, 0.0F, 0.0F).setUv(0.0F, k);
-        } else if (instance.getVertexFormat() == DefaultVertexFormat.POSITION_TEX_COLOR) {
+        } else if (instance.vertexFormat() == DefaultVertexFormat.POSITION_TEX_COLOR) {
             bufferBuilder.addVertex(0.0F, g, 0.0F).setUv(0.0F, 0.0F).setColor(255, 255, 255, 255);
             bufferBuilder.addVertex(f, g, 0.0F).setUv(h, 0.0F).setColor(255, 255, 255, 255);
             bufferBuilder.addVertex(f, 0.0F, 0.0F).setUv(h, k).setColor(255, 255, 255, 255);
             bufferBuilder.addVertex(0.0F, 0.0F, 0.0F).setUv(0.0F, k).setColor(255, 255, 255, 255);
         } else {
-            throw new IllegalStateException("Unexpected vertex format " + instance.getVertexFormat());
+            throw new IllegalStateException("Unexpected vertex format " + instance.vertexFormat());
         }
         BufferUploader.draw(bufferBuilder.buildOrThrow());
-        instance.clear();
+        program.clear();
         RenderSystem.depthMask(true);
         RenderSystem.colorMask(true, true, true, true);
     }
@@ -231,13 +233,13 @@ public abstract class RenderTargetMixin implements RenderTargetExtension {
             }
         }
 
-
-        ShaderInstance instance = VRShaders.blitAspectShader;
-        instance.setSampler("DiffuseSampler", this.colorTextureId);
+        CompiledShaderProgram instance = Objects.requireNonNull(
+            RenderSystem.setShader(VRShaders.blitAspectShader), "Vive Blit shader not loaded");
+        instance.bindSampler("DiffuseSampler", this.colorTextureId);
 
         instance.apply();
 
-        BufferBuilder bufferbuilder = RenderSystem.renderThreadTesselator().begin(VertexFormat.Mode.QUADS, instance.getVertexFormat());
+        BufferBuilder bufferbuilder = RenderSystem.renderThreadTesselator().begin(VertexFormat.Mode.QUADS, VRShaders.blitAspectShader.vertexFormat());
         bufferbuilder.addVertex(0.0F, 0.0F, 0.0F).setUv(xMin, yMin);
         bufferbuilder.addVertex(1.0F, 0.0F, 0.0F).setUv(xMax, yMin);
         bufferbuilder.addVertex(1.0F, 1.0F, 0.0F).setUv(xMax, yMax);

@@ -4,12 +4,14 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.CoreShaders;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
@@ -45,7 +47,7 @@ public class VRArmHelper {
 
     public static void renderVRHands(float partialTicks, boolean renderRight, boolean renderLeft, boolean menuHandRight,
         boolean menuHandLeft) {
-        mc.getProfiler().push("hands");
+        Profiler.get().push("hands");
         // backup projection matrix, not doing that breaks sodium water on 1.19.3
         RenderSystem.backupProjectionMatrix();
 
@@ -72,7 +74,7 @@ public class VRArmHelper {
         }
 
         RenderSystem.restoreProjectionMatrix();
-        mc.getProfiler().pop();
+        Profiler.get().pop();
     }
 
     public static void renderMainMenuHand(int c, float partialTicks, boolean depthAlways) {
@@ -86,8 +88,8 @@ public class VRArmHelper {
         RenderHelper.setupRenderingAtController(c, modelView);
 
         if (mc.getOverlay() == null) {
-            mc.getTextureManager().bindForSetup(ResourceLocation.parse("vivecraft:textures/white.png"));
             RenderSystem.setShaderTexture(0, ResourceLocation.parse("vivecraft:textures/white.png"));
+            RenderSystem.bindTexture(RenderSystem.getShaderTexture(0));
         }
 
         if (depthAlways && c == 0) {
@@ -114,11 +116,11 @@ public class VRArmHelper {
                 light = (float) minLight;
             }
 
-            float lightPercent = light / (float) mc.level.getMaxLightLevel();
+            float lightPercent = light / 15F;
             color = new Vec3i(Mth.floor(color.getX() * lightPercent), Mth.floor(color.getY() * lightPercent),
                 Mth.floor(color.getZ() * lightPercent));
         }
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShader(CoreShaders.POSITION_COLOR);
         BufferBuilder bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_NORMAL);
         RenderHelper.renderBox(bufferBuilder, start, end, -0.02F, 0.02F, -0.0125F, 0.0125F, color, alpha, modelView);
         BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
@@ -267,9 +269,9 @@ public class VRArmHelper {
                 if (r < 0.0F) {
                     r = 0.0F;
                 }
-                RenderSystem.setShader(GameRenderer::getPositionColorShader);
-                mc.getTextureManager().bindForSetup(ResourceLocation.parse("vivecraft:textures/white.png"));
+                RenderSystem.setShader(CoreShaders.POSITION_COLOR);
                 RenderSystem.setShaderTexture(0, ResourceLocation.parse("vivecraft:textures/white.png"));
+                RenderSystem.bindTexture(RenderSystem.getShaderTexture(0));
                 RenderHelper.renderFlatQuad(start.add(0.0D, 0.05001D, 0.0D), r, r, 0.0F, tpLimitedColor.getX(),
                     tpLimitedColor.getY(), tpLimitedColor.getZ(), 128, poseStack.last().pose());
                 RenderHelper.renderFlatQuad(start.add(0.0D, 0.05D, 0.0D), max, max, 0.0F, tpLimitedColor.getX(),
@@ -297,14 +299,14 @@ public class VRArmHelper {
         if (dataHolder.teleportTracker.vrMovementStyle.showBeam
             && dataHolder.teleportTracker.isAiming()
             && dataHolder.teleportTracker.movementTeleportArcSteps > 1) {
-            mc.getProfiler().push("teleportArc");
+            Profiler.get().push("teleportArc");
 
             RenderSystem.enableCull();
-            RenderSystem.setShader(GameRenderer::getPositionColorShader);
+            RenderSystem.setShader(CoreShaders.POSITION_COLOR);
 
             // to make shaders work
-            mc.getTextureManager().bindForSetup(ResourceLocation.parse("vivecraft:textures/white.png"));
             RenderSystem.setShaderTexture(0, ResourceLocation.parse("vivecraft:textures/white.png"));
+            RenderSystem.bindTexture(RenderSystem.getShaderTexture(0));
 
             BufferBuilder bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_NORMAL);
 
@@ -384,7 +386,7 @@ public class VRArmHelper {
                 RenderSystem.enableCull();
             }
 
-            mc.getProfiler().pop();
+            Profiler.get().pop();
         }
     }
 }

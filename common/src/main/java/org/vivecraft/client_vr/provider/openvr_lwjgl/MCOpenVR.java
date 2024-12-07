@@ -12,6 +12,7 @@ import net.minecraft.client.resources.language.ClientLanguage;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector2f;
 import org.lwjgl.openvr.*;
@@ -337,12 +338,12 @@ public class MCOpenVR extends MCVR {
     public void poll(long frameIndex) {
         if (this.initialized) {
             this.paused = VRSystem_ShouldApplicationPause();
-            this.mc.getProfiler().push("events");
+            Profiler.get().push("events");
             this.pollVREvents();
 
             if (!this.dh.vrSettings.seated) {
-                this.mc.getProfiler().popPush("controllers");
-                this.mc.getProfiler().push("gui");
+                Profiler.get().popPush("controllers");
+                Profiler.get().push("gui");
 
                 if (this.mc.screen == null && this.dh.vrSettings.vrTouchHotbar) {
                     VRSettings vrsettings = this.dh.vrSettings;
@@ -352,18 +353,18 @@ public class MCOpenVR extends MCVR {
                     }
                 }
 
-                this.mc.getProfiler().pop();
+                Profiler.get().pop();
             }
 
-            this.mc.getProfiler().popPush("processEvents");
+            Profiler.get().popPush("processEvents");
             this.processVREvents();
-            this.mc.getProfiler().popPush("updatePose/Vsync");
+            Profiler.get().popPush("updatePose/Vsync");
             this.updatePose();
-            this.mc.getProfiler().popPush("processInputs");
+            Profiler.get().popPush("processInputs");
             this.processInputs();
-            this.mc.getProfiler().popPush("hmdSampling");
+            Profiler.get().popPush("hmdSampling");
             this.hmdSampling();
-            this.mc.getProfiler().pop();
+            Profiler.get().pop();
         }
     }
 
@@ -1219,7 +1220,7 @@ public class MCOpenVR extends MCVR {
             }
 
             if (this.inputInitialized) {
-                this.mc.getProfiler().push("updateActionState");
+                Profiler.get().push("updateActionState");
 
                 if (this.updateActiveActionSets()) {
                     int k = VRInput.VRInput_UpdateActionState(activeActionSetsBuffer, VRActiveActionSet.SIZEOF);
@@ -1230,7 +1231,7 @@ public class MCOpenVR extends MCVR {
                 }
 
                 this.inputActions.values().forEach(this::readNewData);
-                this.mc.getProfiler().pop();
+                Profiler.get().pop();
 
                 if (this.dh.vrSettings.reverseHands) {
                     this.updateControllerPose(0, this.leftPoseHandle);

@@ -5,6 +5,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -204,7 +205,7 @@ public class TeleportTracker extends Tracker {
     }
 
     public void updateTeleportDestinations(GameRenderer renderer, Minecraft mc, LocalPlayer player) {
-        mc.getProfiler().push("updateTeleportDestinations");
+        Profiler.get().push("updateTeleportDestinations");
 
         if (this.vrMovementStyle.arcAiming) {
             this.movementTeleportDestination = new Vec3(0.0D, 0.0D, 0.0D);
@@ -214,7 +215,7 @@ public class TeleportTracker extends Tracker {
             }
         }
 
-        mc.getProfiler().pop();
+        Profiler.get().pop();
     }
 
     private void updateTeleportArc(Minecraft mc, LocalPlayer player) {

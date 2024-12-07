@@ -14,8 +14,8 @@ import org.vivecraft.common.utils.math.Quaternion;
 import org.vivecraft.common.utils.math.Vector3;
 
 public class CameraTracker extends Tracker {
-    public static final ModelResourceLocation cameraModel = new ModelResourceLocation(ResourceLocation.fromNamespaceAndPath("vivecraft", "camera"), "standalone");
-    public static final ModelResourceLocation cameraDisplayModel = new ModelResourceLocation(ResourceLocation.fromNamespaceAndPath("vivecraft", "camera_display"), "standalone");
+    public static final ModelResourceLocation cameraModel = ModelResourceLocation.inventory(ResourceLocation.fromNamespaceAndPath("vivecraft", "camera"));
+    public static final ModelResourceLocation cameraDisplayModel = ModelResourceLocation.inventory(ResourceLocation.fromNamespaceAndPath("vivecraft", "camera_display"));
     private boolean visible = false;
     private Vec3 position = new Vec3(0.0D, 0.0D, 0.0D);
     private Quaternion rotation = new Quaternion();

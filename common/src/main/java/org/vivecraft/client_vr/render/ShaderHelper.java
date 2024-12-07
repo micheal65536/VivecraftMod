@@ -17,7 +17,7 @@ public class ShaderHelper {
             if (i == 0) {
                 return 0;
             } else {
-                GlStateManager.glShaderSource(i, List.of(shaderGLSL));
+                GlStateManager.glShaderSource(i, shaderGLSL);
                 GlStateManager.glCompileShader(i);
 
                 String log = GL20C.glGetShaderInfoLog(i);

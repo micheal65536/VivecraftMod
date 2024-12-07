@@ -6,6 +6,7 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -207,7 +208,7 @@ public class ClientNetworking {
             capturedYaw = player.getYRot();
             float f = (float) Math.toDegrees(Math.asin(-view.y / view.length()));
             float f1 = (float) Math.toDegrees(Math.atan2(-view.x, view.z));
-            ((LocalPlayer) player).connection.send(new ServerboundMovePlayerPacket.Rot(f1, f, player.onGround()));
+            ((LocalPlayer) player).connection.send(new ServerboundMovePlayerPacket.Rot(f1, f, player.onGround(), player.horizontalCollision));
             overrideActive = true;
         }
     }
@@ -215,7 +216,7 @@ public class ClientNetworking {
     public static void restoreLook(Player player) {
         if (!serverWantsData) {
             if (overrideActive) {
-                ((LocalPlayer) player).connection.send(new ServerboundMovePlayerPacket.Rot(capturedYaw, capturedPitch, player.onGround()));
+                ((LocalPlayer) player).connection.send(new ServerboundMovePlayerPacket.Rot(capturedYaw, capturedPitch, player.onGround(), player.horizontalCollision));
                 overrideActive = false;
             }
         }
@@ -256,11 +257,11 @@ public class ClientNetworking {
 
                     while (buffer.readableBytes() > 0) {
                         String s12 = buffer.readUtf(16384);
-                        Block block = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(s12));
+                        Holder.Reference<Block> block = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(s12)).orElse(null);
 
                         // if the block is not there AIR is returned
-                        if (block != Blocks.AIR) {
-                            dataholder.climbTracker.blocklist.add(block);
+                        if (block != null && block.value() != Blocks.AIR) {
+                            dataholder.climbTracker.blocklist.add(block.value());
                         }
                     }
                 }

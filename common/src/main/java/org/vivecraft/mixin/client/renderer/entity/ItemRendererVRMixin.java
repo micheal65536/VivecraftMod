@@ -1,8 +1,8 @@
 package org.vivecraft.mixin.client.renderer.entity;
 
-import net.minecraft.client.renderer.ItemModelShaper;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.spongepowered.asm.mixin.Final;
@@ -14,21 +14,23 @@ import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.VRState;
 import org.vivecraft.client_vr.gameplay.trackers.ClimbTracker;
 import org.vivecraft.client_vr.gameplay.trackers.TelescopeTracker;
+import org.vivecraft.client_vr.render.RenderPass;
 
 @Mixin(ItemRenderer.class)
 public class ItemRendererVRMixin {
 
     @Shadow
     @Final
-    private ItemModelShaper itemModelShaper;
+    private ModelManager modelManager;
 
     @ModifyVariable(at = @At(value = "STORE"), method = "getModel")
     public BakedModel vivecraft$modelOverride(BakedModel bakedModel, ItemStack itemStack) {
-        if (VRState.vrRunning && itemStack.is(Items.SPYGLASS)) {
-            return itemModelShaper.getModelManager().getModel(TelescopeTracker.scopeModel);
+        // TODO 1.21.3 maybe use item properties?
+        if (VRState.vrRunning && ClientDataHolderVR.getInstance().currentPass != RenderPass.GUI && itemStack.is(Items.SPYGLASS)) {
+            return this.modelManager.getModel(TelescopeTracker.scopeModel);
         }
         if (ClientDataHolderVR.getInstance().climbTracker.isClaws(itemStack)) {
-            return itemModelShaper.getModelManager().getModel(ClimbTracker.clawsModel);
+            return this.modelManager.getModel(ClimbTracker.clawsModel);
         }
         return bakedModel;
     }

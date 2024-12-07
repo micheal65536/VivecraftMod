@@ -153,7 +153,7 @@ public class FakeBlockAccess implements LevelReader {
     }
 
     public double getHorizon() {
-        return isFlat ? -effectiveGround : 63.0D - effectiveGround + getMinBuildHeight();
+        return isFlat ? -effectiveGround : 63.0D - effectiveGround + getMinY();
     }
 
     @Override
@@ -344,7 +344,7 @@ public class FakeBlockAccess implements LevelReader {
 
     @Override
     public int getSeaLevel() {
-        return (int) (63 - effectiveGround + getMinBuildHeight()); // magic number
+        return (int) (63 - effectiveGround + getMinY()); // magic number
     }
 
     @Override

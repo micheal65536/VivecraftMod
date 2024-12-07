@@ -3,7 +3,7 @@ package org.vivecraft.mixin.client_vr.world;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.AbstractBoat;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -17,8 +17,8 @@ import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.VRState;
 
 //TODO needed?
-@Mixin(Boat.class)
-public abstract class BoatMixin extends Entity {
+@Mixin(AbstractBoat.class)
+public abstract class AbstractBoatMixin extends Entity {
 
     @Shadow
     private float deltaRotation;
@@ -32,7 +32,7 @@ public abstract class BoatMixin extends Entity {
     @Shadow
     public abstract void setPaddleState(boolean pLeft, boolean pRight);
 
-    public BoatMixin(EntityType<?> entityType, Level level) {
+    public AbstractBoatMixin(EntityType<?> entityType, Level level) {
         super(entityType, level);
     }
 
@@ -50,7 +50,7 @@ public abstract class BoatMixin extends Entity {
         return -f1;
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/vehicle/Boat;setDeltaMovement(Lnet/minecraft/world/phys/Vec3;)V", shift = At.Shift.BEFORE), method = "controlBoat", locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/vehicle/AbstractBoat;setDeltaMovement(Lnet/minecraft/world/phys/Vec3;)V", shift = At.Shift.BEFORE), method = "controlBoat", locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
     public void vivecraft$roomscaleRowing(CallbackInfo ci, float f) {
         if (!VRState.vrRunning) {
             return;

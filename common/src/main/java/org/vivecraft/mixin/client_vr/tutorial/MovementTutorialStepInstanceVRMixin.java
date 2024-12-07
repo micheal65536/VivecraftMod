@@ -2,7 +2,7 @@ package org.vivecraft.mixin.client_vr.tutorial;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.Input;
+import net.minecraft.client.player.ClientInput;
 import net.minecraft.client.tutorial.MovementTutorialStepInstance;
 import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Mixin;
@@ -124,7 +124,7 @@ public class MovementTutorialStepInstanceVRMixin {
     }
 
     @Inject(at = @At("TAIL"), method = "onInput")
-    private void vivecraft$addTeleport(Input input, CallbackInfo ci) {
+    private void vivecraft$addTeleport(ClientInput clientInput, CallbackInfo ci) {
         moved |= VivecraftVRMod.INSTANCE.keyTeleport.isDown();
     }
 

@@ -5,46 +5,50 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.item.ItemStack;
 import org.vivecraft.client_vr.gameplay.trackers.SwingTracker;
 import org.vivecraft.client_vr.provider.ControllerType;
 
 public class VRArmRenderer extends PlayerRenderer {
+
+    public float armAlpha = 1F;
+
     public VRArmRenderer(EntityRendererProvider.Context p_117733_, boolean p_117734_) {
         super(p_117733_, p_117734_);
     }
 
-    public void renderRightHand(PoseStack pMatrixStack, MultiBufferSource pBuffer, int pCombinedLight, AbstractClientPlayer pPlayer) {
-        this.renderItem(ControllerType.RIGHT, pMatrixStack, pBuffer, pCombinedLight, pPlayer, (this.model).rightArm, (this.model).rightSleeve);
+    @Override
+    public void renderRightHand(PoseStack pMatrixStack, MultiBufferSource pBuffer, int pCombinedLight, ResourceLocation resourceLocation, boolean sleeve) {
+        this.renderItem(ControllerType.RIGHT, pMatrixStack, pBuffer, pCombinedLight, resourceLocation, (this.model).rightArm, sleeve);
     }
 
-    public void renderLeftHand(PoseStack pMatrixStack, MultiBufferSource pBuffer, int pCombinedLight, AbstractClientPlayer pPlayer) {
-        this.renderItem(ControllerType.LEFT, pMatrixStack, pBuffer, pCombinedLight, pPlayer, (this.model).leftArm, (this.model).leftSleeve);
+    @Override
+    public void renderLeftHand(PoseStack pMatrixStack, MultiBufferSource pBuffer, int pCombinedLight, ResourceLocation resourceLocation, boolean sleeve) {
+        this.renderItem(ControllerType.LEFT, pMatrixStack, pBuffer, pCombinedLight, resourceLocation, (this.model).leftArm, sleeve);
     }
 
-    private void renderItem(ControllerType side, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, AbstractClientPlayer playerIn, ModelPart rendererArmIn, ModelPart rendererArmwearIn) {
-        PlayerModel<AbstractClientPlayer> playermodel = this.getModel();
-        this.setModelProperties(playerIn);
+    private void renderItem(ControllerType side, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, ResourceLocation resourceLocation, ModelPart arm, boolean sleeve) {
+        PlayerModel playermodel = this.getModel();
+        arm.resetPose();
+        arm.visible = true;
+        playermodel.leftSleeve.visible = sleeve;
+        playermodel.rightSleeve.visible = sleeve;
+
         RenderSystem.enableBlend();
         RenderSystem.enableCull();
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        playermodel.attackTime = 0.0F;
-        playermodel.crouching = false;
-        playermodel.swimAmount = 0.0F;
-        rendererArmIn.xRot = 0.0F;
-        playermodel.leftSleeve.copyFrom(playermodel.leftArm);
-        playermodel.rightSleeve.copyFrom(playermodel.rightArm);
-        float f = SwingTracker.getItemFade((LocalPlayer) playerIn, ItemStack.EMPTY);
-        rendererArmIn.render(matrixStackIn, bufferIn.getBuffer(RenderType.entityTranslucent(playerIn.getSkin().texture())), combinedLightIn, OverlayTexture.NO_OVERLAY);
-        rendererArmwearIn.xRot = 0.0F;
-        rendererArmwearIn.render(matrixStackIn, bufferIn.getBuffer(RenderType.entityTranslucent(playerIn.getSkin().texture())), combinedLightIn, OverlayTexture.NO_OVERLAY);
+
+        arm.xRot = 0.0F;
+        arm.render(matrixStackIn, bufferIn.getBuffer(RenderType.entityTranslucent(resourceLocation)), combinedLightIn, OverlayTexture.NO_OVERLAY, ARGB.white(armAlpha));
+
         RenderSystem.disableBlend();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     }

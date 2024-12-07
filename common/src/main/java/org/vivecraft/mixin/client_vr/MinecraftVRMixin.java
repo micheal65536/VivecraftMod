@@ -1,11 +1,11 @@
 package org.vivecraft.mixin.client_vr;
 
+import com.mojang.blaze3d.ProjectionType;
 import com.mojang.blaze3d.pipeline.MainTarget;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.shaders.ProgramManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.ChatFormatting;
@@ -18,9 +18,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.RenderBuffers;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.server.IntegratedServer;
@@ -30,8 +28,7 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
-import net.minecraft.util.profiling.ProfileResults;
-import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
@@ -39,7 +36,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
-import org.joml.Matrix4fStack;
 import org.lwjgl.glfw.GLFW;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
@@ -124,9 +120,6 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
     public Screen screen;
 
     @Shadow
-    private ProfilerFiller profiler;
-
-    @Shadow
     @Final
     private Window window;
 
@@ -153,9 +146,6 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
 
     @Shadow
     public LocalPlayer player;
-
-    @Shadow
-    private ProfileResults fpsPieResults;
 
     @Shadow
     private int rightClickDelay;
@@ -191,9 +181,6 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
     public abstract Entity getCameraEntity();
 
     @Shadow
-    protected abstract void renderFpsMeter(GuiGraphics guiGraphics, ProfileResults profileResults);
-
-    @Shadow
     public abstract void tick();
 
     @Shadow
@@ -214,7 +201,7 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
 
     @Shadow
     @Final
-    private DeltaTracker.Timer timer;
+    private DeltaTracker.Timer deltaTracker;
 
     @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;setOverlay(Lnet/minecraft/client/gui/screens/Overlay;)V"), method = "<init>", index = 0)
     public Overlay vivecraft$initVivecraft(Overlay overlay) {
@@ -302,12 +289,12 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
             RenderPassManager.setGUIRenderPass();
             // reset camera position, if there is one, since it only gets set at the start of rendering, and the last renderpass can be anywhere
             if (gameRenderer != null && gameRenderer.getMainCamera() != null && level != null && this.getCameraEntity() != null) {
-                this.gameRenderer.getMainCamera().setup(this.level, this.getCameraEntity(), false, false, timer.getGameTimeDeltaPartialTick(true));
+                this.gameRenderer.getMainCamera().setup(this.level, this.getCameraEntity(), false, false, deltaTracker.getGameTimeDeltaPartialTick(true));
             }
 
-            this.profiler.push("VR Poll/VSync");
+            Profiler.get().push("VR Poll/VSync");
             ClientDataHolderVR.getInstance().vr.poll(ClientDataHolderVR.getInstance().frameIndex);
-            this.profiler.pop();
+            Profiler.get().pop();
             ClientDataHolderVR.getInstance().vrPlayer.postPoll();
         }
     }
@@ -321,9 +308,9 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
             if (ClientDataHolderVR.getInstance().menuWorldRenderer != null) {
                 ClientDataHolderVR.getInstance().menuWorldRenderer.checkTask();
                 if (ClientDataHolderVR.getInstance().menuWorldRenderer.isBuilding()) {
-                    this.profiler.push("Build Menu World");
+                    Profiler.get().push("Build Menu World");
                     ClientDataHolderVR.getInstance().menuWorldRenderer.buildNext();
-                    this.profiler.pop();
+                    Profiler.get().pop();
                 }
             }
         }
@@ -339,10 +326,10 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
     @Inject(at = @At(value = "CONSTANT", args = "stringValue=render"), method = "runTick")
     public void vivecraft$preRender(CallbackInfo ci) {
         if (VRState.vrRunning) {
-            this.profiler.push("preRender");
-            ClientDataHolderVR.getInstance().vrPlayer.preRender(timer.getGameTimeDeltaPartialTick(true));
+            Profiler.get().push("preRender");
+            ClientDataHolderVR.getInstance().vrPlayer.preRender(deltaTracker.getGameTimeDeltaPartialTick(true));
             VRHotkeys.updateMovingThirdPersonCam();
-            this.profiler.pop();
+            Profiler.get().pop();
         }
     }
 
@@ -350,7 +337,7 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
     public boolean vivecraft$setupRenderGUI(boolean renderLevel) {
         if (VRState.vrRunning) {
 
-            this.profiler.push("setupRenderConfiguration");
+            Profiler.get().push("setupRenderConfiguration");
             try {
                 this.vivecraft$checkGLError("pre render setup ");
                 ClientDataHolderVR.getInstance().vrRenderer.setupRenderConfiguration();
@@ -359,18 +346,18 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
                 vivecraft$switchVRState(false);
                 VRState.destroyVR(true);
                 Minecraft.getInstance().setScreen(new ErrorScreen("VR Render Error", renderConfigException.error));
-                this.profiler.pop();
+                Profiler.get().pop();
                 return renderLevel;
             } catch (Exception exception2) {
                 exception2.printStackTrace();
             }
-            this.profiler.pop();
+            Profiler.get().pop();
 
             RenderPassManager.setGUIRenderPass();
             RenderSystem.depthMask(true);
             RenderSystem.colorMask(true, true, true, true);
             RenderSystem.defaultBlendFunc();
-            this.mainRenderTarget.clear(Minecraft.ON_OSX);
+            this.mainRenderTarget.clear();
             this.mainRenderTarget.bindWrite(true);
 
             // draw screen/gui to buffer
@@ -385,17 +372,12 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
         }
     }
 
-    @Redirect(at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;fpsPieResults:Lnet/minecraft/util/profiling/ProfileResults;"), method = "runTick")
-    public ProfileResults vivecraft$cancelRegularFpsPie(Minecraft instance) {
-        return VRState.vrRunning ? null : fpsPieResults;
-    }
-
     @Redirect(at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/pipeline/RenderTarget;blitToScreen(II)V"), method = "runTick")
     public void vivecraft$blitMirror(RenderTarget instance, int width, int height) {
         if (!VRState.vrRunning) {
             instance.blitToScreen(width, height);
         } else {
-            this.profiler.popPush("vrMirror");
+            Profiler.get().popPush("vrMirror");
             this.vivecraft$copyToMirror();
             this.vivecraft$drawNotifyMirror();
             this.vivecraft$checkGLError("post-mirror ");
@@ -414,10 +396,6 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;getMainRenderTarget()Lcom/mojang/blaze3d/pipeline/RenderTarget;"), method = "resizeDisplay")
     void vivecraft$restoreVanillaState(CallbackInfo ci) {
         if (VRState.vrInitialized) {
-            // restore vanilla post chains before the resize, or it will resize the wrong ones
-            if (levelRenderer != null) {
-                ((LevelRendererExtension) levelRenderer).vivecraft$restoreVanillaPostChains();
-            }
             if (VRState.vrRunning) {
                 RenderPassManager.setGUIRenderPass();
             } else {
@@ -549,11 +527,11 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
                 ClientDataHolderVR.getInstance().menuWorldRenderer.tick();
             }
 
-            this.profiler.push("vrProcessInputs");
+            Profiler.get().push("vrProcessInputs");
             ClientDataHolderVR.getInstance().vr.processInputs();
             ClientDataHolderVR.getInstance().vr.processBindings();
 
-            this.profiler.popPush("vrInputActionsTick");
+            Profiler.get().popPush("vrInputActionsTick");
 
             for (VRInputAction vrinputaction : ClientDataHolderVR.getInstance().vr.getInputActions()) {
                 vrinputaction.tick();
@@ -567,17 +545,17 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
                 ClientDataHolderVR.getInstance().vrPlayer.updateFreeMove();
             }
 
-            this.profiler.pop();
+            Profiler.get().pop();
         }
 
-        this.profiler.push("vrPlayers");
+        Profiler.get().push("vrPlayers");
 
         VRPlayersClient.getInstance().tick();
 
-        this.profiler.popPush("Vivecraft Keybindings");
+        Profiler.get().popPush("Vivecraft Keybindings");
         vivecraft$processAlwaysAvailableKeybindings();
 
-        this.profiler.pop();
+        Profiler.get().pop();
     }
 
     @Unique
@@ -748,20 +726,19 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
             RenderSystem.viewport(0, 0, screenX, screenY);
             Matrix4f matrix4f = new Matrix4f().setOrtho(0.0F, (float) screenX,
                 screenY, 0.0F, 1000.0F, 3000.0F);
-            RenderSystem.setProjectionMatrix(matrix4f, VertexSorting.ORTHOGRAPHIC_Z);
+            RenderSystem.setProjectionMatrix(matrix4f, ProjectionType.ORTHOGRAPHIC);
             RenderSystem.getModelViewStack().pushMatrix();
             RenderSystem.getModelViewStack().identity();
             RenderSystem.getModelViewStack().translate(0, 0, -2000);
-            RenderSystem.applyModelViewMatrix();
-            RenderSystem.setShaderFogStart(Float.MAX_VALUE);
+            RenderSystem.setShaderFog(FogParameters.NO_FOG);
 
             GuiGraphics guiGraphics = new GuiGraphics((Minecraft) (Object) this, renderBuffers.bufferSource());
             guiGraphics.pose().scale(3, 3, 3);
-            RenderSystem.clear(256, ON_OSX);
+            RenderSystem.clear(256);
 
             if (this.vivecraft$mirrorNotifyClear) {
                 RenderSystem.clearColor(0, 0, 0, 0);
-                RenderSystem.clear(16384, ON_OSX);
+                RenderSystem.clear(16384);
             }
 
             int i = this.window.getScreenWidth() / 22;
@@ -824,18 +801,6 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
         }
         resizeDisplay();
         window.updateVsync(options.enableVsync().get());
-    }
-
-    @Unique
-    @Override
-    public void vivecraft$drawProfiler() {
-        if (this.fpsPieResults != null) {
-            this.profiler.push("fpsPie");
-            GuiGraphics guiGraphics = new GuiGraphics((Minecraft) (Object) this, renderBuffers.bufferSource());
-            this.renderFpsMeter(guiGraphics, this.fpsPieResults);
-            guiGraphics.flush();
-            this.profiler.pop();
-        }
     }
 
     @Unique
@@ -954,8 +919,10 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
         RenderSystem.setShaderTexture(0, ClientDataHolderVR.getInstance().vrRenderer.framebufferMR.getColorTextureId());
         RenderSystem.setShaderTexture(1, ClientDataHolderVR.getInstance().vrRenderer.framebufferMR.getDepthTextureId());
 
-        VRShaders.depthMaskShader.setSampler("thirdPersonColor", RenderSystem.getShaderTexture(0));
-        VRShaders.depthMaskShader.setSampler("thirdPersonDepth", RenderSystem.getShaderTexture(1));
+        CompiledShaderProgram depthMaskShader = RenderSystem.setShader(VRShaders.depthMaskShader);
+
+        depthMaskShader.bindSampler("thirdPersonColor", RenderSystem.getShaderTexture(0));
+        depthMaskShader.bindSampler("thirdPersonDepth", RenderSystem.getShaderTexture(1));
 
         if (ClientDataHolderVR.getInstance().vrSettings.mixedRealityUnityLike) {
             if (ClientDataHolderVR.getInstance().vrSettings.displayMirrorUseScreenshotCamera && ClientDataHolderVR.getInstance().cameraTracker.isVisible()) {
@@ -973,19 +940,17 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
                         ClientDataHolderVR.getInstance().vrRenderer.framebufferEye1.getColorTextureId());
                 }
             }
-            VRShaders.depthMaskShader.setSampler("firstPersonColor", RenderSystem.getShaderTexture(2));
+            depthMaskShader.bindSampler("firstPersonColor", RenderSystem.getShaderTexture(2));
         }
 
-        VRShaders.depthMaskShader.apply();
+        depthMaskShader.apply();
 
-        BufferBuilder bufferbuilder = RenderSystem.renderThreadTesselator().begin(VertexFormat.Mode.QUADS, VRShaders.depthMaskShader.getVertexFormat());
+        BufferBuilder bufferbuilder = RenderSystem.renderThreadTesselator().begin(VertexFormat.Mode.QUADS, VRShaders.depthMaskShader.vertexFormat());
         bufferbuilder.addVertex(-1, -1, 0).setUv(0, 0);
         bufferbuilder.addVertex(1, -1, 0).setUv(2, 0);
         bufferbuilder.addVertex(1, 1, 0).setUv(2, 2);
         bufferbuilder.addVertex(-1, 1, 0).setUv(0, 2);
         BufferUploader.draw(bufferbuilder.buildOrThrow());
-        VRShaders.depthMaskShader.clear();
-
-        ProgramManager.glUseProgram(0);
+        depthMaskShader.clear();
     }
 }

@@ -1,12 +1,6 @@
 {
-  "blend": {
-    "func": "add",
-    "srcrgb": "srcalpha",
-    "dstrgb": "1-srcalpha"
-  },
-  "vertex": "lanczos",
-  "fragment": "lanczos",
-  "attributes": ["Position", "UV0"],
+  "vertex": "vivecraft:core/lanczos",
+  "fragment": "vivecraft:core/lanczos",
   "samplers": [
     {
       "name": "Sampler0"

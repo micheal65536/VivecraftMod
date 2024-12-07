@@ -8,10 +8,13 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.CoreShaders;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -29,6 +32,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.VRState;
 import org.vivecraft.client_vr.extensions.GuiExtension;
+import org.vivecraft.client_vr.render.RenderPass;
 import org.vivecraft.client_xr.render_pass.RenderPassType;
 
 @Mixin(Gui.class)
@@ -94,17 +98,24 @@ public abstract class GuiVRMixin implements GuiExtension {
         }
     }
 
+    @Inject(at = @At("HEAD"), method = "renderConfusionOverlay", cancellable = true)
+    private void vivecraft$noConfusionOverlayOnGUI(CallbackInfo ci) {
+        if (RenderPassType.isGuiOnly()) {
+            ci.cancel();
+        }
+    }
+
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/KeyMapping;isDown()Z"), method = "renderTabList")
     public boolean vivecraft$toggleableTabList(KeyMapping instance) {
         return instance.isDown() || vivecraft$showPlayerList;
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 1, shift = At.Shift.AFTER), method = "renderItemHotbar")
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Ljava/util/function/Function;Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 1, shift = At.Shift.AFTER), method = "renderItemHotbar")
     public void vivecraft$hotbarContext(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if (VRState.vrRunning && ClientDataHolderVR.getInstance().interactTracker.hotbar >= 0 && ClientDataHolderVR.getInstance().interactTracker.hotbar < 9 && this.getCameraPlayer().getInventory().selected != ClientDataHolderVR.getInstance().interactTracker.hotbar && ClientDataHolderVR.getInstance().interactTracker.isActive(minecraft.player)) {
             int i = guiGraphics.guiWidth() / 2;
             RenderSystem.setShaderColor(0.0F, 1.0F, 0.0F, 1.0F);
-            guiGraphics.blitSprite(HOTBAR_SELECTION_SPRITE, i - 91 - 1 + ClientDataHolderVR.getInstance().interactTracker.hotbar * 20, guiGraphics.guiHeight() - 22 - 1, 24, 23);
+            guiGraphics.blitSprite(RenderType::guiTextured, HOTBAR_SELECTION_SPRITE, i - 91 - 1 + ClientDataHolderVR.getInstance().interactTracker.hotbar * 20, guiGraphics.guiHeight() - 22 - 1, 24, 23);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         }
     }
@@ -121,35 +132,35 @@ public abstract class GuiVRMixin implements GuiExtension {
         }
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 2, shift = At.Shift.BEFORE), method = "renderItemHotbar")
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Ljava/util/function/Function;Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 2, shift = At.Shift.BEFORE), method = "renderItemHotbar")
     public void vivecraft$renderVRHotbarLeft(CallbackInfo ci) {
         if (VRState.vrRunning && ClientDataHolderVR.getInstance().interactTracker.hotbar == 9 && ClientDataHolderVR.getInstance().interactTracker.isActive(minecraft.player)) {
             RenderSystem.setShaderColor(0.0F, 0.0F, 1.0F, 1.0F);
         }
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 2, shift = At.Shift.AFTER), method = "renderItemHotbar")
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Ljava/util/function/Function;Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 2, shift = At.Shift.AFTER), method = "renderItemHotbar")
     public void vivecraft$renderVRHotbarLeftReset(CallbackInfo ci) {
         if (VRState.vrRunning && ClientDataHolderVR.getInstance().interactTracker.hotbar == 9) {
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         }
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 3, shift = At.Shift.BEFORE), method = "renderItemHotbar")
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Ljava/util/function/Function;Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 3, shift = At.Shift.BEFORE), method = "renderItemHotbar")
     public void vivecraft$renderVRHotbarRight(CallbackInfo ci) {
         if (VRState.vrRunning && ClientDataHolderVR.getInstance().interactTracker.hotbar == 9 && ClientDataHolderVR.getInstance().interactTracker.isActive(minecraft.player)) {
             RenderSystem.setShaderColor(0.0F, 0.0F, 1.0F, 1.0F);
         }
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 3, shift = At.Shift.AFTER), method = "renderItemHotbar")
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Ljava/util/function/Function;Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 3, shift = At.Shift.AFTER), method = "renderItemHotbar")
     public void vivecraft$renderVRHotbarRightReset(CallbackInfo ci) {
         if (VRState.vrRunning && ClientDataHolderVR.getInstance().interactTracker.hotbar == 9) {
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         }
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;disableBlend()V", remap = false), method = "renderItemHotbar")
+    @Inject(at = @At("TAIL"), method = "renderItemHotbar")
     public void vivecraft$renderVive(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if (VRState.vrRunning) {
             this.vivecraft$renderViveHudIcons(guiGraphics);
@@ -199,7 +210,7 @@ public abstract class GuiVRMixin implements GuiExtension {
             if (mobeffect != null) {
                 TextureAtlasSprite textureatlassprite = this.minecraft.getMobEffectTextures().get(mobeffect);
                 RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-                guiGraphics.blit(x, y, 0, 18, 18, textureatlassprite);
+                guiGraphics.blitSprite(RenderType::guiTextured, textureatlassprite, x, y, 18, 18);
             }
         }
     }
@@ -222,7 +233,7 @@ public abstract class GuiVRMixin implements GuiExtension {
         RenderSystem.enableBlend();
         RenderSystem.disableDepthTest();
         //uhhhh //RenderSystem.disableLighting();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(CoreShaders.POSITION_TEX);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         TextureAtlasSprite crosshairSprite = minecraft.getGuiSprites().getSprite(CROSSHAIR_SPRITE);
         RenderSystem.setShaderTexture(0, crosshairSprite.atlasLocation());

@@ -3,6 +3,7 @@ package org.vivecraft.mixin.client_vr.renderer;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.mojang.blaze3d.ProjectionType;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -15,10 +16,10 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.HitResult;
@@ -50,12 +51,9 @@ import org.vivecraft.client_vr.render.helpers.RenderHelper;
 import org.vivecraft.client_vr.render.helpers.VRArmHelper;
 import org.vivecraft.client_vr.render.helpers.VREffectsHelper;
 import org.vivecraft.client_vr.settings.VRSettings;
-import org.vivecraft.client_xr.render_pass.RenderPassManager;
 import org.vivecraft.client_xr.render_pass.RenderPassType;
-import org.vivecraft.client_xr.render_pass.WorldRenderPass;
 import org.vivecraft.mod_compat_vr.immersiveportals.ImmersivePortalsHelper;
 
-import java.io.IOException;
 import java.nio.file.Path;
 
 @Mixin(GameRenderer.class)
@@ -127,21 +125,18 @@ public abstract class GameRendererVRMixin
     @Shadow
     private float zoomY;
     @Shadow
-    private float fov;
+    private float fovModifier;
 
     @Shadow
-    private float oldFov;
+    private float oldFovModifier;
     @Shadow
     private boolean renderHand;
 
     @Shadow
-    public abstract Matrix4f getProjectionMatrix(double fov);
+    public abstract Matrix4f getProjectionMatrix(float fov);
 
     @Shadow
-    protected abstract double getFov(Camera mainCamera2, float partialTicks, boolean b);
-
-    @Shadow
-    public abstract void resetProjectionMatrix(Matrix4f projectionMatrix);
+    protected abstract float getFov(Camera mainCamera2, float partialTicks, boolean b);
 
     @Shadow
     public abstract void renderItemActivationAnimation(GuiGraphics guiGraphics, float f);
@@ -175,33 +170,6 @@ public abstract class GameRendererVRMixin
         return ClientDataHolderVR.getInstance().vrPlayer.vrdata_world_render == null ? null : instance.level;
     }
 
-    @Inject(at = @At("HEAD"), method = {"shutdownEffect", "checkEntityPostEffect", "loadEffect"})
-    public void vivecraft$shutdownEffect(CallbackInfo ci) {
-        if (VRState.vrInitialized) {
-            RenderPassManager.setVanillaRenderPass();
-            if (WorldRenderPass.stereoXR != null && WorldRenderPass.stereoXR.postEffect != null) {
-                WorldRenderPass.stereoXR.postEffect.close();
-                WorldRenderPass.stereoXR.postEffect = null;
-            }
-            if (WorldRenderPass.center != null && WorldRenderPass.center.postEffect != null) {
-                WorldRenderPass.center.postEffect.close();
-                WorldRenderPass.center.postEffect = null;
-            }
-        }
-    }
-
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/PostChain;resize(II)V", shift = Shift.AFTER), method = "loadEffect")
-    public void vivecraft$loadEffect(ResourceLocation resourceLocation, CallbackInfo ci) throws IOException {
-        if (VRState.vrInitialized) {
-            if (WorldRenderPass.stereoXR != null) {
-                WorldRenderPass.stereoXR.postEffect = WorldRenderPass.createPostChain(resourceLocation, WorldRenderPass.stereoXR.target);
-            }
-            if (WorldRenderPass.center != null) {
-                WorldRenderPass.center.postEffect = WorldRenderPass.createPostChain(resourceLocation, WorldRenderPass.center.target);
-            }
-        }
-    }
-
     @ModifyVariable(at = @At("STORE"), method = "pick(Lnet/minecraft/world/entity/Entity;DDF)Lnet/minecraft/world/phys/HitResult;", ordinal = 0)
     public Vec3 vivecraft$rayTrace(Vec3 original) {
         if (!VRState.vrRunning) {
@@ -233,20 +201,20 @@ public abstract class GameRendererVRMixin
     @Inject(at = @At("HEAD"), method = "tickFov", cancellable = true)
     public void vivecraft$noFOVchangeInVR(CallbackInfo ci) {
         if (!RenderPassType.isVanilla()) {
-            this.oldFov = this.fov = 1.0f;
+            this.oldFovModifier = this.fovModifier = 1.0f;
             ci.cancel();
         }
     }
 
-    @Inject(at = @At("HEAD"), method = "getFov(Lnet/minecraft/client/Camera;FZ)D", cancellable = true)
-    public void vivecraft$fov(Camera camera, float f, boolean bl, CallbackInfoReturnable<Double> info) {
+    @Inject(at = @At("HEAD"), method = "getFov(Lnet/minecraft/client/Camera;FZ)F", cancellable = true)
+    public void vivecraft$fov(Camera camera, float f, boolean bl, CallbackInfoReturnable<Float> info) {
         if (this.minecraft.level == null || MethodHolder.isInMenuRoom()) { // Vivecraft: using this on the main menu
-            info.setReturnValue(Double.valueOf(this.minecraft.options.fov().get()));
+            info.setReturnValue(Float.valueOf(this.minecraft.options.fov().get()));
         }
     }
 
-    @Inject(at = @At("HEAD"), method = "getProjectionMatrix(D)Lorg/joml/Matrix4f;", cancellable = true)
-    public void vivecraft$projection(double d, CallbackInfoReturnable<Matrix4f> info) {
+    @Inject(at = @At("HEAD"), method = "getProjectionMatrix(F)Lorg/joml/Matrix4f;", cancellable = true)
+    public void vivecraft$projection(float d, CallbackInfoReturnable<Matrix4f> info) {
         if (!VRState.vrRunning) {
             return;
         }
@@ -308,13 +276,6 @@ public abstract class GameRendererVRMixin
         } else {
             return this.lastActiveTime;
         }
-    }
-
-    @Inject(at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;viewport(IIII)V", remap = false, shift = Shift.AFTER), method = "render(Lnet/minecraft/client/DeltaTracker;Z)V")
-    public void vivecraft$matrix(DeltaTracker deltaTracker, boolean bl, CallbackInfo ci) {
-        this.resetProjectionMatrix(this.getProjectionMatrix(minecraft.options.fov().get()));
-        RenderSystem.getModelViewStack().identity();
-        RenderSystem.applyModelViewMatrix();
     }
 
     @Inject(at = @At("HEAD"), method = "shouldRenderBlockOutline", cancellable = true)
@@ -379,7 +340,7 @@ public abstract class GameRendererVRMixin
             if (vivecraft$shouldDrawGui) {
                 // when the gui is rendered it is expected that something got pushed to the profiler before
                 // so do that now
-                this.minecraft.getProfiler().push("vanillaGuiSetup");
+                Profiler.get().push("vanillaGuiSetup");
             }
             return;
         }
@@ -387,16 +348,15 @@ public abstract class GameRendererVRMixin
             float partialTicks = deltaTracker.getGameTimeDeltaPartialTick(false);
             if (!renderWorldIn || this.minecraft.level == null) {
                 // no "level" got pushed so do a manual push
-                this.minecraft.getProfiler().push("MainMenu");
+                Profiler.get().push("MainMenu");
             } else {
                 // do a popPush
-                this.minecraft.getProfiler().popPush("MainMenu");
+                Profiler.get().popPush("MainMenu");
             }
             GL11.glDisable(GL11.GL_STENCIL_TEST);
 
             RenderSystem.getModelViewStack().pushMatrix().identity();
             RenderHelper.applyVRModelView(vivecraft$DATA_HOLDER.currentPass, RenderSystem.getModelViewStack());
-            RenderSystem.applyModelViewMatrix();
 
             VREffectsHelper.renderGuiLayer(partialTicks, true);
 
@@ -415,10 +375,9 @@ public abstract class GameRendererVRMixin
                 VRArmHelper.renderVRHands(partialTicks, true, true, true, true);
             }
             RenderSystem.getModelViewStack().popMatrix();
-            RenderSystem.applyModelViewMatrix();
         }
         // pop the "level" push, since that would happen after this
-        this.minecraft.getProfiler().pop();
+        Profiler.get().pop();
         info.cancel();
     }
 
@@ -441,13 +400,6 @@ public abstract class GameRendererVRMixin
     private void vivecraft$noGUIwithViewOnly(Gui instance, GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         if (RenderPassType.isVanilla() || !ClientDataHolderVR.viewonly) {
             instance.render(guiGraphics, deltaTracker);
-        }
-    }
-
-    @Inject(at = @At("HEAD"), method = "renderConfusionOverlay", cancellable = true)
-    private void vivecraft$noConfusionOverlayOnGUI(GuiGraphics guiGraphics, float f, CallbackInfo ci) {
-        if (vivecraft$DATA_HOLDER.currentPass == RenderPass.GUI) {
-            ci.cancel();
         }
     }
 
@@ -757,6 +709,6 @@ public abstract class GameRendererVRMixin
     @Override
     @Unique
     public void vivecraft$resetProjectionMatrix(float partialTicks) {
-        this.resetProjectionMatrix(this.getProjectionMatrix(this.getFov(this.mainCamera, partialTicks, true)));
+        RenderSystem.setProjectionMatrix(this.getProjectionMatrix(this.getFov(this.mainCamera, partialTicks, true)), ProjectionType.PERSPECTIVE);
     }
 }

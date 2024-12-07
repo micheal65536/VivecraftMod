@@ -5,7 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.phys.Vec3;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.gameplay.VRPlayer;
@@ -41,17 +41,17 @@ public class EatingTracker extends Tracker {
             return false;
         } else {
             if (p.getMainHandItem() != null) {
-                UseAnim useanim = p.getMainHandItem().getUseAnimation();
+                ItemUseAnimation useanim = p.getMainHandItem().getUseAnimation();
 
-                if (useanim == UseAnim.EAT || useanim == UseAnim.DRINK || useanim == UseAnim.TOOT_HORN) {
+                if (useanim == ItemUseAnimation.EAT || useanim == ItemUseAnimation.DRINK || useanim == ItemUseAnimation.TOOT_HORN) {
                     return true;
                 }
             }
 
             if (p.getOffhandItem() != null) {
-                UseAnim useanim1 = p.getOffhandItem().getUseAnimation();
+                ItemUseAnimation useanim1 = p.getOffhandItem().getUseAnimation();
 
-                return useanim1 == UseAnim.EAT || useanim1 == UseAnim.DRINK || useanim1 == UseAnim.TOOT_HORN;
+                return useanim1 == ItemUseAnimation.EAT || useanim1 == ItemUseAnimation.DRINK || useanim1 == ItemUseAnimation.TOOT_HORN;
             }
 
             return false;
@@ -81,13 +81,13 @@ public class EatingTracker extends Tracker {
 
                 int crunchiness = 0;
 
-                if (itemstack.getUseAnimation() == UseAnim.DRINK) {//thats how liquid works.
+                if (itemstack.getUseAnimation() == ItemUseAnimation.DRINK) {//thats how liquid works.
                     if (vrplayer.vrdata_room_pre.getController(c).getCustomVector(new Vec3(0, 1, 0)).y > 0) {
                         continue;
                     }
-                } else if (itemstack.getUseAnimation() == UseAnim.EAT) {
+                } else if (itemstack.getUseAnimation() == ItemUseAnimation.EAT) {
                     crunchiness = 2;
-                } else if (itemstack.getUseAnimation() == UseAnim.TOOT_HORN) {
+                } else if (itemstack.getUseAnimation() == ItemUseAnimation.TOOT_HORN) {
                     crunchiness = 1;
                 } else {
                     continue;

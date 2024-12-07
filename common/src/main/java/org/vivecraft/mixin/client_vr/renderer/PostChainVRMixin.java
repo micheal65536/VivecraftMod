@@ -12,7 +12,8 @@ import org.vivecraft.client.extensions.RenderTargetExtension;
 
 @Mixin(PostChain.class)
 public class PostChainVRMixin {
-
+    // TODO 1.21.3 stencil for post
+/*
     @Shadow
     @Final
     private RenderTarget screenTarget;
@@ -21,8 +22,8 @@ public class PostChainVRMixin {
     private RenderTarget vivecraft$vrTarget(RenderTarget old) {
         if (((RenderTargetExtension) screenTarget).vivecraft$getUseStencil()) {
             ((RenderTargetExtension) old).vivecraft$setUseStencil(true);
-            old.resize(old.width, old.height, Minecraft.ON_OSX);
+            old.resize(old.width, old.height);
         }
         return old;
-    }
+    }*/
 }

@@ -147,7 +147,7 @@ public class VRPlayer {
             this.worldScale = rawWorldScale;
 
             // scale world with player size
-            this.worldScale *= ScaleHelper.getEntityScale(mc.player, mc.getTimer().getGameTimeDeltaPartialTick(false));
+            this.worldScale *= ScaleHelper.getEntityScale(mc.player, mc.getDeltaTracker().getGameTimeDeltaPartialTick(false));
             // limit scale
             if (this.worldScale > 100F) {
                 this.worldScale = 100F;
@@ -543,7 +543,7 @@ public class VRPlayer {
                 entity.setYHeadRot(entity.getYRot());
                 entity.setXRot(-data.getController(1).getPitch());
             }
-        } else if (entity.isSprinting() && (entity.input.jumping || mc.options.keyJump.isDown()) || entity.isFallFlying() || entity.isSwimming() && entity.zza > 0.0F) {
+        } else if (entity.isSprinting() && (entity.input.keyPresses.jump() || mc.options.keyJump.isDown()) || entity.isFallFlying() || entity.isSwimming() && entity.zza > 0.0F) {
             //Server-side movement
             VRSettings.FreeMove freeMoveType = entity.isFallFlying() && this.dh.vrSettings.vrFreeMoveFlyMode != VRSettings.FreeMove.AUTO ? this.dh.vrSettings.vrFreeMoveFlyMode : this.dh.vrSettings.vrFreeMoveMode;
 

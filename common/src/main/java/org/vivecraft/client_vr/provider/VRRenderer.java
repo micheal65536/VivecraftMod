@@ -1,15 +1,17 @@
 package org.vivecraft.client_vr.provider;
 
+import com.mojang.blaze3d.ProjectionType;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.GlUtil;
-import com.mojang.blaze3d.shaders.ProgramManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.GraphicsStatus;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.CompiledShaderProgram;
+import net.minecraft.client.renderer.CoreShaders;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.CommonComponents;
@@ -48,6 +50,7 @@ import oshi.hardware.GraphicsCard;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public abstract class VRRenderer {
     public static final String RENDER_SETUP_FAILURE_MESSAGE = "Failed to initialise stereo rendering plugin: ";
@@ -127,9 +130,11 @@ public abstract class VRRenderer {
         ClientDataHolderVR dataholder = ClientDataHolderVR.getInstance();
 
         //setup stencil for writing
-        GL11.glEnable(GL11.GL_STENCIL_TEST);
-        RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_REPLACE);
-        RenderSystem.stencilMask(0xFF); // Write to stencil buffer
+        if (dataholder.vrSettings.useStencilBuffer) {
+            GL11.glEnable(GL11.GL_STENCIL_TEST);
+            RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_REPLACE);
+            RenderSystem.stencilMask(0xFF); // Write to stencil buffer
+        }
 
         if (inverse) {
             //clear whole image for total mask in color, stencil, depth
@@ -147,7 +152,7 @@ public abstract class VRRenderer {
             RenderSystem.colorMask(true, true, true, true);
         }
 
-        RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT, false);
+        RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
 
         RenderSystem.clearStencil(0);
         RenderSystem.clearDepth(1);
@@ -162,15 +167,15 @@ public abstract class VRRenderer {
 
         RenderTarget fb = minecraft.getMainRenderTarget();
         RenderSystem.backupProjectionMatrix();
-        RenderSystem.setProjectionMatrix(new Matrix4f().setOrtho(0.0F, fb.viewWidth, 0.0F, fb.viewHeight, 0.0F, 20.0F), VertexSorting.ORTHOGRAPHIC_Z);
+        RenderSystem.setProjectionMatrix(new Matrix4f().setOrtho(0.0F, fb.viewWidth, 0.0F, fb.viewHeight, 0.0F, 20.0F), ProjectionType.ORTHOGRAPHIC);
         RenderSystem.getModelViewStack().pushMatrix();
         RenderSystem.getModelViewStack().identity();
         if (inverse) //draw on far clip
         {
             RenderSystem.getModelViewStack().translate(0, 0, -20);
         }
-        RenderSystem.applyModelViewMatrix();
-        int s = GlStateManager._getInteger(GL43.GL_CURRENT_PROGRAM);
+
+        CompiledShaderProgram s = RenderSystem.getShader();
 
         if (dataholder.currentPass == RenderPass.SCOPEL || dataholder.currentPass == RenderPass.SCOPER) {
             drawCircle(fb.viewWidth, fb.viewHeight);
@@ -187,10 +192,13 @@ public abstract class VRRenderer {
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.enableCull();
-        ProgramManager.glUseProgram(s);
-        RenderSystem.stencilFunc(GL11.GL_NOTEQUAL, 255, 1);
-        RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
-        RenderSystem.stencilMask(0); // Dont Write to stencil buffer
+
+        RenderSystem.setShader(s);
+        if (dataholder.vrSettings.useStencilBuffer) {
+            RenderSystem.stencilFunc(GL11.GL_NOTEQUAL, 255, 1);
+            RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
+            RenderSystem.stencilMask(0); // Dont Write to stencil buffer
+        }
         RenderSystem.depthFunc(GL11.GL_LEQUAL);
     }
 
@@ -205,6 +213,9 @@ public abstract class VRRenderer {
             // set to always, so that we can skip the clear
             RenderSystem.depthFunc(GL43.GL_ALWAYS);
 
+            CompiledShaderProgram shader = Objects.requireNonNull(
+                RenderSystem.setShader(VRShaders.lanczosShader), "lanczos shader not loaded");
+
             // first pass
             this.fsaaFirstPassResultFBO.bindWrite(true);
 
@@ -217,11 +228,11 @@ public abstract class VRRenderer {
             RenderSystem.bindTexture(framebufferVrRender.getDepthTextureId());
             RenderSystem.activeTexture(GL43.GL_TEXTURE0);
 
-            VRShaders.lanczosShader.setSampler("Sampler0", RenderSystem.getShaderTexture(0));
-            VRShaders.lanczosShader.setSampler("Sampler1", RenderSystem.getShaderTexture(1));
+            shader.bindSampler("Sampler0", RenderSystem.getShaderTexture(0));
+            shader.bindSampler("Sampler1", RenderSystem.getShaderTexture(1));
             VRShaders._Lanczos_texelWidthOffsetUniform.set(1.0F / (3.0F * (float) this.fsaaFirstPassResultFBO.viewWidth));
             VRShaders._Lanczos_texelHeightOffsetUniform.set(0.0F);
-            VRShaders.lanczosShader.apply();
+            shader.apply();
 
             this.drawQuad();
 
@@ -236,16 +247,16 @@ public abstract class VRRenderer {
             RenderSystem.bindTexture(fsaaFirstPassResultFBO.getDepthTextureId());
             RenderSystem.activeTexture(GL43.GL_TEXTURE0);
 
-            VRShaders.lanczosShader.setSampler("Sampler0", RenderSystem.getShaderTexture(0));
-            VRShaders.lanczosShader.setSampler("Sampler1", RenderSystem.getShaderTexture(1));
+            shader.bindSampler("Sampler0", RenderSystem.getShaderTexture(0));
+            shader.bindSampler("Sampler1", RenderSystem.getShaderTexture(1));
             VRShaders._Lanczos_texelWidthOffsetUniform.set(0.0F);
             VRShaders._Lanczos_texelHeightOffsetUniform.set(1.0F / (3.0F * (float) this.fsaaLastPassResultFBO.viewHeight));
-            VRShaders.lanczosShader.apply();
+            shader.apply();
 
             this.drawQuad();
 
             // Clean up time
-            VRShaders.lanczosShader.clear();
+            shader.clear();
             this.fsaaLastPassResultFBO.unbindWrite();
             RenderSystem.depthFunc(GL43.GL_LEQUAL);
             RenderSystem.enableBlend();
@@ -276,13 +287,14 @@ public abstract class VRRenderer {
 
         BufferBuilder builder = Tesselator.getInstance().begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION);
 
-        mc.getTextureManager().bindForSetup(ResourceLocation.parse("vivecraft:textures/black.png"));
+        RenderSystem.setShaderTexture(0, ResourceLocation.parse("vivecraft:textures/black.png"));
+        RenderSystem.bindTexture(RenderSystem.getShaderTexture(0));
 
         for (int i = 0; i < verts.length; i += 2) {
             builder.addVertex(verts[i] * dh.vrRenderer.renderScale, verts[i + 1] * dh.vrRenderer.renderScale, 0.0F);
         }
 
-        RenderSystem.setShader(GameRenderer::getPositionShader);
+        RenderSystem.setShader(CoreShaders.POSITION);
         BufferUploader.drawWithShader(builder.buildOrThrow());
     }
 
@@ -488,13 +500,14 @@ public abstract class VRRenderer {
             Tuple<Integer, Integer> cameraSize = getCameraTextureSize(eyeFBWidth, eyeFBHeight);
 
             // main render target
-            if (dataholder.vrSettings.vrUseStencil) {
+
+            if (dataholder.vrSettings.vrUseStencil && dataholder.vrSettings.useStencilBuffer) {
                 ((RenderTargetExtension) WorldRenderPass.stereoXR.target)
                     .vivecraft$setUseStencil(!Xplat.enableRenderTargetStencil(WorldRenderPass.stereoXR.target));
             }
             WorldRenderPass.stereoXR.resize(eyeFBWidth, eyeFBHeight);
             if (dataholder.vrSettings.useFsaa) {
-                this.fsaaFirstPassResultFBO.resize(eyew, eyeFBHeight, Minecraft.ON_OSX);
+                this.fsaaFirstPassResultFBO.resize(eyew, eyeFBHeight);
             }
 
             // mirror
@@ -512,7 +525,7 @@ public abstract class VRRenderer {
             WorldRenderPass.rightTelescope.resize(telescopeSize.getA(), telescopeSize.getB());
 
             // camera
-            cameraFramebuffer.resize(cameraSize.getA(), cameraSize.getB(), Minecraft.ON_OSX);
+            cameraFramebuffer.resize(cameraSize.getA(), cameraSize.getB());
             if (ShadersHelper.needsSameSizeBuffers()) {
                 WorldRenderPass.camera.resize(eyeFBWidth, eyeFBHeight);
             } else {
@@ -521,7 +534,7 @@ public abstract class VRRenderer {
 
             // resize gui, if changed
             if (GuiHandler.updateResolution()) {
-                GuiHandler.guiFramebuffer.resize(GuiHandler.guiWidth, GuiHandler.guiHeight, Minecraft.ON_OSX);
+                GuiHandler.guiFramebuffer.resize(GuiHandler.guiWidth, GuiHandler.guiHeight);
                 if (minecraft.screen != null) {
                     int l2 = minecraft.getWindow().getGuiScaledWidth();
                     int j3 = minecraft.getWindow().getGuiScaledHeight();
@@ -583,13 +596,13 @@ public abstract class VRRenderer {
             this.checkGLError("Render Texture setup");
 
             if (this.framebufferEye0 == null) {
-                this.framebufferEye0 = new VRTextureTarget("L Eye", eyew, eyeh, false, false, this.LeftEyeTextureId, false, true, false);
+                this.framebufferEye0 = new VRTextureTarget("L Eye", eyew, eyeh, false, this.LeftEyeTextureId, false, true, false);
                 dataholder.print(this.framebufferEye0.toString());
                 this.checkGLError("Left Eye framebuffer setup");
             }
 
             if (this.framebufferEye1 == null) {
-                this.framebufferEye1 = new VRTextureTarget("R Eye", eyew, eyeh, false, false, this.RightEyeTextureId, false, true, false);
+                this.framebufferEye1 = new VRTextureTarget("R Eye", eyew, eyeh, false, this.RightEyeTextureId, false, true, false);
                 dataholder.print(this.framebufferEye1.toString());
                 this.checkGLError("Right Eye framebuffer setup");
             }
@@ -600,7 +613,7 @@ public abstract class VRRenderer {
             int eyeFBWidth = (int) Math.ceil(eyew * this.renderScale);
             int eyeFBHeight = (int) Math.ceil(eyeh * this.renderScale);
 
-            this.framebufferVrRender = new VRTextureTarget("3D Render", eyeFBWidth, eyeFBHeight, true, false, -1, true, true, dataholder.vrSettings.vrUseStencil);
+            this.framebufferVrRender = new VRTextureTarget("3D Render", eyeFBWidth, eyeFBHeight, true, -1, true, true, dataholder.vrSettings.vrUseStencil && dataholder.vrSettings.useStencilBuffer);
             WorldRenderPass.stereoXR = new WorldRenderPass((VRTextureTarget) this.framebufferVrRender);
             dataholder.print(this.framebufferVrRender.toString());
             this.checkGLError("3D framebuffer setup");
@@ -616,14 +629,14 @@ public abstract class VRRenderer {
             // only do these, if the window is not minimized
             if (mirrorFBWidth > 0 && mirrorFBHeight > 0) {
                 if (list.contains(RenderPass.THIRD) || ShadersHelper.isShaderActive()) {
-                    this.framebufferMR = new VRTextureTarget("Mixed Reality Render", this.mirrorFBWidth, this.mirrorFBHeight, true, false, -1, true, false, false);
+                    this.framebufferMR = new VRTextureTarget("Mixed Reality Render", this.mirrorFBWidth, this.mirrorFBHeight, true, -1, true, false, false);
                     WorldRenderPass.mixedReality = new WorldRenderPass((VRTextureTarget) this.framebufferMR);
                     dataholder.print(this.framebufferMR.toString());
                     this.checkGLError("Mixed reality framebuffer setup");
                 }
 
                 if (list.contains(RenderPass.CENTER) || ShadersHelper.isShaderActive()) {
-                    this.framebufferUndistorted = new VRTextureTarget("Undistorted View Render", this.mirrorFBWidth, this.mirrorFBHeight, true, false, -1, false, false, false);
+                    this.framebufferUndistorted = new VRTextureTarget("Undistorted View Render", this.mirrorFBWidth, this.mirrorFBHeight, true, -1, false, false, false);
                     WorldRenderPass.center = new WorldRenderPass((VRTextureTarget) this.framebufferUndistorted);
                     dataholder.print(this.framebufferUndistorted.toString());
                     this.checkGLError("Undistorted view framebuffer setup");
@@ -631,30 +644,30 @@ public abstract class VRRenderer {
             }
 
             GuiHandler.updateResolution();
-            GuiHandler.guiFramebuffer = new VRTextureTarget("GUI", GuiHandler.guiWidth, GuiHandler.guiHeight, true, false, -1, false, true, false);
+            GuiHandler.guiFramebuffer = new VRTextureTarget("GUI", GuiHandler.guiWidth, GuiHandler.guiHeight, true, -1, false, true, false);
             dataholder.print(GuiHandler.guiFramebuffer.toString());
             this.checkGLError("GUI framebuffer setup");
-            KeyboardHandler.Framebuffer = new VRTextureTarget("Keyboard", GuiHandler.guiWidth, GuiHandler.guiHeight, true, false, -1, false, true, false);
+            KeyboardHandler.Framebuffer = new VRTextureTarget("Keyboard", GuiHandler.guiWidth, GuiHandler.guiHeight, true, -1, false, true, false);
             dataholder.print(KeyboardHandler.Framebuffer.toString());
             this.checkGLError("Keyboard framebuffer setup");
-            RadialHandler.Framebuffer = new VRTextureTarget("Radial Menu", GuiHandler.guiWidth, GuiHandler.guiHeight, true, false, -1, false, true, false);
+            RadialHandler.Framebuffer = new VRTextureTarget("Radial Menu", GuiHandler.guiWidth, GuiHandler.guiHeight, true, -1, false, true, false);
             dataholder.print(RadialHandler.Framebuffer.toString());
             this.checkGLError("Radial framebuffer setup");
 
 
             Tuple<Integer, Integer> telescopeSize = getTelescopeTextureSize(eyeFBWidth, eyeFBHeight);
-            this.telescopeFramebufferR = new VRTextureTarget("TelescopeR", telescopeSize.getA(), telescopeSize.getB(), true, false, -1, true, false, false);
+            this.telescopeFramebufferR = new VRTextureTarget("TelescopeR", telescopeSize.getA(), telescopeSize.getB(), true, -1, true, false, false);
             WorldRenderPass.rightTelescope = new WorldRenderPass((VRTextureTarget) this.telescopeFramebufferR);
             dataholder.print(this.telescopeFramebufferR.toString());
             this.telescopeFramebufferR.setClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-            this.telescopeFramebufferR.clear(Minecraft.ON_OSX);
+            this.telescopeFramebufferR.clear();
             this.checkGLError("TelescopeR framebuffer setup");
 
-            this.telescopeFramebufferL = new VRTextureTarget("TelescopeL", telescopeSize.getA(), telescopeSize.getB(), true, false, -1, true, false, false);
+            this.telescopeFramebufferL = new VRTextureTarget("TelescopeL", telescopeSize.getA(), telescopeSize.getB(), true, -1, true, false, false);
             WorldRenderPass.leftTelescope = new WorldRenderPass((VRTextureTarget) this.telescopeFramebufferL);
             dataholder.print(this.telescopeFramebufferL.toString());
             this.telescopeFramebufferL.setClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-            this.telescopeFramebufferL.clear(Minecraft.ON_OSX);
+            this.telescopeFramebufferL.clear();
             this.checkGLError("TelescopeL framebuffer setup");
 
 
@@ -667,11 +680,11 @@ public abstract class VRRenderer {
                 cameraRenderFBheight = eyeFBHeight;
             }
 
-            this.cameraFramebuffer = new VRTextureTarget("Handheld Camera", cameraSize.getA(), cameraSize.getB(), true, false, -1, true, false, false);
+            this.cameraFramebuffer = new VRTextureTarget("Handheld Camera", cameraSize.getA(), cameraSize.getB(), true, -1, true, false, false);
             dataholder.print(this.cameraFramebuffer.toString());
 
             this.checkGLError("Camera framebuffer setup");
-            this.cameraRenderFramebuffer = new VRTextureTarget("Handheld Camera Render", cameraRenderFBwidth, cameraRenderFBheight, true, false, -1, true, true, false);
+            this.cameraRenderFramebuffer = new VRTextureTarget("Handheld Camera Render", cameraRenderFBwidth, cameraRenderFBheight, true, -1, true, true, false);
             WorldRenderPass.camera = new WorldRenderPass((VRTextureTarget) this.cameraRenderFramebuffer);
             dataholder.print(this.cameraRenderFramebuffer.toString());
 
@@ -683,8 +696,8 @@ public abstract class VRRenderer {
             if (dataholder.vrSettings.useFsaa) {
                 try {
                     this.checkGLError("pre FSAA FBO creation");
-                    this.fsaaFirstPassResultFBO = new VRTextureTarget("FSAA Pass1 FBO", eyew, eyeFBHeight, true, false, -1, false, false, false);
-                    this.fsaaLastPassResultFBO = new VRTextureTarget("FSAA Pass2 FBO", eyew, eyeh, true, false, -1, false, false, false);
+                    this.fsaaFirstPassResultFBO = new VRTextureTarget("FSAA Pass1 FBO", eyew, eyeFBHeight, true, -1, false, false, false);
+                    this.fsaaLastPassResultFBO = new VRTextureTarget("FSAA Pass2 FBO", eyew, eyeh, true, -1, false, false, false);
                     dataholder.print(this.fsaaFirstPassResultFBO.toString());
                     dataholder.print(this.fsaaLastPassResultFBO.toString());
                     this.checkGLError("FSAA FBO creation");
@@ -707,8 +720,6 @@ public abstract class VRRenderer {
                 ShaderHelper.checkGLError("init depth shader");
                 VRShaders.setupFOVReduction();
                 ShaderHelper.checkGLError("init FOV shader");
-                VRShaders.setupPortalShaders();
-                ShaderHelper.checkGLError("init portal shader");
                 minecraft.gameRenderer.checkEntityPostEffect(minecraft.getCameraEntity());
             } catch (Exception exception1) {
                 System.out.println(exception1.getMessage());

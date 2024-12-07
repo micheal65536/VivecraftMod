@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.ShapeRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -57,15 +58,15 @@ public abstract class EntityRenderDispatcherMixin implements ResourceManagerRelo
         AABB headBox;
         if ((headBox = Utils.getEntityHeadHitbox(entity, 0.0)) != null) {
             // raw head box
-            LevelRenderer.renderLineBox(poseStack, vertexConsumer, headBox.move(-entity.getX(), -entity.getY(), -entity.getZ()), 1.0f, 1.0f, 0.0f, 1.0f);
+            ShapeRenderer.renderLineBox(poseStack, vertexConsumer, headBox.move(-entity.getX(), -entity.getY(), -entity.getZ()), 1.0f, 1.0f, 0.0f, 1.0f);
             // inflated head box for arrows
             AABB headBoxArrow = Utils.getEntityHeadHitbox(entity, 0.3);
-            LevelRenderer.renderLineBox(poseStack, vertexConsumer, headBoxArrow.move(-entity.getX(), -entity.getY(), -entity.getZ()), 1.0f, 0.0f, 0.0f, 1.0f);
+            ShapeRenderer.renderLineBox(poseStack, vertexConsumer, headBoxArrow.move(-entity.getX(), -entity.getY(), -entity.getZ()), 1.0f, 0.0f, 0.0f, 1.0f);
         }
     }
 
     @Inject(at = @At("HEAD"), method = "getRenderer(Lnet/minecraft/world/entity/Entity;)Lnet/minecraft/client/renderer/entity/EntityRenderer;", cancellable = true)
-    public void vivecraft$renderer(Entity pEntity, CallbackInfoReturnable<EntityRenderer<AbstractClientPlayer>> info) {
+    public void vivecraft$renderer(Entity pEntity, CallbackInfoReturnable<EntityRenderer> info) {
         if (pEntity instanceof AbstractClientPlayer) {
             String s = ((AbstractClientPlayer) pEntity).getSkin().model().id();
             VRPlayersClient.RotInfo playermodelcontroller$rotinfo = VRPlayersClient.getInstance().getRotationsForPlayer(pEntity.getUUID());

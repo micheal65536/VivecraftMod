@@ -1,5 +1,6 @@
 package org.vivecraft.client_vr.render.helpers;
 
+import com.mojang.blaze3d.ProjectionType;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -9,9 +10,10 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.CoreShaders;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.renderer.ShaderProgram;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceLocation;
@@ -158,6 +160,7 @@ public class RenderHelper {
     public static void renderDebugAxes(int r, int g, int b, float radius) {
         setupPolyRendering(true);
         RenderSystem.setShaderTexture(0, ResourceLocation.parse("vivecraft:textures/white.png"));
+        RenderSystem.bindTexture(RenderSystem.getShaderTexture(0));
         renderCircle(new Vec3(0.0D, 0.0D, 0.0D), radius, 32, r, g, b, 255, 0);
         renderCircle(new Vec3(0.0D, 0.01D, 0.0D), radius * 0.75F, 32, r, g, b, 255, 0);
         renderCircle(new Vec3(0.0D, 0.02D, 0.0D), radius * 0.25F, 32, r, g, b, 255, 0);
@@ -243,13 +246,12 @@ public class RenderHelper {
         posestack.pushMatrix();
         posestack.identity();
         posestack.translate(0.0F, 0.0F, -11000.0F);
-        RenderSystem.applyModelViewMatrix();
 
         Matrix4f guiProjection = (new Matrix4f()).setOrtho(
             0.0F, (float) (mc.getWindow().getWidth() / mc.getWindow().getGuiScale()),
                 (float) (mc.getWindow().getHeight() / mc.getWindow().getGuiScale()), 0.0F,
                 1000.0F, 21000.0F);
-        RenderSystem.setProjectionMatrix(guiProjection, VertexSorting.ORTHOGRAPHIC_Z);
+        RenderSystem.setProjectionMatrix(guiProjection, ProjectionType.ORTHOGRAPHIC);
 
         RenderSystem.blendFuncSeparate(
             GlStateManager.SourceFactor.SRC_ALPHA,
@@ -266,7 +268,6 @@ public class RenderHelper {
             GlStateManager.DestFactor.ONE);
 
         posestack.popMatrix();
-        RenderSystem.applyModelViewMatrix();
 
         RenderTarget main = mc.getMainRenderTarget();
         main.bindRead();
@@ -305,7 +306,7 @@ public class RenderHelper {
     public static void drawSizedQuad(float displayWidth, float displayHeight, float size, float[] color, Matrix4f pMatrix) {
         float aspect = displayHeight / displayWidth;
 
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(CoreShaders.POSITION_TEX);
         RenderSystem.setShaderColor(color[0], color[1], color[2], color[3]);
         BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
         bufferbuilder
@@ -330,16 +331,16 @@ public class RenderHelper {
 
     public static void drawSizedQuadWithLightmapCutout(float displayWidth, float displayHeight, float size, int lighti,
         float[] color, Matrix4f pMatrix, boolean flipY) {
-        drawSizedQuadWithLightmap(displayWidth, displayHeight, size, lighti, color, pMatrix, GameRenderer::getRendertypeEntityCutoutNoCullShader, flipY);
+        drawSizedQuadWithLightmap(displayWidth, displayHeight, size, lighti, color, pMatrix, CoreShaders.RENDERTYPE_ENTITY_CUTOUT_NO_CULL, flipY);
     }
 
     public static void drawSizedQuadSolid(float displayWidth, float displayHeight, float size,
         float[] color, Matrix4f pMatrix) {
-        drawSizedQuadWithLightmap(displayWidth, displayHeight, size, LightTexture.pack(15, 15), color, pMatrix, GameRenderer::getRendertypeEntitySolidShader, false);
+        drawSizedQuadWithLightmap(displayWidth, displayHeight, size, LightTexture.pack(15, 15), color, pMatrix, CoreShaders.RENDERTYPE_ENTITY_SOLID, false);
     }
 
     public static void drawSizedQuadWithLightmap(float displayWidth, float displayHeight, float size, int lighti,
-        float[] color, Matrix4f pMatrix, Supplier<ShaderInstance> shader, boolean flipY) {
+        float[] color, Matrix4f pMatrix, ShaderProgram shader, boolean flipY) {
         float aspect = displayHeight / displayWidth;
         RenderSystem.setShader(shader);
         mc.gameRenderer.lightTexture().turnOnLightLayer();

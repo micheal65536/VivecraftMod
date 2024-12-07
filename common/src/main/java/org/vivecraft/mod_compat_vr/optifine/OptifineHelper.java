@@ -11,6 +11,7 @@ import org.vivecraft.client_vr.settings.VRSettings;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.RecordComponent;
 
 public class OptifineHelper {
 
@@ -54,6 +55,10 @@ public class OptifineHelper {
     private static Field optionsOfCloudHeight;
     private static Field optionsOfAoLevel;
     private static Field vertexRenderPositions;
+    private static Method VertexRecord_renderPositions;
+
+    private static Method Mutable_get;
+    private static Method Mutable_set;
 
     public static boolean isOptifineLoaded() {
         if (!checkedForOptifine) {
@@ -288,6 +293,12 @@ public class OptifineHelper {
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
+        } else if (VertexRecord_renderPositions != null) {
+            try {
+                Mutable_set.invoke(VertexRecord_renderPositions.invoke(dest), Mutable_get.invoke(VertexRecord_renderPositions.invoke(source)));
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -346,6 +357,24 @@ public class OptifineHelper {
             } catch (NoSuchFieldException e) {
                 // this version doesn't have the entity render improvements
                 vertexRenderPositions = null;
+                // check if record type
+                if (ModelPart.Vertex.class.isRecord()) {
+                    // check for mutable renderPositions
+                    for (RecordComponent comp : ModelPart.Vertex.class.getRecordComponents()) {
+                        if (comp.getName().equals("renderPositions")) {
+                            VertexRecord_renderPositions = comp.getAccessor();
+                        }
+                    }
+                }
+                try {
+                    Class<?> Mutable = Class.forName("net.optifine.util.Mutable");
+                    Mutable_get = Mutable.getMethod("get");
+                    Mutable_set = Mutable.getMethod("set", Object.class);
+                } catch (ClassNotFoundException | NoSuchMethodException eRecord) {
+                    VertexRecord_renderPositions = null;
+                    Mutable_get = null;
+                    Mutable_set = null;
+                }
             }
         } catch (ClassNotFoundException e) {
             VRSettings.logger.error("Optifine detected, but couldn't load class: {}", e.getMessage());

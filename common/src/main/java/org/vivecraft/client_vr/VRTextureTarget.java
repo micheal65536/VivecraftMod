@@ -9,7 +9,7 @@ public class VRTextureTarget extends RenderTarget {
 
     private final String name;
 
-    public VRTextureTarget(String name, int width, int height, boolean usedepth, boolean onMac, int texid, boolean depthtex, boolean linearFilter, boolean useStencil) {
+    public VRTextureTarget(String name, int width, int height, boolean usedepth, int texid, boolean depthtex, boolean linearFilter, boolean useStencil) {
         super(usedepth);
         this.name = name;
         RenderSystem.assertOnRenderThreadOrInit();
@@ -20,11 +20,12 @@ public class VRTextureTarget extends RenderTarget {
         this.viewWidth = width;
         this.viewHeight = height;
 
+
         if (useStencil && !Xplat.enableRenderTargetStencil(this)) {
             // use our stencil only if the modloader doesn't support it
             ((RenderTargetExtension) this).vivecraft$setUseStencil(true);
         }
-        this.resize(width, height, onMac);
+        this.resize(width, height);
         this.setClearColor(0, 0, 0, 0);
     }
 

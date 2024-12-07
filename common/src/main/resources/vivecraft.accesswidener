@@ -8,7 +8,6 @@ accessible field net/minecraft/client/model/geom/ModelPart$Cube polygons [Lnet/m
 
 # custom player modle rendering
 accessible field net/minecraft/client/model/PlayerModel slim Z
-extendable method net/minecraft/client/renderer/entity/player/PlayerRenderer setModelProperties (Lnet/minecraft/client/player/AbstractClientPlayer;)V
 
 # modded layer supports
 accessible method net/minecraft/client/renderer/entity/LivingEntityRenderer addLayer (Lnet/minecraft/client/renderer/entity/layers/RenderLayer;)Z
@@ -67,9 +66,6 @@ accessible method net/minecraft/client/renderer/RenderType create (Ljava/lang/St
 # to render item activation outside of gamerenderer
 accessible method net/minecraft/client/renderer/GameRenderer renderItemActivationAnimation (Lnet/minecraft/client/gui/GuiGraphics;F)V
 
-# tohave differnt postEffects per pass
-accessible field net/minecraft/client/renderer/GameRenderer postEffect Lnet/minecraft/client/renderer/PostChain;
-
 # to disable destroy delay, on roomscale hitting
 accessible field net/minecraft/client/multiplayer/MultiPlayerGameMode destroyDelay I
 
@@ -100,6 +96,3 @@ accessible method net/minecraft/world/item/BrushItem spawnDustParticles (Lnet/mi
 
 # do not kick climbing players
 accessible field net/minecraft/server/network/ServerGamePacketListenerImpl aboveGroundTickCount I
-
-# for roomscale eating
-extendable method net/minecraft/world/entity/LivingEntity eat (Lnet/minecraft/world/level/Level;Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/world/item/ItemStack;

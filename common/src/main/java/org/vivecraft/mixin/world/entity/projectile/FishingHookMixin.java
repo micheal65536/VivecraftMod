@@ -31,7 +31,7 @@ public abstract class FishingHookMixin extends Entity {
     @Unique
     private Vec3 vivecraft$controllerPos = null;
 
-    @ModifyVariable(at = @At(value = "STORE"), method = "<init>(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/level/Level;II)V", ordinal = 0)
+    @ModifyVariable(at = @At(value = "STORE"), method = "<init>(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/level/Level;IILnet/minecraft/world/item/ItemStack;)V", ordinal = 0)
     private float vivecraft$modifyXrot(float xRot, Player player) {
         // some mods like Aquaculture create a FishingHook on the client with a LocalPlayer
         // this is nonsense, so just ignore it
@@ -50,7 +50,7 @@ public abstract class FishingHookMixin extends Entity {
         }
     }
 
-    @ModifyVariable(at = @At(value = "STORE"), method = "<init>(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/level/Level;II)V", ordinal = 1)
+    @ModifyVariable(at = @At(value = "STORE"), method = "<init>(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/level/Level;IILnet/minecraft/world/item/ItemStack;)V", ordinal = 1)
     private float vivecraft$modifyYrot(float yRot) {
         if (vivecraft$serverviveplayer != null && vivecraft$serverviveplayer.isVR()) {
             return (float) Math.toDegrees(Math.atan2(-vivecraft$controllerDir.x, vivecraft$controllerDir.z));
@@ -59,7 +59,7 @@ public abstract class FishingHookMixin extends Entity {
         }
     }
 
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/projectile/FishingHook;moveTo(DDDFF)V"), method = "<init>(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/level/Level;II)V")
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/projectile/FishingHook;moveTo(DDDFF)V"), method = "<init>(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/level/Level;IILnet/minecraft/world/item/ItemStack;)V")
     private void vivecraft$modifyMoveTo(FishingHook instance, double x, double y, double z, float yRot, float xRot) {
         if (vivecraft$serverviveplayer != null && vivecraft$serverviveplayer.isVR()) {
             instance.moveTo(vivecraft$controllerPos.x + vivecraft$controllerDir.x * (double) 0.6F, vivecraft$controllerPos.y + vivecraft$controllerDir.y * (double) 0.6F, vivecraft$controllerPos.z + vivecraft$controllerDir.z * (double) 0.6F, yRot, xRot);

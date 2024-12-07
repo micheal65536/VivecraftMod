@@ -9,7 +9,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.phys.Vec3;
 import org.vivecraft.client.VivecraftVRMod;
 import org.vivecraft.client.network.ClientNetworking;
@@ -70,7 +70,7 @@ public class BowTracker extends Tracker {
         } else if (ClientDataHolderVR.getInstance().vrSettings.bowMode == VRSettings.BowMode.VANILLA) {
             return itemStack.getItem() == Items.BOW;
         } else {
-            return itemStack.getItem().getUseAnimation(itemStack) == UseAnim.BOW && !itemStack.is(org.vivecraft.client_vr.ItemTags.VIVECRAFT_BOW_EXCLUSION);
+            return itemStack.getItem().getUseAnimation(itemStack) == ItemUseAnimation.BOW && !itemStack.is(org.vivecraft.client_vr.ItemTags.VIVECRAFT_BOW_EXCLUSION);
         }
     }
 
@@ -128,7 +128,7 @@ public class BowTracker extends Tracker {
             this.lastcanDraw = this.canDraw;
 
             // this is meant to be relative to the base Bb height, not the scaled one
-            this.maxDraw = (double) this.mc.player.getBbHeight() * 0.22D / ScaleHelper.getEntityBbScale(player, mc.getTimer().getGameTimeDeltaPartialTick(false));
+            this.maxDraw = (double) this.mc.player.getBbHeight() * 0.22D / ScaleHelper.getEntityBbScale(player, mc.getDeltaTracker().getGameTimeDeltaPartialTick(false));
 
             Vec3 vec3 = vrdata.getController(0).getPosition();
             Vec3 vec31 = vrdata.getController(1).getPosition();

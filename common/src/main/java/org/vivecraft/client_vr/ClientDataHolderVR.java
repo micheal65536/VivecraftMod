@@ -18,8 +18,8 @@ public class ClientDataHolderVR {
     public static boolean katvr;
     public static boolean infinadeck;
     public static boolean viewonly;
-    public static ModelResourceLocation thirdPersonCameraModel = new ModelResourceLocation(ResourceLocation.fromNamespaceAndPath("vivecraft", "camcorder"), "standalone");
-    public static ModelResourceLocation thirdPersonCameraDisplayModel = new ModelResourceLocation(ResourceLocation.fromNamespaceAndPath("vivecraft", "camcorder_display"), "standalone");
+    public static ModelResourceLocation thirdPersonCameraModel = ModelResourceLocation.inventory(ResourceLocation.fromNamespaceAndPath("vivecraft", "camcorder"));
+    public static ModelResourceLocation thirdPersonCameraDisplayModel = ModelResourceLocation.inventory(ResourceLocation.fromNamespaceAndPath("vivecraft", "camcorder_display"));
     private static ClientDataHolderVR INSTANCE;
 
     public VRPlayer vrPlayer;

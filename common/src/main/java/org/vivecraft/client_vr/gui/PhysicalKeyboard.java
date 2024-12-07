@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.*;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.CoreShaders;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -483,7 +484,7 @@ public class PhysicalKeyboard {
         if (this.easterEggActive) {
             // https://qimg.techjargaming.com/i/UkG1cWAh.png
             for (KeyButton button : this.keys) {
-                RGBAColor color = RGBAColor.fromHSB(((float) this.dh.tickCounter + this.mc.getTimer().getGameTimeDeltaPartialTick(false)) / 100.0F + (float) (button.boundingBox.minX + (button.boundingBox.maxX - button.boundingBox.minX) / 2.0D) / 2.0F, 1.0F, 1.0F);
+                RGBAColor color = RGBAColor.fromHSB(((float) this.dh.tickCounter + this.mc.getDeltaTracker().getGameTimeDeltaPartialTick(false)) / 100.0F + (float) (button.boundingBox.minX + (button.boundingBox.maxX - button.boundingBox.minX) / 2.0D) / 2.0F, 1.0F, 1.0F);
                 button.color.r = color.r;
                 button.color.g = color.g;
                 button.color.b = color.b;
@@ -503,11 +504,11 @@ public class PhysicalKeyboard {
             });
         }
 
-        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+        RenderSystem.setShader(CoreShaders.POSITION_TEX_COLOR);
 
         // TODO: does this still do the right thing for shaders?
-        mc.getTextureManager().bindForSetup(ResourceLocation.parse("vivecraft:textures/white.png"));
         RenderSystem.setShaderTexture(0, ResourceLocation.parse("vivecraft:textures/white.png"));
+        RenderSystem.bindTexture(RenderSystem.getShaderTexture(0));
 
         // We need to ignore depth so we can see the back faces and text
         RenderSystem.depthFunc(GL11.GL_ALWAYS);
@@ -553,7 +554,7 @@ public class PhysicalKeyboard {
             poseStack.pushMatrix();
             poseStack.translate((label.getB()).x, (label.getB()).y, (label.getB()).z);
             poseStack.scale(textScale, textScale, 1.0F);
-            font.drawInBatch(label.getA(), 0.0F, 0.0F, 0xFFFFFFFF, false, poseStack, mc.renderBuffers().bufferSource(), Font.DisplayMode.NORMAL, 0, 15728880, font.isBidirectional());
+            font.drawInBatch(label.getA(), 0.0F, 0.0F, 0xFFFFFFFF, false, poseStack, mc.renderBuffers().bufferSource(), Font.DisplayMode.NORMAL, 0, 15728880);
             poseStack.popMatrix();
         }
 

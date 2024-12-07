@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
@@ -30,6 +31,7 @@ import org.vivecraft.client_vr.VRState;
 import org.vivecraft.client_vr.extensions.EntityRenderDispatcherVRExtension;
 import org.vivecraft.client_vr.extensions.ItemInHandRendererExtension;
 import org.vivecraft.client_vr.gameplay.trackers.BowTracker;
+import org.vivecraft.client_vr.gameplay.trackers.SwingTracker;
 import org.vivecraft.client_vr.gameplay.trackers.TelescopeTracker;
 import org.vivecraft.client_vr.render.RenderPass;
 import org.vivecraft.client_vr.render.VRArmRenderer;
@@ -197,7 +199,7 @@ public abstract class ItemInHandRendererVRMixin implements ItemInHandRendererExt
     private void vivecraft$vrPlayerArm(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, float f, float g, HumanoidArm humanoidArm) {
         boolean flag = humanoidArm != HumanoidArm.LEFT;
         float h = flag ? 1.0F : -1.0F;
-        AbstractClientPlayer abstractclientplayer = this.minecraft.player;
+        LocalPlayer abstractclientplayer = this.minecraft.player;
         RenderSystem.setShaderTexture(0, abstractclientplayer.getSkin().texture());
         VRArmRenderer vrarmrenderer = ((EntityRenderDispatcherVRExtension) entityRenderDispatcher).vivecraft$getArmSkinMap().get(abstractclientplayer.getSkin().model().id());
         poseStack.pushPose();
@@ -227,10 +229,12 @@ public abstract class ItemInHandRendererVRMixin implements ItemInHandRendererExt
         poseStack.translate((slim ? -0.34375F : -0.375F) * h, 0.0F, slim ? 0.78125F : 0.75F);
         poseStack.mulPose(Axis.XP.rotationDegrees(-90));
         poseStack.mulPose(Axis.YP.rotationDegrees(180));
+        vrarmrenderer.armAlpha = SwingTracker.getItemFade(abstractclientplayer, ItemStack.EMPTY);
+        ResourceLocation skin = abstractclientplayer.getSkin().texture();
         if (flag) {
-            vrarmrenderer.renderRightHand(poseStack, multiBufferSource, i, abstractclientplayer);
+            vrarmrenderer.renderRightHand(poseStack, multiBufferSource, i, skin, true);
         } else {
-            vrarmrenderer.renderLeftHand(poseStack, multiBufferSource, i, abstractclientplayer);
+            vrarmrenderer.renderLeftHand(poseStack, multiBufferSource, i, skin, true);
         }
         poseStack.popPose();
     }

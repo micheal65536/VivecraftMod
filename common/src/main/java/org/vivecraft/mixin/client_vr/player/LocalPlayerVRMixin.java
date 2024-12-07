@@ -118,7 +118,7 @@ public abstract class LocalPlayerVRMixin extends AbstractClientPlayer implements
         }
     }
 
-    @ModifyVariable(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;isPassenger()Z"), ordinal = 2, method = "sendPosition")
+    @ModifyVariable(at = @At(value = "STORE"), ordinal = 1, method = "sendPosition")
     private boolean vivecraft$directTeleport(boolean updateRotation) {
         if (this.vivecraft$teleported) {
             updateRotation = true;
@@ -135,7 +135,7 @@ public abstract class LocalPlayerVRMixin extends AbstractClientPlayer implements
     }
 
     // needed, or the server will spam 'moved too quickly'/'moved wrongly'
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientPacketListener;send(Lnet/minecraft/network/protocol/Packet;)V"), method = "sendPosition", slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;isPassenger()Z")))
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientPacketListener;send(Lnet/minecraft/network/protocol/Packet;)V"), method = "sendPosition")
     public void vivecraft$noMovePacketsOnTeleport(ClientPacketListener instance, Packet<?> packet) {
         if (!this.vivecraft$teleported) {
             instance.send(packet);
@@ -255,15 +255,6 @@ public abstract class LocalPlayerVRMixin extends AbstractClientPlayer implements
     @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;cos(F)F"), method = "updateAutoJump")
     private float vivecraft$modifyAutoJumpCos(float original) {
         return VRState.vrRunning ? ClientDataHolderVR.getInstance().vrPlayer.vrdata_world_pre.getBodyYaw() * ((float) Math.PI / 180) : original;
-    }
-
-    @Override
-    public ItemStack eat(Level level, ItemStack itemStack) {
-        if (VRState.vrRunning && itemStack.get(DataComponents.FOOD) != null && (Object) this == Minecraft.getInstance().player && itemStack.getHoverName().getString().equals("EAT ME")) {
-            ClientDataHolderVR.getInstance().vrPlayer.wfMode = 0.5D;
-            ClientDataHolderVR.getInstance().vrPlayer.wfCount = 400;
-        }
-        return super.eat(level, itemStack);
     }
 
     @Override

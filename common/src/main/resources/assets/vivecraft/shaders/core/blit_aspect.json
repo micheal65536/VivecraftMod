@@ -1,0 +1,10 @@
+{
+  "vertex": "vivecraft:core/blit_aspect",
+  "fragment": "vivecraft:core/blit_aspect",
+  "samplers": [
+    {
+      "name": "DiffuseSampler"
+    }
+  ],
+  "uniforms": []
+}

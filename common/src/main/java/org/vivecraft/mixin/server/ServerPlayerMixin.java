@@ -18,7 +18,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
@@ -95,49 +95,6 @@ public abstract class ServerPlayerMixin extends Player {
         }
     }
 
-    // TODO: this is not needed
-    @Override
-    protected void triggerItemUseEffects(ItemStack pStack, int pCount) {
-        if (!pStack.isEmpty() && this.isUsingItem()) {
-            if (pStack.getUseAnimation() == UseAnim.DRINK) {
-                this.playSound(this.getDrinkingSound(pStack), 0.5F, this.level().random.nextFloat() * 0.1F + 0.9F);
-            }
-
-            if (pStack.getUseAnimation() == UseAnim.EAT) {
-                this.vivecraft$addItemParticles(pStack, pCount);
-                this.playSound(this.getEatingSound(pStack), 0.5F + 0.5F * (float) this.random.nextInt(2),
-                    (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-            }
-        }
-    }
-
-    // TODO: this should override "spawnItemParticles", or inject into LivingEntity
-    @Unique
-    private void vivecraft$addItemParticles(ItemStack stack, int count) {
-        ServerVivePlayer serverviveplayer = vivecraft$getVivePlayer();
-        for (int i = 0; i < count; ++i) {
-            Vec3 vec3 = new Vec3(((double) this.random.nextFloat() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, 0.0D);
-            vec3 = vec3.xRot(-this.getXRot() * ((float) Math.PI / 180F));
-            vec3 = vec3.yRot(-this.getYRot() * ((float) Math.PI / 180F));
-            double d0 = (double) (-this.random.nextFloat()) * 0.6D - 0.3D;
-            Vec3 vec31 = new Vec3(((double) this.random.nextFloat() - 0.5D) * 0.3D, d0, 0.6D);
-            vec31 = vec31.xRot(-this.getXRot() * ((float) Math.PI / 180F));
-            vec31 = vec31.yRot(-this.getYRot() * ((float) Math.PI / 180F));
-            vec31 = vec31.add(this.getX(), this.getEyeY(), this.getZ());
-            if (serverviveplayer != null && serverviveplayer.isVR()) {
-                InteractionHand interactionhand = this.getUsedItemHand();
-
-                if (interactionhand == InteractionHand.MAIN_HAND) {
-                    vec31 = serverviveplayer.getControllerPos(0, this);
-                } else {
-                    vec31 = serverviveplayer.getControllerPos(1, this);
-                }
-            }
-            this.level().addParticle(new ItemParticleOption(ParticleTypes.ITEM, stack), vec31.x, vec31.y, vec31.z, vec3.x,
-                vec3.y + 0.05D, vec3.z);
-        }
-    }
-
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;addFreshEntity(Lnet/minecraft/world/entity/Entity;)Z", shift = Shift.BEFORE), method = "drop(Lnet/minecraft/world/item/ItemStack;ZZ)Lnet/minecraft/world/entity/item/ItemEntity;",
         locals = LocalCapture.CAPTURE_FAILHARD)
     public void vivecraft$dropvive(ItemStack p_9085_, boolean dropAround, boolean includeName, CallbackInfoReturnable<ItemEntity> info,
@@ -153,8 +110,8 @@ public abstract class ServerPlayerMixin extends Player {
         }
     }
 
-    @Inject(at = @At("HEAD"), method = "hurt", cancellable = true)
-    public void vivecraft$checkCanGetHurt(DamageSource damageSource, float f, CallbackInfoReturnable<Boolean> cir) {
+    @Inject(at = @At("HEAD"), method = "hurtServer", cancellable = true)
+    public void vivecraft$checkCanGetHurt(ServerLevel serverLevel, DamageSource damageSource, float f, CallbackInfoReturnable<Boolean> cir) {
         Entity entity = damageSource.getEntity();
         ServerPlayer other = null;
 

@@ -27,7 +27,7 @@ public class TheEndGatewayRendererVRMixin {
                 false,
                 false,
                 RenderType.CompositeState.builder()
-                    .setShaderState(new RenderStateShard.ShaderStateShard(VRShaders::getRendertypeEndGatewayShaderVR))
+                    .setShaderState(new RenderStateShard.ShaderStateShard(VRShaders.rendertypeEndGatewayShaderVR))
                     .setTextureState(
                         RenderStateShard
                             .MultiTextureStateShard
