@@ -81,6 +81,7 @@ public abstract class AbstractArrowMixin extends Entity {
                         owner,
                         ParticleTypes.CRIT,
                         true, // always render the hit particles on the client
+                        true, // always render the hit particles on the client
                         hitpos.x,
                         hitpos.y,
                         hitpos.z,

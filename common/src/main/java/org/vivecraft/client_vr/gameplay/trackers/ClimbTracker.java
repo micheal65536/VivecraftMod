@@ -31,7 +31,7 @@ import org.vivecraft.common.network.CommonNetworkHelper;
 import java.util.*;
 
 public class ClimbTracker extends Tracker {
-    public static final ModelResourceLocation clawsModel = ModelResourceLocation.inventory(ResourceLocation.fromNamespaceAndPath("vivecraft", "climb_claws"));
+    public static final ResourceLocation clawsModel = ResourceLocation.fromNamespaceAndPath("vivecraft", "climb_claws");
     private final boolean[] latched = new boolean[2];
     private final boolean[] wasinblock = new boolean[2];
     private final boolean[] wasbutton = new boolean[2];

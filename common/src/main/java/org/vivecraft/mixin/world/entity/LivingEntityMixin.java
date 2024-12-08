@@ -54,7 +54,7 @@ public class LivingEntityMixin {
         return hmdPos.get() != null ? hmdPos.get().z : original.call(instance);
     }
 
-    @WrapOperation(method = "hasLineOfSight(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/level/ClipContext$Block;Lnet/minecraft/world/level/ClipContext$Fluid;Ljava/util/function/DoubleSupplier;)Z", at = @At(value = "NEW", target = "net/minecraft/world/phys/Vec3", ordinal = 0))
+    @WrapOperation(method = "hasLineOfSight(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/level/ClipContext$Block;Lnet/minecraft/world/level/ClipContext$Fluid;D)Z", at = @At(value = "NEW", target = "net/minecraft/world/phys/Vec3", ordinal = 0))
     private Vec3 vivecraft$modifyOwnHeadPos(double x, double y, double z, Operation<Vec3> original) {
         if ((Object) this instanceof ServerPlayer player) {
             ServerVivePlayer serverVivePlayer = ServerVRPlayers.getVivePlayer(player);
@@ -65,7 +65,7 @@ public class LivingEntityMixin {
         return original.call(x, y, z);
     }
 
-    @WrapOperation(method = "hasLineOfSight(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/level/ClipContext$Block;Lnet/minecraft/world/level/ClipContext$Fluid;Ljava/util/function/DoubleSupplier;)Z", at = @At(value = "NEW", target = "net/minecraft/world/phys/Vec3", ordinal = 1))
+    @WrapOperation(method = "hasLineOfSight(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/level/ClipContext$Block;Lnet/minecraft/world/level/ClipContext$Fluid;D)Z", at = @At(value = "NEW", target = "net/minecraft/world/phys/Vec3", ordinal = 1))
     private Vec3 vivecraft$modifyOtherHeadPos(
         double x, double y, double z, Operation<Vec3> original, @Local(argsOnly = true) Entity other) {
         if (other instanceof ServerPlayer player) {

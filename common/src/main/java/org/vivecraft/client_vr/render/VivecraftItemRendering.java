@@ -7,7 +7,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.item.ItemModelResolver;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -23,7 +24,9 @@ import org.vivecraft.client_vr.gameplay.trackers.TelescopeTracker;
 public class VivecraftItemRendering {
     private static final ClientDataHolderVR dh = ClientDataHolderVR.getInstance();
 
-    public static VivecraftItemTransformType getTransformType(ItemStack pStack, AbstractClientPlayer pPlayer, ItemRenderer itemRenderer) {
+    private static final ItemStackRenderState itemStackRenderState = new ItemStackRenderState();
+
+    public static VivecraftItemTransformType getTransformType(ItemStack pStack, AbstractClientPlayer pPlayer, ItemModelResolver itemModelResolver) {
         VivecraftItemTransformType rendertype = VivecraftItemTransformType.Item;
         Item item = pStack.getItem();
         Minecraft minecraft = Minecraft.getInstance();
@@ -35,9 +38,9 @@ public class VivecraftItemRendering {
                 if (block instanceof TorchBlock) {
                     rendertype = VivecraftItemTransformType.Block_Stick;
                 } else {
-                    BakedModel bakedmodel = itemRenderer.getModel(pStack, minecraft.level, minecraft.player, 0);
+                    itemModelResolver.updateForLiving(itemStackRenderState, pStack, ItemDisplayContext.GUI, false, pPlayer);
 
-                    if (bakedmodel.isGui3d()) {
+                    if (itemStackRenderState.isGui3d()) {
                         rendertype = VivecraftItemTransformType.Block_3D;
                     } else {
                         rendertype = VivecraftItemTransformType.Block_Item;

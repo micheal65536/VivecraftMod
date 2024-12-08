@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.BlockPos;
@@ -92,8 +93,9 @@ public class VRWidgetHelper {
         }
     }
 
-    public static void renderVRCameraWidget(float offsetX, float offsetY, float offsetZ, float scale, RenderPass renderPass, ModelResourceLocation model, ModelResourceLocation displayModel, Runnable displayBindFunc, Function<Direction, DisplayFace> displayFaceFunc) {
-        Minecraft minecraft = Minecraft.getInstance();
+    public static void renderVRCameraWidget(float offsetX, float offsetY, float offsetZ, float scale, RenderPass renderPass, ResourceLocation model, ResourceLocation displayModel, Runnable displayBindFunc, Function<Direction, DisplayFace> displayFaceFunc) {
+        // TODO 1.21.4 make models work
+        /*Minecraft minecraft = Minecraft.getInstance();
         ClientDataHolderVR dataholder = ClientDataHolderVR.getInstance();
         Matrix4fStack poseStack = RenderSystem.getModelViewStack();
         poseStack.pushMatrix();
@@ -120,7 +122,7 @@ public class VRWidgetHelper {
 
         RenderSystem.enableDepthTest();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
+        RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
         if (minecraft.level != null) {
             RenderSystem.setShader(CoreShaders.RENDERTYPE_ENTITY_CUTOUT_NO_CULL);
         } else {
@@ -194,7 +196,7 @@ public class VRWidgetHelper {
         BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
         minecraft.gameRenderer.lightTexture().turnOffLightLayer();
         RenderSystem.enableBlend();
-        poseStack.popMatrix();
+        poseStack.popMatrix();*/
     }
 
     public enum DisplayFace {

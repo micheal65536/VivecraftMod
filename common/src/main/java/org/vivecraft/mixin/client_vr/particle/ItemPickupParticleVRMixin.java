@@ -30,7 +30,7 @@ public class ItemPickupParticleVRMixin {
     @Unique
     private Vec3 vivecraft$playerPos;
 
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;lerp(DDD)D", ordinal = 0), method = "render")
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;lerp(DDD)D", ordinal = 0), method = "renderCustom")
     public double vivecraft$updateX(double d, double e, double f) {
         if (VRState.vrRunning && target == vivecraft$mc.player) {
             vivecraft$playerPos = RenderHelper.getControllerRenderPos(0);
@@ -40,7 +40,7 @@ public class ItemPickupParticleVRMixin {
         return Mth.lerp(d, e, f);
     }
 
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;lerp(DDD)D", ordinal = 1), method = "render")
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;lerp(DDD)D", ordinal = 1), method = "renderCustom")
     public double vivecraft$updateY(double d, double e, double f) {
         if (VRState.vrRunning && target == vivecraft$mc.player) {
             e = f = vivecraft$playerPos.y - itemEntity.getBbHeight();
@@ -49,7 +49,7 @@ public class ItemPickupParticleVRMixin {
         return Mth.lerp(d, e, f);
     }
 
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;lerp(DDD)D", ordinal = 2), method = "render")
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;lerp(DDD)D", ordinal = 2), method = "renderCustom")
     public double vivecraft$updateZ(double d, double e, double f) {
         if (VRState.vrRunning && target == vivecraft$mc.player) {
             e = f = vivecraft$playerPos.z;

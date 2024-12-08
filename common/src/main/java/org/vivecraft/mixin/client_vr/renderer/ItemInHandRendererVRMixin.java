@@ -9,7 +9,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -54,7 +54,7 @@ public abstract class ItemInHandRendererVRMixin implements ItemInHandRendererExt
     private EntityRenderDispatcher entityRenderDispatcher;
     @Final
     @Shadow
-    private ItemRenderer itemRenderer;
+    private ItemModelResolver itemModelResolver;
     @Shadow
     private float oMainHandHeight;
     @Shadow
@@ -114,7 +114,7 @@ public abstract class ItemInHandRendererVRMixin implements ItemInHandRendererExt
                 this.vivecraft$transformFirstPersonVR(pMatrixStack, humanoidarm, pSwingProgress);
             }
 
-            VivecraftItemRendering.VivecraftItemTransformType rendertype = VivecraftItemRendering.getTransformType(pStack, pPlayer, itemRenderer);
+            VivecraftItemRendering.VivecraftItemTransformType rendertype = VivecraftItemRendering.getTransformType(pStack, pPlayer, itemModelResolver);
 
             boolean useLeftHandModelinLeftHand = false;
 

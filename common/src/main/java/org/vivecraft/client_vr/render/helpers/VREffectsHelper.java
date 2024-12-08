@@ -439,6 +439,8 @@ public class VREffectsHelper {
                                             ? (long) (dataHolder.menuWorldRenderer.ticks * 10L + 10 * mc.getDeltaTracker().getGameTimeDeltaPartialTick(false))
                                             : (long) ((System.currentTimeMillis() + tzOffset - 21600000) / 86400000D * 24000D);
 
+        dataHolder.menuWorldRenderer.time = 1000;
+
         dataHolder.menuWorldRenderer.fogRenderer.setupFogColor();
         RenderSystem.clear(GL11C.GL_COLOR_BUFFER_BIT | GL11C.GL_DEPTH_BUFFER_BIT);
 

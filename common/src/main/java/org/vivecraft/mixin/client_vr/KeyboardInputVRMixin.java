@@ -43,7 +43,7 @@ public class KeyboardInputVRMixin extends ClientInput {
     }
 
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
-    public void vivecraft$tick(boolean isSneaking, float sneakSpeed, CallbackInfo ci) {
+    public void vivecraft$tick(CallbackInfo ci) {
         if (!VRState.vrRunning) {
             return;
         }
@@ -185,11 +185,6 @@ public class KeyboardInputVRMixin extends ClientInput {
         boolean flag2 = minecraft.screen == null && (dataholder.vrPlayer.getFreeMove() || dataholder.vrSettings.simulateFalling) && !climbing;
         jumping = this.options.keyJump.isDown() && flag2;
         shiftKeyDown = (dataholder.sneakTracker.sneakCounter > 0 || dataholder.sneakTracker.sneakOverride || this.options.keyShift.isDown()) && minecraft.screen == null;
-
-        if (isSneaking) {
-            this.leftImpulse = (float) ((double) this.leftImpulse * sneakSpeed);
-            this.forwardImpulse = (float) ((double) this.forwardImpulse * sneakSpeed);
-        }
 
         this.keyPresses = new Input(up, down, left, right, jumping, shiftKeyDown, sprint);
     }

@@ -109,7 +109,7 @@ public class TextScrollWidget extends AbstractWidget {
                 // update scroll position
                 setCurrentLineFromYPos(y);
             }
-        } else if (this.clicked(x, y)) {
+        } else if (this.isMouseOver(x, y)) {
             Style style = getMouseoverStyle(x, y);
             if (style != null && style.getClickEvent() != null) {
                 Minecraft.getInstance().screen.handleComponentClicked(style);
@@ -173,7 +173,7 @@ public class TextScrollWidget extends AbstractWidget {
     }
 
     private int getLineIndex(double x, double y) {
-        if (!this.clicked(x, y)) {
+        if (!this.isMouseOver(x, y)) {
             return -1;
         } else {
             return (int) ((y - this.getY() - padding * 0.5) / 12.0);

@@ -43,8 +43,8 @@ public class SettingsList extends ContainerObjectSelectionList<SettingsList.Base
     }
 
     @Override
-    protected int getScrollbarPosition() {
-        return super.getScrollbarPosition() + 8;
+    protected int scrollBarX() {
+        return super.scrollBarX() + 8;
     }
 
     @Override

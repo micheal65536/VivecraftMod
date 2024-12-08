@@ -138,7 +138,7 @@ public class VRPassHelper {
                 ItemStack itemstack = mc.player.getInventory().getArmor(3);
 
                 if (itemstack.getItem() == Blocks.CARVED_PUMPKIN.asItem()
-                    && (itemstack.getOrDefault(DataComponents.CUSTOM_MODEL_DATA, CustomModelData.DEFAULT).value() == 0)) {
+                    && (itemstack.getOrDefault(DataComponents.CUSTOM_MODEL_DATA, CustomModelData.EMPTY) != CustomModelData.EMPTY)) {
                     dataHolder.pumpkineffect = 1.0F;
                 } else {
                     dataHolder.pumpkineffect = 0.0F;

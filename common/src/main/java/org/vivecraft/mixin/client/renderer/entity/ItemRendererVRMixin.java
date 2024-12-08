@@ -1,39 +1,10 @@
 package org.vivecraft.mixin.client.renderer.entity;
 
 import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.ModelManager;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.vivecraft.client_vr.ClientDataHolderVR;
-import org.vivecraft.client_vr.VRState;
-import org.vivecraft.client_vr.gameplay.trackers.ClimbTracker;
-import org.vivecraft.client_vr.gameplay.trackers.TelescopeTracker;
-import org.vivecraft.client_vr.render.RenderPass;
 
 @Mixin(ItemRenderer.class)
 public class ItemRendererVRMixin {
-
-    @Shadow
-    @Final
-    private ModelManager modelManager;
-
-    @ModifyVariable(at = @At(value = "STORE"), method = "getModel")
-    public BakedModel vivecraft$modelOverride(BakedModel bakedModel, ItemStack itemStack) {
-        // TODO 1.21.3 maybe use item properties?
-        if (VRState.vrRunning && ClientDataHolderVR.getInstance().currentPass != RenderPass.GUI && itemStack.is(Items.SPYGLASS)) {
-            return this.modelManager.getModel(TelescopeTracker.scopeModel);
-        }
-        if (ClientDataHolderVR.getInstance().climbTracker.isClaws(itemStack)) {
-            return this.modelManager.getModel(ClimbTracker.clawsModel);
-        }
-        return bakedModel;
-    }
 
 // hand item fade
 // needs custom item renderer, since the regular one doesn't accept a non 1.0 alpha

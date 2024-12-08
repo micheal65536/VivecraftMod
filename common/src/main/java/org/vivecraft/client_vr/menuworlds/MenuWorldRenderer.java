@@ -691,7 +691,7 @@ public class MenuWorldRenderer {
                     float f7 = Mth.sin(f6);
                     float f8 = Mth.cos(f6);
                     bufferBuilder
-                        .addVertex(modelView, f7 * 120.0F, f8 * 120.0F, -f8 * 40.0F *ARGB.from8BitChannel(ARGB.alpha(sunriseColor)))
+                        .addVertex(modelView, f7 * 120.0F, f8 * 120.0F, -f8 * 40.0F * ARGB.alphaFloat(sunriseColor))
                         .setColor(ARGB.transparent(sunriseColor));
                 }
 
@@ -1438,10 +1438,10 @@ public class MenuWorldRenderer {
                 if (f5 > 0.0F && this.menuWorldRenderer.dimensionInfo.isSunriseOrSunset(this.menuWorldRenderer.getTimeOfDay())) {
                     int color = this.menuWorldRenderer.dimensionInfo.getSunriseOrSunsetColor(this.menuWorldRenderer.getTimeOfDay());
 
-                    f5 = f5 * ARGB.from8BitChannel(ARGB.alpha(color));
-                    fogRed = fogRed * (1.0f - f5) + ARGB.from8BitChannel(ARGB.red(color)) * f5;
-                    fogGreen = fogGreen * (1.0f - f5) + ARGB.from8BitChannel(ARGB.green(color)) * f5;
-                    fogBlue = fogBlue * (1.0f - f5) + ARGB.from8BitChannel(ARGB.blue(color)) * f5;
+                    f5 = f5 * ARGB.alphaFloat(color);
+                    fogRed = fogRed * (1.0f - f5) + ARGB.redFloat(color) * f5;
+                    fogGreen = fogGreen * (1.0f - f5) + ARGB.greenFloat(color) * f5;
+                    fogBlue = fogBlue * (1.0f - f5) + ARGB.blueFloat(color) * f5;
                 }
             }
 

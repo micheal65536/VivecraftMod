@@ -189,7 +189,7 @@ public class VRPlayerModel_WithArms extends VRPlayerModel {
             this.leftArm.yRot = 0.0F;
         }
 
-        if (getArmPose(playerRenderState, HumanoidArm.RIGHT) == ArmPose.THROW_SPEAR) {
+        if (playerRenderState.rightArmPose == ArmPose.THROW_SPEAR) {
             this.leftHand.xRot = (float) ((double) this.leftHand.xRot - (Math.PI / 2D));
         }
 
@@ -212,7 +212,7 @@ public class VRPlayerModel_WithArms extends VRPlayerModel {
             this.rightArm.yRot = 0.0F;
         }
 
-        if (this.getArmPose(playerRenderState, HumanoidArm.RIGHT) == ArmPose.THROW_SPEAR) {
+        if (playerRenderState.rightArmPose == ArmPose.THROW_SPEAR) {
             this.rightHand.xRot = (float) ((double) this.rightHand.xRot - (Math.PI / 2D));
         }
 

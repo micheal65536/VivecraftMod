@@ -235,16 +235,6 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
     public void vivecraft$initVROnLaunch(CallbackInfo ci) {
         // set initial resourcepacks
         vivecraft$resourcepacks = resourceManager.listPacks().map(PackResources::packId).toList();
-
-        if (OptifineHelper.isOptifineLoaded() && ClientDataHolderVR.getInstance().menuWorldRenderer != null && ClientDataHolderVR.getInstance().menuWorldRenderer.isReady()) {
-            // with optifine this texture somehow fails to load, so manually reload it
-            try {
-                textureManager.getTexture(Gui.CROSSHAIR_SPRITE).load(resourceManager);
-            } catch (IOException e) {
-                // if there was an error, just reload everything
-                reloadResourcePacks();
-            }
-        }
     }
 
     @Inject(at = @At("TAIL"), method = "onGameLoadFinished")

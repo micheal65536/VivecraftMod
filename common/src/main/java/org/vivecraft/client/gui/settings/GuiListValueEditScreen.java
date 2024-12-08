@@ -32,7 +32,7 @@ public class GuiListValueEditScreen extends GuiListScreen {
     @Override
     protected void init() {
         clearWidgets();
-        double scrollAmount = list != null ? list.getScrollAmount() : 0.0D;
+        double scrollAmount = list != null ? list.scrollAmount() : 0.0D;
 
         this.list = new SettingsList(this, minecraft, getEntries());
         list.setScrollAmount(scrollAmount);
