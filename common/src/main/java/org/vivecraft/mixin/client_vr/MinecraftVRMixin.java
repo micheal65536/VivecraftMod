@@ -378,8 +378,17 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
             instance.blitToScreen(width, height);
         } else {
             Profiler.get().popPush("vrMirror");
+            // use the vanilla main target as the mirror target
+            RenderPassManager.setVanillaRenderPass();
+            this.mainRenderTarget.clear();
+            this.mainRenderTarget.bindWrite(false);
+
             this.vivecraft$copyToMirror();
             this.vivecraft$drawNotifyMirror();
+
+            this.mainRenderTarget.unbindWrite();
+            this.mainRenderTarget.blitToScreen(this.mainRenderTarget.width, this.mainRenderTarget.height);
+            RenderPassManager.setGUIRenderPass();
             this.vivecraft$checkGLError("post-mirror ");
         }
     }

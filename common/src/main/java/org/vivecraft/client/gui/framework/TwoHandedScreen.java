@@ -10,6 +10,7 @@ import org.vivecraft.client_vr.extensions.GuiExtension;
 import org.vivecraft.client_vr.gameplay.screenhandlers.GuiHandler;
 import org.vivecraft.client_vr.provider.ControllerType;
 import org.vivecraft.client_vr.provider.MCVR;
+import org.vivecraft.client_vr.render.helpers.RenderHelper;
 
 public abstract class TwoHandedScreen extends Screen {
     protected ClientDataHolderVR dataholder = ClientDataHolderVR.getInstance();
@@ -76,7 +77,7 @@ public abstract class TwoHandedScreen extends Screen {
             this.lastHoveredButtonId2 = abstractwidget1;
         }
 
-        ((GuiExtension) this.minecraft.gui).vivecraft$drawMouseMenuQuad((int) d0, (int) d1);
-        ((GuiExtension) this.minecraft.gui).vivecraft$drawMouseMenuQuad((int) d2, (int) d3);
+        RenderHelper.drawMouseMenuQuad(guiGraphics, (int) d0, (int) d1);
+        RenderHelper.drawMouseMenuQuad(guiGraphics, (int) d2, (int) d3);
     }
 }

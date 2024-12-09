@@ -8,12 +8,10 @@ import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.CoreShaders;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.ShaderProgram;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceLocation;
@@ -260,6 +258,7 @@ public class RenderHelper {
             GlStateManager.DestFactor.ONE);
 
         screen.render(guiGraphics, 0, 0, timer.getRealtimeDeltaTicks());
+        guiGraphics.flush();
 
         RenderSystem.blendFuncSeparate(
             GlStateManager.SourceFactor.SRC_ALPHA,
@@ -273,6 +272,12 @@ public class RenderHelper {
         main.bindRead();
         ((RenderTargetExtension) main).vivecraft$genMipMaps();
         main.unbindRead();
+    }
+
+    public static void drawMouseMenuQuad(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        float size = 15.0F * Math.max(ClientDataHolderVR.getInstance().vrSettings.menuCrosshairScale, 1.0F / (float) mc.getWindow().getGuiScale());
+
+        guiGraphics.blitSprite(RenderType::crosshair, Gui.CROSSHAIR_SPRITE, (int) (mouseX - size * 0.5F + 1), (int) (mouseY - size * 0.5F + 1), (int) size, (int) size);
     }
 
 
