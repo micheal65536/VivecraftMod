@@ -41,6 +41,7 @@ import org.vivecraft.client_vr.render.RenderPass;
 import org.vivecraft.client_vr.render.ShaderHelper;
 import org.vivecraft.client_vr.render.VRShaders;
 import org.vivecraft.client_vr.settings.VRSettings;
+import org.vivecraft.client_xr.render_pass.RenderPassManager;
 import org.vivecraft.client_xr.render_pass.WorldRenderPass;
 import org.vivecraft.mod_compat_vr.ShadersHelper;
 import org.vivecraft.mod_compat_vr.resolutioncontrol.ResolutionControlHelper;
@@ -482,6 +483,12 @@ public abstract class VRRenderer {
             previousGraphics = Minecraft.getInstance().options.graphicsMode().get();
             this.reinitFrameBuffers("gfx setting change");
         }
+
+        if (this.resizeFrameBuffers || this.reinitFramebuffers) {
+            // resize mirror
+            RenderPassManager.INSTANCE.vanillaRenderTarget.resize(((WindowExtension) (Object) Minecraft.getInstance().getWindow()).vivecraft$getActualScreenWidth(), ((WindowExtension) (Object) Minecraft.getInstance().getWindow()).vivecraft$getActualScreenHeight());
+        }
+
 
         if (this.resizeFrameBuffers && !this.reinitFramebuffers) {
             resizeFrameBuffers = false;
