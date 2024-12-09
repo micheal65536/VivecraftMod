@@ -484,8 +484,10 @@ public abstract class VRRenderer {
             this.reinitFrameBuffers("gfx setting change");
         }
 
-        if (this.resizeFrameBuffers || this.reinitFramebuffers) {
-            // resize mirror
+        if ((this.resizeFrameBuffers || this.reinitFramebuffers) &&
+            ((WindowExtension) (Object) Minecraft.getInstance().getWindow()).vivecraft$getActualScreenWidth() != 0 &&
+            ((WindowExtension) (Object) Minecraft.getInstance().getWindow()).vivecraft$getActualScreenHeight() != 0) {
+            // resize vanilla target
             RenderPassManager.INSTANCE.vanillaRenderTarget.resize(((WindowExtension) (Object) Minecraft.getInstance().getWindow()).vivecraft$getActualScreenWidth(), ((WindowExtension) (Object) Minecraft.getInstance().getWindow()).vivecraft$getActualScreenHeight());
         }
 
