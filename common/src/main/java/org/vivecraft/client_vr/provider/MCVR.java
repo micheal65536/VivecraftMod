@@ -55,11 +55,13 @@ public abstract class MCVR {
 
     protected HardwareType detectedHardware = HardwareType.VIVE;
 
-    // position/orientation of headset and eye offsets
-    protected Matrix4f hmdPose = new Matrix4f();
-    public Matrix4f hmdRotation = new Matrix4f();
-    protected Matrix4f hmdPoseLeftEye = new Matrix4f();
-    protected Matrix4f hmdPoseRightEye = new Matrix4f();
+    // position/orientation of headset and eyes
+    protected final Matrix4f hmdPose = new Matrix4f();
+    protected final Matrix4f hmdRotation = new Matrix4f();
+    protected final Matrix4f hmdPoseLeftEye = new Matrix4f();
+    protected final Matrix4f hmdPoseRightEye = new Matrix4f();
+    protected final Matrix4f hmdRotationLeftEye = new Matrix4f();
+    protected final Matrix4f hmdRotationRightEye = new Matrix4f();
 
     public Vector3fHistory hmdHistory = new Vector3fHistory();
     public Vector3fHistory hmdPivotHistory = new Vector3fHistory();
@@ -285,11 +287,10 @@ public abstract class MCVR {
      * @return position of the given eye, in room space
      */
     public Vector3f getEyePosition(RenderPass eye) {
-        Matrix4f pose = new Matrix4f(this.hmdPose);
-        switch (eye) {
-            case LEFT -> pose.mul(this.hmdPoseLeftEye);
-            case RIGHT -> pose.mul(this.hmdPoseRightEye);
-            default -> {}
+        Matrix4fc pose =  switch (eye) {
+            case LEFT -> this.hmdPoseLeftEye;
+            case RIGHT -> this.hmdPoseRightEye;
+            default -> this.hmdPose;
         };
 
         Vector3f pos = pose.getTranslation(new Vector3f());
@@ -308,18 +309,11 @@ public abstract class MCVR {
      * @return rotation of the given eye, in room space
      */
     public Matrix4fc getEyeRotation(RenderPass eye) {
-        Matrix4f hmdToEye = switch (eye) {
-            case LEFT -> this.hmdPoseLeftEye;
-            case RIGHT -> this.hmdPoseRightEye;
-            default -> null;
+        return switch (eye) {
+            case LEFT -> this.hmdRotationLeftEye;
+            case RIGHT -> this.hmdRotationRightEye;
+            default -> this.hmdRotation;
         };
-
-        if (hmdToEye != null) {
-            Matrix4f eyeRot = new Matrix4f().set3x3(hmdToEye);
-            return this.hmdRotation.mul(eyeRot, eyeRot);
-        } else {
-            return this.hmdRotation;
-        }
     }
 
     /**
@@ -593,6 +587,9 @@ public abstract class MCVR {
         // hmd
         this.hmdRotation.identity();
         this.hmdRotation.set3x3(this.hmdPose);
+
+        this.hmdRotationLeftEye.set3x3(this.hmdPoseLeftEye);
+        this.hmdRotationRightEye.set3x3(this.hmdPoseRightEye);
 
         Vector3fc eye = this.getEyePosition(RenderPass.CENTER);
         this.hmdHistory.add(eye);

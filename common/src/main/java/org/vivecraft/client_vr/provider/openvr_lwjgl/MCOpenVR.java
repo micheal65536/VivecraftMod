@@ -1241,6 +1241,10 @@ public class MCOpenVR extends MCVR {
             this.hmdPose.m31(1.62F);
         }
 
+        // ret the complete room eye transforms
+        this.hmdPose.mul(this.hmdPoseLeftEye, this.hmdPoseLeftEye);
+        this.hmdPose.mul(this.hmdPoseRightEye, this.hmdPoseRightEye);
+
         // Gotta do this here so we can get the poses
         if (this.inputInitialized) {
             this.mc.getProfiler().push("updateActionState");

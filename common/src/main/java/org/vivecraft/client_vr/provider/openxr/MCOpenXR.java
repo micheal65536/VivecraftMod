@@ -217,7 +217,6 @@ public class MCOpenXR extends MCVR {
             logError(error, "xrLocateSpace", "xrViewSpace");
             if (error >= 0) {
                 OpenXRUtil.openXRPoseToMarix(space_location.pose(), this.hmdPose);
-                OpenXRUtil.openXRPoseToMarix(space_location.pose().orientation(), this.hmdRotation);
                 headIsTracking = true;
             } else {
                 headIsTracking = false;
@@ -297,30 +296,6 @@ public class MCOpenXR extends MCVR {
 
             this.updateAim();
         }
-    }
-
-    /**
-     * @param eye LEFT, RIGHT or CENTER eye
-     * @return position of the given eye, in room space
-     */
-    @Override
-    public Vector3f getEyePosition(RenderPass eye) {
-        Matrix4f pose = new Matrix4f(this.hmdPose);
-        switch (eye) {
-            case LEFT -> pose = this.hmdPoseLeftEye; //OpenXR includes total
-            case RIGHT -> pose = this.hmdPoseRightEye;
-            default -> {}
-        };
-
-        Vector3f pos = pose.getTranslation(new Vector3f());
-
-        if (this.dh.vrSettings.seated || this.dh.vrSettings.allowStandingOriginOffset) {
-            if (this.dh.vr.isHMDTracking()) {
-                pos = pos.add(this.dh.vrSettings.originOffset);
-            }
-        }
-
-        return pos;
     }
 
     public void readNewData(VRInputAction action) {
