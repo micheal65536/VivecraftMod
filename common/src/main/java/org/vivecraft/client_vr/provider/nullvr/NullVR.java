@@ -65,7 +65,10 @@ public class NullVR extends MCVR {
             this.hmdPose.m31(1.62F);
 
             // eye offset, 10cm total distance
+            this.hmdPoseLeftEye.set(this.hmdPose);
             this.hmdPoseLeftEye.m30(-IPD * 0.5F);
+
+            this.hmdPoseRightEye.set(this.hmdPose);
             this.hmdPoseRightEye.m30(IPD * 0.5F);
 
             this.populateInputActions();
