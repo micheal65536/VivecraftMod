@@ -484,6 +484,14 @@ public abstract class VRRenderer {
             this.reinitFrameBuffers("gfx setting change");
         }
 
+        if (minecraft.options.graphicsMode().get() == GraphicsStatus.FABULOUS &&
+            minecraft.getShaderManager().getProgram(VRShaders.vrTransparency) == null) {
+            minecraft.gui.getChat().addMessage(Component.translatable("vivecraft.messages.fabulousFailed"));
+            minecraft.options.graphicsMode().set(GraphicsStatus.FAST);
+            minecraft.levelRenderer.allChanged();
+            this.reinitFrameBuffers("fabulous missing");
+        }
+
         if ((this.resizeFrameBuffers || this.reinitFramebuffers) &&
             ((WindowExtension) (Object) Minecraft.getInstance().getWindow()).vivecraft$getActualScreenWidth() != 0 &&
             ((WindowExtension) (Object) Minecraft.getInstance().getWindow()).vivecraft$getActualScreenHeight() != 0) {

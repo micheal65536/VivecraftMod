@@ -57,6 +57,10 @@ public class VRShaders {
         ResourceLocation.fromNamespaceAndPath("vivecraft", "core/rendertype_end_gateway_vr"),
         DefaultVertexFormat.POSITION, ShaderDefines.EMPTY);
 
+    public static final ShaderProgram vrTransparency = new ShaderProgram(
+        ResourceLocation.fromNamespaceAndPath("vivecraft", "post/vrtransparency"),
+        DefaultVertexFormat.POSITION, ShaderDefines.EMPTY);
+
     private VRShaders() {
     }
 
