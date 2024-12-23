@@ -402,6 +402,22 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
         }
     }
 
+    @Inject(method = "setCameraEntity", at = @At("HEAD"))
+    private void vivecraft$rideEntity(Entity entity, CallbackInfo ci){
+        if (VRState.VR_INITIALIZED) {
+            if (entity != this.getCameraEntity()) {
+                // snap to entity, if it changed
+                ClientDataHolderVR.getInstance().vrPlayer.snapRoomOriginToPlayerEntity(entity, true, false);
+            }
+            if (entity != this.player) {
+                // ride the new camera entity
+                ClientDataHolderVR.getInstance().vehicleTracker.onStartRiding(entity);
+            } else {
+                ClientDataHolderVR.getInstance().vehicleTracker.onStopRiding();
+            }
+        }
+    }
+
     // the VR runtime handles the frame limit, no need to manually limit it 60fps
     @ModifyExpressionValue(method = "doWorldLoad", at = @At(value = "CONSTANT", args = "longValue=16"))
     private long vivecraft$noWaitOnLevelLoad(long original) {

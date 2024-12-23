@@ -182,7 +182,7 @@ public abstract class LevelRendererVRMixin implements ResourceManagerReloadListe
     {
         if (!RenderPassType.isVanilla() && entity == this.minecraft.getCameraEntity()) {
             capturedEntity.set(entity);
-            ((GameRendererExtension) this.minecraft.gameRenderer).vivecraft$restoreRVEPos((LivingEntity) capturedEntity.get());
+            ((GameRendererExtension) this.minecraft.gameRenderer).vivecraft$restoreRVEPos(capturedEntity.get());
         }
         this.vivecraft$renderedEntity = entity;
     }
@@ -193,7 +193,7 @@ public abstract class LevelRendererVRMixin implements ResourceManagerReloadListe
         @Share("capturedEntity") LocalRef<Entity> capturedEntity)
     {
         if (capturedEntity.get() != null) {
-            ((GameRendererExtension) this.minecraft.gameRenderer).vivecraft$cacheRVEPos((LivingEntity) capturedEntity.get());
+            ((GameRendererExtension) this.minecraft.gameRenderer).vivecraft$cacheRVEPos(capturedEntity.get());
             ((GameRendererExtension) this.minecraft.gameRenderer).vivecraft$setupRVE();
         }
         this.vivecraft$renderedEntity = null;

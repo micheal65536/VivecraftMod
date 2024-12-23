@@ -699,7 +699,7 @@ public class VREffectsHelper {
             return;
         }
         if (!MC.player.isAlive()) return;
-        if (MC.player.getVehicle() != null) return;
+        if (MC.player.isPassenger() || MC.player != MC.getCameraEntity()) return;
         // no indicator when swimming/crawling
         if (((PlayerExtension) MC.player).vivecraft$getRoomYOffsetFromPose() < 0.0D) return;
 
