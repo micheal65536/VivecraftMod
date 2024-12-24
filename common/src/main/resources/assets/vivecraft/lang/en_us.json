@@ -425,8 +425,9 @@
 
   "_comment_m": "mixin version exclusive strings",
   "vivecraft.options.screen.settings": "Vivecraft Settings",
-  "vivecraft.options.screen.server": "Vivecraft Server Settings",
+  "vivecraft.options.screen.server": "Server Settings",
   "vivecraft.options.screen.debug": "Debug Render Settings",
+  "vivecraft.options.screen.blocklist": "Server Blocklist",
   "_comment_m1": "Option screens",
   "vivecraft.options.screen.mixedreality": "Mixed Reality Settings",
   "vivecraft.options.screen.posteffects": "Postprocessing Settings",
@@ -542,6 +543,8 @@
   "vivecraft.messages.slowshader": "§a[Vivecraft]§r The selected shader uses features, that need the shadows to be processed for every render pass. §6This might be slow.§r",
   "vivecraft.messages.3options": "%s > %s > %s",
   "vivecraft.messages.openSettings": "Click to open settings",
+  "vivecraft.messages.blocklist.title": "Server is on the Vivecraft Server Blocklist",
+  "vivecraft.messages.blocklist": "The selected Server '%s' is on the Vivecraft Server Blocklist.\nContinuing to join will completely disable Vivecraft.",
   "vivecraft.message.kofi": "Support us on Ko-Fi",
   "vivecraft.message.overriddenbyserver": "§6Setting overridden by server.§r\n",
   "vivecraft.message.limitedbyserver": "§6Setting range limited by server (%s - %s)§r\n",
@@ -551,6 +554,7 @@
 
   "vivecraft.gui.update": "§aⓘ§r Update",
   "vivecraft.gui.vr": "VR: %s",
+  "vivecraft.gui.continueWithout": "Continue Without Vivecraft",
 
   "vivecraft.toasts.move1": "Move with %s",
   "vivecraft.toasts.move2": "Move with %s and %s",

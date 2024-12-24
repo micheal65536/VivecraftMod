@@ -181,6 +181,8 @@ public class VRSettings {
     public String[] vrRadialItems = getRadialItemsDefault();
     @SettingField(config = "RADIALALT", separate = true)
     public String[] vrRadialItemsAlt = getRadialItemsAltDefault();
+    @SettingField(fixedSize = false)
+    public String[] vrServerBlacklist = getServerBlacklistDefault();
 
     @SettingField(VrOptions.RADIAL_NUMBER)
     public int vrRadialButtons = 8;
@@ -2113,6 +2115,10 @@ public class VRSettings {
         }
 
         return out;
+    }
+
+    public String[] getServerBlacklistDefault() {
+        return new String[]{"mc.hypixel.net"};
     }
 
     public int[] getKeyboardCodesDefault() {
