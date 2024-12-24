@@ -138,10 +138,14 @@ public class VRState {
         if (disableVRSetting) {
             dh.vrSettings.vrEnabled = false;
             dh.vrSettings.saveOptions();
-        }
-        // fixes an issue with DH shaders where the depth texture gets stuck
-        if (Xplat.isModLoaded("distanthorizons") && disableVRSetting) {
-            ShadersHelper.maybeReloadShaders();
+
+            // fixes an issue with DH shaders where the depth texture gets stuck
+            if (Xplat.isModLoaded("distanthorizons")) {
+                ShadersHelper.maybeReloadShaders();
+            }
+
+            // this reloads any PostChain, at least in vanilla
+            Minecraft.getInstance().levelRenderer.onResourceManagerReload(Minecraft.getInstance().getResourceManager());
         }
     }
 }
