@@ -46,7 +46,6 @@ public class VehicleTracker extends Tracker {
     public void reset(LocalPlayer player) {
         this.minecartStupidityCounter = 2;
         this.isRiding = false;
-        super.reset(player);
     }
 
     public double getVehicleFloor(Entity vehicle, double original) {
