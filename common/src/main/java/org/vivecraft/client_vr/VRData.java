@@ -1,13 +1,18 @@
 package org.vivecraft.client_vr;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.joml.*;
+import org.vivecraft.client.ClientVRPlayers;
+import org.vivecraft.client.gui.screens.FBTCalibrationScreen;
+import org.vivecraft.common.network.FBTMode;
 import org.vivecraft.common.utils.MathUtils;
 import org.vivecraft.client_vr.provider.MCVR;
 import org.vivecraft.client_vr.render.RenderPass;
 import org.vivecraft.client_vr.settings.VRSettings;
 
+import javax.annotation.Nullable;
 import java.lang.Math;
 
 public class VRData {
@@ -36,6 +41,17 @@ public class VRData {
 
     // screenshot camera
     public VRDevicePose cam;
+
+    // fbt trackers
+    public VRDevicePose waist;
+    public VRDevicePose foot_left;
+    public VRDevicePose foot_right;
+    public VRDevicePose knee_left;
+    public VRDevicePose knee_right;
+    public VRDevicePose elbow_left;
+    public VRDevicePose elbow_right;
+
+    public FBTMode fbtMode = FBTMode.ARMS_ONLY;
 
     // room origin, all VRDevicePose are relative to that
     public Vec3 origin;
@@ -132,6 +148,44 @@ public class VRData {
                 pos.add(scaleOffset),
                 dir);
         }
+
+        // fbt
+        if (mcVR.hasFBT() && dataHolder.vrSettings.fbtCalibrated &&
+            !(Minecraft.getInstance().screen instanceof FBTCalibrationScreen))
+        {
+            this.fbtMode = FBTMode.ARMS_LEGS;
+            this.waist = new VRDevicePose(this,
+                mcVR.getAimRotation(MCVR.WAIST_TRACKER),
+                mcVR.getAimSource(MCVR.WAIST_TRACKER).add(scaleOffset, new Vector3f()),
+                mcVR.getAimVector(MCVR.WAIST_TRACKER));
+            this.foot_left = new VRDevicePose(this,
+                mcVR.getAimRotation(MCVR.LEFT_FOOT_TRACKER),
+                mcVR.getAimSource(MCVR.LEFT_FOOT_TRACKER).add(scaleOffset, new Vector3f()),
+                mcVR.getAimVector(MCVR.LEFT_FOOT_TRACKER));
+            this.foot_right = new VRDevicePose(this,
+                mcVR.getAimRotation(MCVR.RIGHT_FOOT_TRACKER),
+                mcVR.getAimSource(MCVR.RIGHT_FOOT_TRACKER).add(scaleOffset, new Vector3f()),
+                mcVR.getAimVector(MCVR.RIGHT_FOOT_TRACKER));
+            if (mcVR.hasExtendedFBT() && dataHolder.vrSettings.fbtExtendedCalibrated) {
+                this.fbtMode = FBTMode.WITH_JOINTS;
+                this.knee_left = new VRDevicePose(this,
+                    mcVR.getAimRotation(MCVR.LEFT_KNEE_TRACKER),
+                    mcVR.getAimSource(MCVR.LEFT_KNEE_TRACKER).add(scaleOffset, new Vector3f()),
+                    mcVR.getAimVector(MCVR.LEFT_KNEE_TRACKER));
+                this.knee_right = new VRDevicePose(this,
+                    mcVR.getAimRotation(MCVR.RIGHT_KNEE_TRACKER),
+                    mcVR.getAimSource(MCVR.RIGHT_KNEE_TRACKER).add(scaleOffset, new Vector3f()),
+                    mcVR.getAimVector(MCVR.RIGHT_KNEE_TRACKER));
+                this.elbow_left = new VRDevicePose(this,
+                    mcVR.getAimRotation(MCVR.LEFT_ELBOW_TRACKER),
+                    mcVR.getAimSource(MCVR.LEFT_ELBOW_TRACKER).add(scaleOffset, new Vector3f()),
+                    mcVR.getAimVector(MCVR.LEFT_ELBOW_TRACKER));
+                this.elbow_right = new VRDevicePose(this,
+                    mcVR.getAimRotation(MCVR.RIGHT_ELBOW_TRACKER),
+                    mcVR.getAimSource(MCVR.RIGHT_ELBOW_TRACKER).add(scaleOffset, new Vector3f()),
+                    mcVR.getAimVector(MCVR.RIGHT_ELBOW_TRACKER));
+            }
+        }
     }
 
     /**
@@ -159,11 +213,32 @@ public class VRData {
     }
 
     /**
-     * @param c controller index
-     * @return the hand device pose for the specified controller
+     * @param c device index
+     * @return the hand device pose for the specified device, if the specified device doesn't have a hand post the regular pose is returned
      */
+    @Nullable
     public VRDevicePose getHand(int c) {
-        return c == 0 ? this.h0 : this.h1;
+        return c > 1 ? getDevice(c) : c == 0 ? this.h0 : this.h1;
+    }
+
+    /**
+     * @param d tracked device index
+     * @return the device pose for the specified device, if the device is not available {@code null} is returned
+     */
+    @Nullable
+    public VRDevicePose getDevice(int d) {
+        return switch (d) {
+            case MCVR.OFFHAND_CONTROLLER ->  this.c1;
+            case MCVR.CAMERA_TRACKER -> this.c2;
+            case MCVR.WAIST_TRACKER ->  this.waist;
+            case MCVR.LEFT_FOOT_TRACKER ->  this.foot_left;
+            case MCVR.RIGHT_FOOT_TRACKER ->  this.foot_right;
+            case MCVR.LEFT_KNEE_TRACKER ->  this.knee_left;
+            case MCVR.RIGHT_KNEE_TRACKER ->  this.knee_right;
+            case MCVR.LEFT_ELBOW_TRACKER ->  this.elbow_left;
+            case MCVR.RIGHT_ELBOW_TRACKER ->  this.elbow_right;
+            default ->  this.c0;
+        };
     }
 
     /**
@@ -174,24 +249,31 @@ public class VRData {
     }
 
     /**
+     * IMPORTANT!!! when changing this, also change {@link ClientVRPlayers.RotInfo#getBodyYawRad()}
      * @return the yaw direction the player body is facing, in radians
      */
     public float getBodyYawRad() {
         if (ClientDataHolderVR.getInstance().vrSettings.seated) {
-            // body is equal to the headset
+            // in seated use the head direction
             return this.hmd.getYawRad();
+        } else if (this.fbtMode != FBTMode.ARMS_ONLY) {
+            // use average of head and waist
+            Vector3f dir = this.waist.getDirection().lerp(this.hmd.getDirection(), 0.5F);
+            return (float) Math.atan2(-dir.x, dir.z);
         } else {
-            // body is average of arms and headset direction
-            Vector3f arms = MathUtils.subtractToVector3f(this.c1.getPosition(), this.c0.getPosition())
-                .normalize().rotateY(-Mth.HALF_PI);
-            Vector3f head = this.hmd.getDirection();
-
-            if (arms.dot(head) < 0.0D) {
-                arms = arms.mul(-1.0F);
+            if (!ClientDataHolderVR.getInstance().vr.isControllerTracking(0) ||
+                !ClientDataHolderVR.getInstance().vr.isControllerTracking(1))
+            {
+                return this.hmd.getYawRad();
             }
 
-            arms = head.lerp(arms, 0.7F);
-            return (float) Math.atan2(-arms.x, arms.z);
+            Vec3 headPos = this.hmd.getPosition();
+
+            Vector3f c1Pos = this.c1.getPosition().subtract(headPos).toVector3f();
+            Vector3f c0Pos = this.c0.getPosition().subtract(headPos).toVector3f();
+            Vector3f head = this.hmd.getDirection();
+
+            return MathUtils.bodyYawRad(c0Pos, c1Pos, head);
         }
     }
 

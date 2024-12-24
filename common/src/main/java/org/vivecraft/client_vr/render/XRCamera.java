@@ -3,6 +3,7 @@ package org.vivecraft.client_vr.render;
 import net.minecraft.client.Camera;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.material.FogType;
 import org.joml.Vector3f;
@@ -10,7 +11,6 @@ import org.vivecraft.common.utils.MathUtils;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.VRData;
 import org.vivecraft.client_vr.render.helpers.RenderHelper;
-import org.vivecraft.client_vr.settings.VRSettings;
 import org.vivecraft.client_xr.render_pass.RenderPassType;
 
 /**
@@ -75,11 +75,12 @@ public class XRCamera extends Camera {
         if (RenderPassType.isVanilla()) {
             return super.isDetached();
         }
-        boolean renderSelf = ClientDataHolderVR.getInstance().currentPass == RenderPass.CAMERA ||
-            (ClientDataHolderVR.getInstance().currentPass == RenderPass.THIRD &&
-                ClientDataHolderVR.getInstance().vrSettings.displayMirrorMode == VRSettings.MirrorMode.THIRD_PERSON
-            );
-        return renderSelf || ClientDataHolderVR.getInstance().vrSettings.shouldRenderSelf;
+        boolean renderSelf = RenderPass.renderPlayer(ClientDataHolderVR.getInstance().currentPass);
+        // don't render the player in first person when sleeping
+        renderSelf &= !(RenderPass.isFirstPerson(ClientDataHolderVR.getInstance().currentPass) &&
+            getEntity() instanceof LivingEntity && ((LivingEntity) getEntity()).isSleeping()
+        );
+        return renderSelf;
     }
 
     /**

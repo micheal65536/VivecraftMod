@@ -19,8 +19,11 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
+import org.lwjgl.glfw.GLFW;
 import org.vivecraft.client.VivecraftVRMod;
 import org.vivecraft.client.Xplat;
+import org.vivecraft.client.network.ClientNetworking;
+import org.vivecraft.client_vr.MethodHolder;
 import org.vivecraft.common.utils.MathUtils;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.VRData;
@@ -152,7 +155,7 @@ public class InteractTracker extends Tracker {
 
             // roomscale Bow shooting, only activate for the hand with the arrow
             if (!this.active[c] && this.dh.bowTracker.isNotched() &&
-                c == (this.dh.vrSettings.reverseShootingEye ? 1 : 0))
+                c == ((this.dh.vrSettings.reverseShootingEye && ClientNetworking.supportsReversedBow()) ? 1 : 0))
             {
                 this.inBow[c] = true;
                 this.active[c] = true;
@@ -277,7 +280,7 @@ public class InteractTracker extends Tracker {
 
     public void processBindings() {
         for (int c = 0; c < 2; c++) {
-            if (VivecraftVRMod.INSTANCE.keyVRInteract.consumeClick(ControllerType.values()[c]) && this.active[c]) {
+            if (MethodHolder.isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL) || VivecraftVRMod.INSTANCE.keyVRInteract.consumeClick(ControllerType.values()[c]) && this.active[c]) {
                 InteractionHand hand = InteractionHand.values()[c];
                 boolean success = false;
 

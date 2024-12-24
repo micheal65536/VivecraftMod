@@ -19,6 +19,8 @@ import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vivecraft.client.Xplat;
+import org.vivecraft.client.render.VRPlayerRenderer;
+import org.vivecraft.client.render.armor.VRArmorLayer;
 import org.vivecraft.client.utils.LangHelper;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.VRState;
@@ -163,6 +165,18 @@ public class VRSettings {
         ON
     }
 
+    public enum PlayerModelType implements OptionEnum<PlayerModelType> {
+        VANILLA,
+        SPLIT_ARMS,
+        SPLIT_ARMS_LEGS
+    }
+
+    public enum ModelArmsMode implements OptionEnum<ModelArmsMode> {
+        OFF,
+        SHOULDERS,
+        COMPLETE
+    }
+
     @SettingField
     public int version = UNKNOWN_VERSION;
 
@@ -192,7 +206,7 @@ public class VRSettings {
     //Control
     @SettingField(VrOptions.REVERSE_HANDS)
     public boolean reverseHands = false;
-    //@SettingField(VrOptions.REVERSE_BOW)
+    @SettingField(VrOptions.REVERSE_BOW)
     public boolean reverseShootingEye = false;
     @SettingField(value = VrOptions.WORLD_SCALE)
     public float worldScale = 1.0f;
@@ -213,6 +227,18 @@ public class VRSettings {
     public float autoCalibration = -1;
     @SettingField
     public float manualCalibration = -1;
+    @SettingField
+    public boolean fbtCalibrated = false;
+    @SettingField
+    public boolean fbtExtendedCalibrated = false;
+    @SettingField
+    public boolean unlabeledTrackersUsed = false;
+    @SettingField(VrOptions.OSC_TRACKER_PORT)
+    public int oscTrackerPort = 9000;
+    @SettingField(config = "FBTOFFSETS")
+    public Vector3f[] fbtOffsets = getFbtOffsetDefault();
+    @SettingField(config = "FBTROTATIONS")
+    public Quaternionf[] fbtRotations = getFbtRotationsDefault();
     @SettingField
     public boolean alwaysSimulateKeyboard = false;
     @SettingField(VrOptions.BOW_MODE)
@@ -242,6 +268,8 @@ public class VRSettings {
     public boolean simulateFalling = true;  // VIVE if HMD is over empty space, fall
     @SettingField(value = VrOptions.WEAPON_COLLISION, config = "weaponCollisionNew")
     public WeaponCollision weaponCollision = WeaponCollision.AUTO;  // VIVE weapon hand collides with blocks/enemies
+    @SettingField(value = VrOptions.FEET_COLLISION, config = "weaponCollisionNew")
+    public boolean feetCollision = true;  // VIVE weapon feet collides with blocks/enemies
     @SettingField(VrOptions.SWORD_BLOCK_COLLISION)
     public boolean swordBlockCollision = true;
     @SettingField(VrOptions.MOVEMENT_MULTIPLIER)
@@ -286,6 +314,8 @@ public class VRSettings {
     public boolean realisticBlockInteractEnabled = true;
     @SettingField(VrOptions.REALISTIC_ENTITY_INTERACT)
     public boolean realisticEntityInteractEnabled = true;
+    @SettingField(VrOptions.REALISTIC_OPENING)
+    public boolean doorHitting = true;
     @SettingField(VrOptions.BACKPACK_SWITCH)
     public boolean backpackSwitching = true;
     @SettingField(VrOptions.PHYSICAL_GUI)
@@ -351,17 +381,40 @@ public class VRSettings {
     public float displayMirrorCenterSmooth = 0.0F;
     @SettingField(VrOptions.MIRROR_SCREENSHOT_CAMERA)
     public boolean displayMirrorUseScreenshotCamera = false;
+    @SettingField(VrOptions.SHOW_PLAYER_MODEL)
     public boolean shouldRenderSelf = false;
+    @SettingField(VrOptions.PLAYER_MODEL_TYPE)
+    public PlayerModelType playerModelType = PlayerModelType.VANILLA;
+    @SettingField(VrOptions.SHOW_PLAYER_MODEL_ARMS)
+    public ModelArmsMode modelArmsMode = ModelArmsMode.COMPLETE;
+    @SettingField(VrOptions.PLAYER_LIMBS_CONNECTED)
+    public boolean playerLimbsConnected = true;
+    @SettingField(VrOptions.PLAYER_LIMBS_LIMIT)
+    public boolean playerLimbsLimit = false;
+    @SettingField(VrOptions.PLAYER_WALK_ANIM)
+    public boolean playerWalkAnim = true;
+    @SettingField(VrOptions.PLAYER_ARM_ANIM)
+    public boolean playerArmAnim = true;
+    @SettingField(VrOptions.PLAYER_MODEL_ARMS_SCALE)
+    public float playerModelArmsScale = 0.5F;
+    @SettingField(VrOptions.PLAYER_MODEL_BODY_SCALE)
+    public float playerModelBodyScale = 1.0F;
+    @SettingField(VrOptions.PLAYER_MODEL_LEGS_SCALE)
+    public float playerModelLegScale = 1.0F;
     @SettingField(VrOptions.MENU_WORLD_SELECTION)
     public MenuWorld menuWorldSelection = MenuWorld.BOTH;
     @SettingField(VrOptions.MENU_WORLD_FALLBACK)
     public boolean menuWorldFallbackPanorama = true;
+
+    // debug render settings
     @SettingField(VrOptions.RENDER_DEBUG_HEAD_HITBOX)
     public boolean renderHeadHitbox = false;
     @SettingField(VrOptions.RENDER_DEBUG_DEVICE_AXES)
     public boolean renderDeviceAxes = false;
     @SettingField(VrOptions.RENDER_DEBUG_PLAYER_AXES)
     public boolean renderVrPlayerAxes = false;
+    @SettingField(VrOptions.RENDER_DEBUG_TRACKERS)
+    public boolean renderTrackerPositions = false;
 
     //
 
@@ -459,6 +512,8 @@ public class VRSettings {
     public boolean guiAppearOverBlock = true;
     @SettingField(VrOptions.SHADER_GUI_RENDER)
     public ShaderGUIRender shaderGUIRender = ShaderGUIRender.AFTER_SHADER;
+    @SettingField(VrOptions.SHADER_SHADOW_MODEL_LIMB_SCALE)
+    public boolean shaderFullSizeShadowLimbs = true;
     @SettingField(VrOptions.SHADER_SLOW)
     public boolean disableShaderOptimization = false;
     @SettingField(VrOptions.SHADER_PATCHING)
@@ -549,6 +604,13 @@ public class VRSettings {
 
         // Load settings from the file
         this.loadOptions();
+
+        // reset fbt if general trackers were used last time
+        if (this.unlabeledTrackersUsed) {
+            this.unlabeledTrackersUsed = false;
+            this.fbtCalibrated = false;
+            this.fbtExtendedCalibrated = false;
+        }
 
         // load external camera config
         VRHotkeys.loadExternalCameraConfig(this);
@@ -1206,6 +1268,7 @@ public class VRSettings {
         RENDER_DEBUG_HEAD_HITBOX(false, true), // renders entities head hit boxes
         RENDER_DEBUG_DEVICE_AXES(false, true), // renders axes for the local devices
         RENDER_DEBUG_PLAYER_AXES(false, true), // renders axes for all client vr players
+        RENDER_DEBUG_TRACKERS(false, true), // renders a cube at the tracker position
         VR_PLUGIN(false, true), // vr plugin to use
         VR_ENABLED(false, true) { // vr or nonvr
 
@@ -1362,6 +1425,7 @@ public class VRSettings {
         KEYBOARD_PRESS_BINDS(false, true), // Keyboard Presses Bindings
         GUI_APPEAR_OVER_BLOCK(false, true), // Appear Over Block
         SHADER_GUI_RENDER(false, false), // Shaders GUI
+        SHADER_SHADOW_MODEL_LIMB_SCALE(false, false), // Shaders if player shadows should use full size limbs or first person size
         SHADER_SLOW(false, true, "options.off", "vivecraft.options.disableshaderoptimization.auto"), // disables shader optimizations
         SHADER_PATCHING(false, true), // automatic shader patching for known incompatibilites
         DOUBLE_GUI_RESOLUTION(false, true), // 1440p GUI
@@ -1541,6 +1605,7 @@ public class VRSettings {
                 }
             }
         },
+        FEET_COLLISION(false, true),
         SWORD_BLOCK_COLLISION(false, true), // lets swords hit blocks that can be mined or instabroken
         // VIVE END - new options
         //JRBUDDA VIVE
@@ -1800,6 +1865,7 @@ public class VRSettings {
         REALISTIC_DISMOUNT(false, true), // Roomscale Dismounting
         REALISTIC_BLOCK_INTERACT(false, true), // Roomscale Block Interaction
         REALISTIC_ENTITY_INTERACT(false, true), // Roomscale Entity Interaction
+        REALISTIC_OPENING(false, true), // open doors by hitting them
         WALK_MULTIPLIER(true, false, 1f, 10f, 0.1f, 1), // Walking Multiplier
         FREEMOVE_MODE(false, true) { // Free Move Type
 
@@ -1863,6 +1929,32 @@ public class VRSettings {
         AUTO_SPRINT_THRESHOLD(true, false, 0.5f, 1f, 0.01f, 2), // Auto-sprint Threshold
         THIRDPERSON_ITEMTRANSFORMS(false, true), // 3rd person items
         THIRDPERSON_ITEMTRANSFORMS_CUSTOM(false, true), // 3rd person items, for items with custom model data
+        SHOW_PLAYER_MODEL(false, true), // show the player model in first person
+        SHOW_PLAYER_MODEL_ARMS(false, true), // player model arms, or regular arms
+        PLAYER_MODEL_ARMS_SCALE(true, false, 0.1f, 1f, 0.05f, -1), // scales the width of the first person arms
+        PLAYER_MODEL_BODY_SCALE(true, false, 0.1f, 1f, 0.05f, -1), // scales the width of the first person body
+        PLAYER_MODEL_LEGS_SCALE(true, false, 0.1f, 1f, 0.05f, -1), // scales the width of the first person legs
+        PLAYER_MODEL_TYPE(false, true), // determines how VR player are rendered
+        PLAYER_LIMBS_CONNECTED(false, true) { // extends the model arms to connect
+            @Override
+            public void onOptionChange() {
+                VRPlayerRenderer.createLayers();
+                VRArmorLayer.createLayers();
+                Minecraft.getInstance().reloadResourcePacks();
+            }
+        },
+        PLAYER_LIMBS_LIMIT(false, true), // doesn't split connected limbs when over length
+        PLAYER_WALK_ANIM(false, true), // if the walk animation should show on top of fbt
+        PLAYER_ARM_ANIM(false, true), // if the player arm should swing with attacks, item using
+        OSC_TRACKER_PORT(true, true, 0, 65535, 1, 0) { // port to receive ocs data
+            @Override
+            public void onOptionChange() {
+                if (VRState.VR_INITIALIZED) {
+                    ClientDataHolderVR.getInstance().vr.oscTrackers.changePort(
+                        ClientDataHolderVR.getInstance().vrSettings.oscTrackerPort);
+                }
+            }
+        },
         BOW_MODE(false, true) { // Roomscale Bow Mode
 
             @Override
@@ -2178,6 +2270,22 @@ public class VRSettings {
             GLFW.GLFW_KEY_UNKNOWN // greater than
         };
 
+        return out;
+    }
+
+    public Vector3f[] getFbtOffsetDefault() {
+        Vector3f[] out = new Vector3f[7];
+        for (int i = 0; i < 7; i++) {
+            out[i] = new Vector3f();
+        }
+        return out;
+    }
+
+    public Quaternionf[] getFbtRotationsDefault() {
+        Quaternionf[] out = new Quaternionf[7];
+        for (int i = 0; i < 7; i++) {
+            out[i] = new Quaternionf();
+        }
         return out;
     }
 

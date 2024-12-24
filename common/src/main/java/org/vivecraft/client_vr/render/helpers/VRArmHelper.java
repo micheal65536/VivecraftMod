@@ -50,26 +50,29 @@ public class VRArmHelper {
     /**
      * renders the VR hands
      * @param partialTick current partial tick
-     * @param renderRight if the right hand should be rendered
-     * @param renderLeft if the left hand should be rendered
-     * @param menuHandRight if the right hand should render as the menu hand
-     * @param menuHandLeft if the left hand should render as the menu hand
+     * @param renderMain if the main hand should be rendered
+     * @param renderOff if the offhand should be rendered
+     * @param menuHandMain if the right hand should render as the menu hand
+     * @param menuHandOff if the left hand should render as the menu hand
      * @param poseStack PoseStack to use for positioning
      */
-    public static void renderVRHands(float partialTick, boolean renderRight, boolean renderLeft, boolean menuHandRight,
-        boolean menuHandLeft, PoseStack poseStack) {
+    public static void renderVRHands(
+        float partialTick, boolean renderMain, boolean renderOff, boolean menuHandMain, boolean menuHandOff,
+        PoseStack poseStack)
+    {
         MC.getProfiler().push("hands");
+        ClientDataHolderVR.IS_FP_HAND = true;
 
         // backup projection matrix, not doing that breaks sodium water on 1.19.3
         RenderSystem.backupProjectionMatrix();
 
-        if (renderRight) {
+        if (renderMain) {
             // set main hand active, for the attack cooldown transparency
             ClientDataHolderVR.IS_MAIN_HAND = true;
 
             ((GameRendererExtension) MC.gameRenderer).vivecraft$resetProjectionMatrix(partialTick);
 
-            if (menuHandRight) {
+            if (menuHandMain) {
                 renderMainMenuHand(0, false, poseStack);
             } else {
                 PoseStack newPoseStack = new PoseStack();
@@ -81,9 +84,9 @@ public class VRArmHelper {
             ClientDataHolderVR.IS_MAIN_HAND = false;
         }
 
-        if (renderLeft) {
+        if (renderOff) {
             ((GameRendererExtension) MC.gameRenderer).vivecraft$resetProjectionMatrix(partialTick);
-            if (menuHandLeft) {
+            if (menuHandOff) {
                 renderMainMenuHand(1, false, poseStack);
             } else {
                 PoseStack newPoseStack = new PoseStack();
@@ -94,6 +97,7 @@ public class VRArmHelper {
         }
 
         RenderSystem.restoreProjectionMatrix();
+        ClientDataHolderVR.IS_FP_HAND = false;
         MC.getProfiler().pop();
     }
 
@@ -151,7 +155,7 @@ public class VRArmHelper {
         Tesselator tesselator = Tesselator.getInstance();
         tesselator.getBuilder().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_NORMAL);
 
-        RenderHelper.renderBox(tesselator, start, end, -0.02F, 0.02F, -0.0125F, 0.0125F, color, alpha, poseStack);
+        RenderHelper.renderBox(tesselator.getBuilder(), start, end, -0.02F, 0.02F, -0.0125F, 0.0125F, color, alpha, poseStack);
 
         BufferUploader.drawWithShader(tesselator.getBuilder().end());
 
@@ -166,6 +170,14 @@ public class VRArmHelper {
      * @param partialTick current partial tick
      */
     public static void renderVRHand_Main(PoseStack poseStack, float partialTick) {
+        // don't render claws with model arms
+        if (DATA_HOLDER.climbTracker.isClimbeyClimb() &&
+            ClientDataHolderVR.getInstance().vrSettings.shouldRenderSelf &&
+            ClientDataHolderVR.getInstance().vrSettings.modelArmsMode == VRSettings.ModelArmsMode.COMPLETE)
+        {
+            return;
+        }
+
         poseStack.pushPose();
         RenderHelper.setupRenderingAtController(0, poseStack);
         ItemStack item = MC.player.getMainHandItem();
@@ -215,47 +227,53 @@ public class VRArmHelper {
      * @param renderTeleport if the teleport arc should be rendered
      */
     public static void renderVRHand_Offhand(PoseStack poseStack, float partialTick, boolean renderTeleport) {
-        poseStack.pushPose();
-        RenderHelper.setupRenderingAtController(1, poseStack);
-        ItemStack item = MC.player.getOffhandItem();
-        ItemStack override = null; // physicalGuiManager.getOffhandOverride();
+        // don't render claws with model arms
+        if (!ClientDataHolderVR.getInstance().vrSettings.shouldRenderSelf ||
+            ClientDataHolderVR.getInstance().vrSettings.modelArmsMode != VRSettings.ModelArmsMode.COMPLETE ||
+            !DATA_HOLDER.climbTracker.isClimbeyClimb())
+        {
+            poseStack.pushPose();
+            RenderHelper.setupRenderingAtController(1, poseStack);
+            ItemStack item = MC.player.getOffhandItem();
+            ItemStack override = null; // physicalGuiManager.getOffhandOverride();
 
-        if (override != null) {
-            item = override;
+            if (override != null) {
+                item = override;
+            }
+
+            // climbey override
+            if (DATA_HOLDER.climbTracker.isClimbeyClimb() && !ClimbTracker.isClaws(item) && override == null) {
+                item = MC.player.getMainHandItem();
+            }
+
+            // Roomscale bow override
+            item = getBowOverride(item, InteractionHand.OFF_HAND);
+
+            if (OptifineHelper.isOptifineLoaded() && OptifineHelper.isShaderActive()) {
+                // if we don't do this shaders render the hands wrong
+                OptifineHelper.beginEntities();
+            }
+
+            MC.gameRenderer.lightTexture().turnOnLightLayer();
+
+            MultiBufferSource.BufferSource bufferSource = MC.renderBuffers().bufferSource();
+            MC.gameRenderer.itemInHandRenderer.renderArmWithItem(MC.player, partialTick,
+                0.0F, InteractionHand.OFF_HAND, MC.player.getAttackAnim(partialTick), item, 0.0F,
+                poseStack, bufferSource,
+                MC.getEntityRenderDispatcher().getPackedLightCoords(MC.player, partialTick));
+
+            bufferSource.endBatch();
+
+            MC.gameRenderer.lightTexture().turnOffLightLayer();
+
+            if (OptifineHelper.isOptifineLoaded() && OptifineHelper.isShaderActive()) {
+                // undo the thing we did before
+                OptifineHelper.endEntities();
+            }
+
+            // back to hmd rendering
+            poseStack.popPose();
         }
-
-        // climbey override
-        if (DATA_HOLDER.climbTracker.isClimbeyClimb() && !ClimbTracker.isClaws(item) && override == null) {
-            item = MC.player.getMainHandItem();
-        }
-
-        // Roomscale bow override
-        item = getBowOverride(item, InteractionHand.OFF_HAND);
-
-        if (OptifineHelper.isOptifineLoaded() && OptifineHelper.isShaderActive()) {
-            // if we don't do this shaders render the hands wrong
-            OptifineHelper.beginEntities();
-        }
-
-        MC.gameRenderer.lightTexture().turnOnLightLayer();
-
-        MultiBufferSource.BufferSource bufferSource = MC.renderBuffers().bufferSource();
-        MC.gameRenderer.itemInHandRenderer.renderArmWithItem(MC.player, partialTick,
-            0.0F, InteractionHand.OFF_HAND, MC.player.getAttackAnim(partialTick), item, 0.0F,
-            poseStack, bufferSource,
-            MC.getEntityRenderDispatcher().getPackedLightCoords(MC.player, partialTick));
-
-        bufferSource.endBatch();
-
-        MC.gameRenderer.lightTexture().turnOffLightLayer();
-
-        if (OptifineHelper.isOptifineLoaded() && OptifineHelper.isShaderActive()) {
-            // undo the thing we did before
-            OptifineHelper.endEntities();
-        }
-
-        // back to hmd rendering
-        poseStack.popPose();
 
         // teleport arc
         if (renderTeleport) {
@@ -330,7 +348,7 @@ public class VRArmHelper {
      * @return the overridden item, based on bow state
      */
     private static ItemStack getBowOverride(ItemStack itemStack, InteractionHand interactionHand) {
-        if (DATA_HOLDER.vrSettings.reverseShootingEye) {
+        if (DATA_HOLDER.vrSettings.reverseShootingEye && ClientNetworking.supportsReversedBow()) {
             // reverse bow hands
             interactionHand = interactionHand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
         }
@@ -433,7 +451,7 @@ public class VRArmHelper {
                     .subtract(cameraPosition);
 
                 float shift = (float) progress * 2.0F;
-                RenderHelper.renderBox(tesselator, start, end, -segmentHalfWidth, segmentHalfWidth, (-1.0F + shift) * segmentHalfWidth, (1.0F + shift) * segmentHalfWidth, color, alpha, poseStack);
+                RenderHelper.renderBox(tesselator.getBuilder(), start, end, -segmentHalfWidth, segmentHalfWidth, (-1.0F + shift) * segmentHalfWidth, (1.0F + shift) * segmentHalfWidth, color, alpha, poseStack);
             }
 
             tesselator.end();

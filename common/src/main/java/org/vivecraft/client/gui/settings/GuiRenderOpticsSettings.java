@@ -82,6 +82,8 @@ public class GuiRenderOpticsSettings extends GuiVROptionsBase {
 
         super.init(buttons, true);
 
+        super.init(this.postAndShader, false);
+
         switch(this.dataHolder.vrSettings.displayMirrorMode) {
             case MIXED_REALITY -> super.init(this.MROptions, false);
             case FIRST_PERSON -> super.init(UNDISTORTED_OPTIONS, false);
@@ -89,8 +91,6 @@ public class GuiRenderOpticsSettings extends GuiVROptionsBase {
             case CROPPED -> super.init(CROP_OPTIONS, false);
             case SINGLE -> super.init(SINGLE_OPTIONS, false);
         }
-
-        super.init(this.postAndShader, false);
 
         super.addDefaultButtons();
 

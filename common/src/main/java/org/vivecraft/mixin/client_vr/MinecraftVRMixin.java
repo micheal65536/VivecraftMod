@@ -39,6 +39,7 @@ import net.minecraft.util.profiling.ProfileResults;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
@@ -51,7 +52,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.vivecraft.client.VRPlayersClient;
+import org.vivecraft.client.ClientVRPlayers;
 import org.vivecraft.client.VivecraftVRMod;
 import org.vivecraft.client.gui.VivecraftClickEvent;
 import org.vivecraft.client.gui.screens.ErrorScreen;
@@ -68,6 +69,7 @@ import org.vivecraft.client_vr.gameplay.screenhandlers.GuiHandler;
 import org.vivecraft.client_vr.gameplay.trackers.TelescopeTracker;
 import org.vivecraft.client_vr.menuworlds.MenuWorldDownloader;
 import org.vivecraft.client_vr.menuworlds.MenuWorldExporter;
+import org.vivecraft.client_vr.provider.MCVR;
 import org.vivecraft.client_vr.provider.openvr_lwjgl.VRInputAction;
 import org.vivecraft.client_vr.render.RenderConfigException;
 import org.vivecraft.client_vr.render.VRFirstPersonArmSwing;
@@ -202,6 +204,12 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
 
     @Shadow
     public abstract SoundManager getSoundManager();
+
+    @Shadow
+    public abstract boolean isPaused();
+
+    @Shadow
+    public abstract float getFrameTime();
 
     @ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;setOverlay(Lnet/minecraft/client/gui/screens/Overlay;)V"), index = 0)
     private Overlay vivecraft$initVivecraft(Overlay overlay) {
@@ -477,10 +485,10 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
     }
 
     @WrapOperation(method = "startUseItem", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;hitResult:Lnet/minecraft/world/phys/HitResult;", ordinal = 1))
-    private HitResult vivecraft$activeHand(Minecraft instance, Operation<HitResult> original, @Local InteractionHand hand, @Local ItemStack itemstack) {
+    private HitResult vivecraft$sendActiveHandStart(Minecraft instance, Operation<HitResult> original, @Local InteractionHand hand, @Local ItemStack itemstack) {
         if (VRState.VR_RUNNING) {
             if (ClientDataHolderVR.getInstance().vrSettings.seated || !TelescopeTracker.isTelescope(itemstack)) {
-                ClientNetworking.sendActiveHand((byte) hand.ordinal());
+                ClientNetworking.sendActiveHand(hand);
             } else {
                 // no telescope use in standing vr
                 return null;
@@ -488,6 +496,13 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
         }
 
         return original.call(instance);
+    }
+
+    @Inject(method = "startUseItem", at = @At("RETURN"))
+    private void vivecraft$sendActiveHandStartReset(CallbackInfo ci) {
+        if (VRState.VR_RUNNING) {
+            ClientNetworking.sendActiveHand(InteractionHand.MAIN_HAND);
+        }
     }
 
     @WrapOperation(method = "startUseItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;swing(Lnet/minecraft/world/InteractionHand;)V"))
@@ -533,7 +548,7 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
                 }
                 ClientDataHolderVR.getInstance().incorrectGarbageCollector = "";
             }
-            // server watrnings
+            // server warnings
             if (ClientDataHolderVR.getInstance().vrPlayer.chatWarningTimer >= 0 &&
                 --ClientDataHolderVR.getInstance().vrPlayer.chatWarningTimer == 0)
             {
@@ -557,6 +572,14 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
                     ClientDataHolderVR.getInstance().vrPlayer.vrSwitchWarning = false;
                 }
                 ClientNetworking.DISPLAYED_CHAT_WARNING = true;
+            }
+            if (!ClientDataHolderVR.getInstance().showedFbtCalibrationNotification &&
+                ((MCVR.get().hasFBT() && !ClientDataHolderVR.getInstance().vrSettings.fbtCalibrated) ||
+                    (MCVR.get().hasExtendedFBT() && !ClientDataHolderVR.getInstance().vrSettings.fbtExtendedCalibrated)
+                ))
+            {
+                ClientDataHolderVR.getInstance().showedFbtCalibrationNotification = true;
+                this.gui.getChat().addMessage(Component.translatable("vivecraft.messages.calibratefbtchat"));
             }
         }
 
@@ -582,7 +605,7 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
         }
 
         this.profiler.push("vrPlayers");
-        VRPlayersClient.getInstance().tick();
+        ClientVRPlayers.getInstance().tick();
 
         this.profiler.popPush("Vivecraft Keybindings");
         vivecraft$processAlwaysAvailableKeybindings();
@@ -699,10 +722,14 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
         }
     }
 
-    @Inject(method = "handleKeybinds", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/MultiPlayerGameMode;releaseUsingItem(Lnet/minecraft/world/entity/player/Player;)V"))
-    private void vivecraft$sendActiveHand(CallbackInfo ci) {
+    @WrapOperation(method = "handleKeybinds", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/MultiPlayerGameMode;releaseUsingItem(Lnet/minecraft/world/entity/player/Player;)V"))
+    private void vivecraft$sendActiveHandRelease(MultiPlayerGameMode instance, Player player, Operation<Void> original) {
         if (VRState.VR_RUNNING) {
-            ClientNetworking.sendActiveHand((byte) this.player.getUsedItemHand().ordinal());
+            ClientNetworking.sendActiveHand(this.player.getUsedItemHand());
+        }
+        original.call(instance, player);
+        if (VRState.VR_RUNNING) {
+            ClientNetworking.sendActiveHand(InteractionHand.MAIN_HAND);
         }
     }
 
@@ -805,7 +832,7 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
 
             if (this.player != null) {
                 // remove vr player instance
-                VRPlayersClient.getInstance().disableVR(this.player.getUUID());
+                ClientVRPlayers.getInstance().disableVR(this.player.getUUID());
             }
             if (this.gameRenderer != null) {
                 // update active effect, since VR does block t hem
@@ -826,6 +853,9 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
 
         // send new VR state to the server
         ClientNetworking.sendServerPacket(new VRActivePayloadC2S(vrActive));
+
+        // send options, since we override the main hand setting
+        this.options.broadcastOptions();
 
         // reload sound manager, to toggle HRTF between VR and NONVR one
         if (!getSoundManager().getAvailableSounds().isEmpty()) {
@@ -848,5 +878,14 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
             guiGraphics.flush();
             this.profiler.pop();
         }
+    }
+
+    /**
+     * return current partialTick
+     */
+    @Unique
+    @Override
+    public float vivecraft$getPartialTick() {
+        return this.isPaused() ? this.pausePartialTick : this.getFrameTime();
     }
 }

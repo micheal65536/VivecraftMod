@@ -17,10 +17,12 @@ loom {
         mixinConfig "vivecraft.alexmobs.mixins.json"
         mixinConfig "vivecraft.blur.mixins.json"
         mixinConfig "vivecraft.bedrockify.mixins.json"
+        mixinConfig "vivecraft.emf.mixins.json"
         mixinConfig "vivecraft.cataclysm.mixins.json"
         mixinConfig "vivecraft.dynamicfps.mixins.json"
         mixinConfig "vivecraft.sodium.mixins.json"
         mixinConfig "vivecraft.iris.mixins.json"
+        mixinConfig "vivecraft.mca.mixins.json"
         mixinConfig "vivecraft.physicsmod.mixins.json"
         mixinConfig "vivecraft.rei.mixins.json"
         mixinConfig "vivecraft.resolutioncontrol.mixins.json"
@@ -67,6 +69,8 @@ dependencies {
 
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${rootProject.mixin_extras_version}"))
     implementation(include("io.github.llamalad7:mixinextras-forge:${rootProject.mixin_extras_version}"))
+
+    include(implementation("com.illposed.osc:javaosc-core:0.9"))
 }
 
 processResources {

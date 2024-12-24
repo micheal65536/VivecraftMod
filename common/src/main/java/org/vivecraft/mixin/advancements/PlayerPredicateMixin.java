@@ -10,6 +10,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.vivecraft.common.network.Limb;
 import org.vivecraft.common.utils.MathUtils;
 import org.vivecraft.server.ServerVRPlayers;
 import org.vivecraft.server.ServerVivePlayer;
@@ -23,7 +24,7 @@ public class PlayerPredicateMixin {
         if (player.getUseItem().is(Items.SPYGLASS) && ServerVRPlayers.isVRPlayer(player)) {
             vivePlayer.set(ServerVRPlayers.getVivePlayer(player));
             if (!vivePlayer.get().isSeated()) {
-                return vivePlayer.get().getControllerPos(player.getUsedItemHand().ordinal());
+                return vivePlayer.get().getLimbPos(Limb.values()[player.getUsedItemHand().ordinal()]);
             }
         }
         return original.call(player);
@@ -35,7 +36,8 @@ public class PlayerPredicateMixin {
         @Share("vivePlayer") LocalRef<ServerVivePlayer> vivePlayer)
     {
         if (vivePlayer.get() != null && !vivePlayer.get().isSeated()) {
-            return vivePlayer.get().getControllerVectorCustom(player.getUsedItemHand().ordinal(), MathUtils.DOWN);
+            return vivePlayer.get()
+                .getLimbVectorCustom(Limb.values()[player.getUsedItemHand().ordinal()], MathUtils.DOWN);
         } else {
             return original.call(player, partialTick);
         }
