@@ -224,12 +224,6 @@ public class VivecraftItemRendering {
                 // calculate bow model roll.
                 float roll = Mth.RAD_TO_DEG * angle;
 
-                if (DH.bowTracker.isCharged()) {
-                    // bow jitter
-                    long j = Util.getMillis() - DH.bowTracker.startDrawTime;
-                    translateX += 0.003F * Mth.sin(j);
-                }
-
                 poseStack.translate(0.0F, 0.0F, 0.1F);
                 // un-do controller tracking
                 poseStack.last().pose().multiply(MathUtils.toMcMat4(
