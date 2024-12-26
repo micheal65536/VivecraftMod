@@ -16,7 +16,6 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.VRState;
 
-//TODO needed?
 @Mixin(Boat.class)
 public abstract class BoatMixin extends Entity {
 
@@ -104,12 +103,8 @@ public abstract class BoatMixin extends Entity {
             //roomscale or vanilla behavior
             if (clientDataHolderVR.rowTracker.isRowing() && !clientDataHolderVR.vrSettings.seated) {
 
-                this.deltaRotation += clientDataHolderVR.rowTracker.LOar / 1.5;
-                this.deltaRotation -= clientDataHolderVR.rowTracker.ROar / 1.5;
-    				/*
-    				this.deltaRotation += mc.rowTracker.forces[0] *50;
-    				this.deltaRotation -= mc.rowTracker.forces[1] *50;
-    				 */
+                this.deltaRotation += clientDataHolderVR.rowTracker.forces[0] * 50;
+                this.deltaRotation -= clientDataHolderVR.rowTracker.forces[1] * 50;
 
                 if (deltaRotation < 0) {
                     this.inputLeft = true;
@@ -118,15 +113,10 @@ public abstract class BoatMixin extends Entity {
                     this.inputRight = true;
                 }
 
-                f = 0.06f * clientDataHolderVR.rowTracker.Foar;
-                if (f > 0) {
+                f = (float) (clientDataHolderVR.rowTracker.forces[0] + clientDataHolderVR.rowTracker.forces[1]);
+                if (f > 0.005) {
                     this.inputUp = true;
                 }
-
-    				/*
-    				f=(float)(mc.rowTracker.forces[0] + mc.rowTracker.forces[1]);
-    				if(f > 0.005) this.forwardInputDown = true;
-    				*/
 
                 mx = Math.sin(-this.getYRot() * 0.017453292F) * f;
                 mz = Math.cos(this.getYRot() * 0.017453292F) * f;

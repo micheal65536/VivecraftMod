@@ -14,9 +14,6 @@ public class RowTracker extends Tracker {
     Vec3[] lastUWPs = new Vec3[2];
     public double[] forces = new double[]{0.0D, 0.0D};
     double transmissionEfficiency = 0.9D;
-    public float LOar;
-    public float ROar;
-    public float Foar;
 
     public RowTracker(Minecraft mc, ClientDataHolderVR dh) {
         super(mc, dh);
@@ -43,38 +40,15 @@ public class RowTracker extends Tracker {
     }
 
     public boolean isRowing() {
-        return this.ROar + this.LOar + this.Foar > 0.0F;
+        return this.forces[0] != 0.0D || this.forces[1] != 0.0D;
     }
 
     public void reset(LocalPlayer player) {
-        this.LOar = 0.0F;
-        this.ROar = 0.0F;
-        this.Foar = 0.0F;
+        this.forces[0] = 0.0D;
+        this.forces[1] = 0.0D;
     }
 
     public void doProcess(LocalPlayer player) {
-        double d0 = this.dh.vr.controllerHistory[0].averageSpeed(0.5D);
-        double d1 = this.dh.vr.controllerHistory[1].averageSpeed(0.5D);
-        float f = 0.5F;
-        float f1 = 2.0F;
-        this.ROar = (float) Math.max(d0 - (double) f, 0.0D);
-        this.LOar = (float) Math.max(d1 - (double) f, 0.0D);
-        this.Foar = this.ROar > 0.0F && this.LOar > 0.0F ? (this.ROar + this.LOar) / 2.0F : 0.0F;
-
-        if (this.Foar > f1) {
-            this.Foar = f1;
-        }
-
-        if (this.ROar > f1) {
-            this.ROar = f1;
-        }
-
-        if (this.LOar > f1) {
-            this.LOar = f1;
-        }
-    }
-
-    public void doProcessFinaltransmithastofixthis(LocalPlayer player) {
         Boat boat = (Boat) player.getVehicle();
         Quaternion quaternion = (new Quaternion(boat.getXRot(), -(boat.getYRot() % 360.0F), 0.0F)).normalized();
 
