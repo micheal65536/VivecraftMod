@@ -15,10 +15,6 @@ public class RowTracker extends Tracker {
     private static final double TRANSMISSION_EFFICIENCY = 0.9D;
 
     public double[] forces = new double[]{0.0D, 0.0D};
-    public float LOar;
-    public float ROar;
-    public float FOar;
-
     private final Vec3[] lastUWPs = new Vec3[2];
 
     public RowTracker(Minecraft mc, ClientDataHolderVR dh) {
@@ -45,45 +41,17 @@ public class RowTracker extends Tracker {
     }
 
     public boolean isRowing() {
-        return this.ROar + this.LOar + this.FOar > 0.0F;
+        return this.forces[0] != 0.0D || this.forces[1] != 0.0D;
     }
 
     @Override
     public void reset(LocalPlayer player) {
-        this.LOar = 0.0F;
-        this.ROar = 0.0F;
-        this.FOar = 0.0F;
+        this.forces[0] = 0.0D;
+        this.forces[1] = 0.0D;
     }
 
     @Override
     public void doProcess(LocalPlayer player) {
-        float c0Move = this.dh.vr.controllerHistory[0].averageSpeed(0.5D);
-        float c1Move = this.dh.vr.controllerHistory[1].averageSpeed(0.5D);
-
-        final float minSpeed = 0.5F;
-        final float maxSpeed = 2.0F;
-
-        this.ROar = Math.max(c0Move - minSpeed, 0.0F);
-        this.LOar = Math.max(c1Move - minSpeed, 0.0F);
-
-        this.FOar = this.ROar > 0.0F && this.LOar > 0.0F ? (this.ROar + this.LOar) / 2.0F : 0.0F;
-
-        if (this.FOar > maxSpeed) {
-            this.FOar = maxSpeed;
-        }
-
-        if (this.ROar > maxSpeed) {
-            this.ROar = maxSpeed;
-        }
-
-        if (this.LOar > maxSpeed) {
-            this.LOar = maxSpeed;
-        }
-
-        // TODO: Backwards paddlin'
-    }
-
-    public void doProcessFinaltransmithastofixthis(LocalPlayer player) {
         Boat boat = (Boat) player.getVehicle();
         Quaternionf boatRot = new Quaternionf().rotationYXZ(
             Mth.DEG_TO_RAD * -(boat.getYRot() % 360.0F),

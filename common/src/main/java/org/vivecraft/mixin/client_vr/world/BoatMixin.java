@@ -89,13 +89,8 @@ public abstract class BoatMixin extends Entity {
             } else if (dataHolder.rowTracker.isRowing()) {
                 // roomscale rowing
 
-                this.deltaRotation += dataHolder.rowTracker.LOar / 1.5F;
-                this.deltaRotation -= dataHolder.rowTracker.ROar / 1.5F;
-
-                /*
                 this.deltaRotation += dataHolder.rowTracker.forces[0] * 50;
                 this.deltaRotation -= dataHolder.rowTracker.forces[1] * 50;
-                 */
 
                 if (this.deltaRotation < 0F) {
                     this.inputLeft = true;
@@ -104,19 +99,10 @@ public abstract class BoatMixin extends Entity {
                     this.inputRight = true;
                 }
 
-                // clamp to vanilla speed
-                acceleration = Math.min(0.04F, 0.06F * dataHolder.rowTracker.FOar);
-                if (acceleration > 0F) {
-                    this.inputUp = true;
-                }
-
-                /*
                 acceleration = (float) (dataHolder.rowTracker.forces[0] + dataHolder.rowTracker.forces[1]);
                 if (acceleration > 0.005F) {
                     this.inputUp = true;
                 }
-                */
-
             }
         }
         return acceleration;
