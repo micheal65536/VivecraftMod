@@ -45,7 +45,11 @@ public class VehicleTracker extends Tracker {
     }
 
     public double getVehicleFloor(Entity vehicle, double original) {
-        return original;
+        if (vehicle instanceof Boat) {
+            return original + 0.6f;
+        } else {
+            return original;
+        }
     }
 
     public static Vec3 getSteeringDirection(LocalPlayer player) {
