@@ -97,10 +97,6 @@ public class BowTracker extends Tracker {
         }
     }
 
-    public boolean isCharged() {
-        return Util.getMillis() - this.startDrawTime >= this.maxDrawMillis;
-    }
-
     public void reset(LocalPlayer player) {
         this.isDrawing = false;
         this.canDraw = false;
@@ -225,7 +221,6 @@ public class BowTracker extends Tracker {
                     j1 = (int) (this.getDrawPercent() * 500.0F) + 700;
                 }
 
-                int l = (int) ((float) itemstack1.getUseDuration() - this.getDrawPercent() * (float) this.maxDrawMillis);
                 ((PlayerExtension) player).vivecraft$setItemInUseClient(itemstack1, interactionhand);
                 double d1 = this.getDrawPercent();
 
@@ -245,10 +240,6 @@ public class BowTracker extends Tracker {
                     if (d1 == 1.0D) {
                         this.dh.vr.triggerHapticPulse(1, j1);
                     }
-                }
-
-                if (this.isCharged() && this.hapcounter % 4 == 0) {
-                    this.dh.vr.triggerHapticPulse(1, 200);
                 }
 
                 this.lasthapStep = i1;

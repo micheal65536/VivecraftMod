@@ -17,6 +17,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.UseAnim;
@@ -95,6 +96,19 @@ public abstract class ServerPlayerMixin extends Player {
         } else {
             super.sweepAttack();
         }
+    }
+
+    @Override
+    public void releaseUsingItem() {
+        ServerVivePlayer serverVivePlayer = vivecraft$getVivePlayer();
+        if (serverVivePlayer != null && serverVivePlayer.isVR()) {
+            if (serverVivePlayer.getDraw() > 0.0F) {
+                if (!this.useItem.isEmpty()) {
+                    this.useItemRemaining = Math.max(this.useItem.getUseDuration() - (int) (BowItem.MAX_DRAW_DURATION * serverVivePlayer.getDraw()), 0);
+                }
+            }
+        }
+        super.releaseUsingItem();
     }
 
     // TODO: this is not needed
