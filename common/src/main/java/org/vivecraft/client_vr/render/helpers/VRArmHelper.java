@@ -158,7 +158,7 @@ public class VRArmHelper {
      */
     public static void renderVRHand_Main(PoseStack poseStack, float partialTick) {
         // don't render claws with model arms
-        if (DATA_HOLDER.climbTracker.isClimbeyClimb() &&
+        if ((DATA_HOLDER.climbTracker.isClimbeyClimb() || ClimbTracker.isClaws(MC.player.getMainHandItem())) &&
             ClientDataHolderVR.getInstance().vrSettings.shouldRenderSelf &&
             ClientDataHolderVR.getInstance().vrSettings.modelArmsMode == VRSettings.ModelArmsMode.COMPLETE)
         {
@@ -217,7 +217,7 @@ public class VRArmHelper {
         // don't render claws with model arms
         if (!ClientDataHolderVR.getInstance().vrSettings.shouldRenderSelf ||
             ClientDataHolderVR.getInstance().vrSettings.modelArmsMode != VRSettings.ModelArmsMode.COMPLETE ||
-            !DATA_HOLDER.climbTracker.isClimbeyClimb())
+            !(DATA_HOLDER.climbTracker.isClimbeyClimb() || ClimbTracker.isClaws(MC.player.getOffhandItem())))
         {
             poseStack.pushPose();
             RenderHelper.setupRenderingAtController(1, poseStack);

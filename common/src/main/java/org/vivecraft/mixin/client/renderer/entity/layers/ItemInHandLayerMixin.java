@@ -20,7 +20,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.vivecraft.client.ClientVRPlayers;
 import org.vivecraft.client.network.ClientNetworking;
 import org.vivecraft.client.render.VRPlayerModel;
-import org.vivecraft.client.render.VRPlayerModel_WithArms;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.VRState;
 import org.vivecraft.client_vr.gameplay.trackers.ClimbTracker;
@@ -47,7 +46,7 @@ public abstract class ItemInHandLayerMixin extends RenderLayer {
     }
 
     @Inject(method = "renderArmWithItem", at = @At("HEAD"), cancellable = true)
-    private void vivecraft$noItemsInFirstPerson(CallbackInfo ci, @Local(argsOnly = true) LivingEntity entity, @Local(argsOnly = true) HumanoidArm arm) {
+    private void vivecraft$noItemsInFirstPerson(CallbackInfo ci, @Local(argsOnly = true) LivingEntity entity, @Local(argsOnly = true) HumanoidArm arm, @Local(argsOnly = true) ItemStack itemStack) {
         if (entity == Minecraft.getInstance().player && VRState.VR_RUNNING &&
             ClientDataHolderVR.getInstance().vrSettings.shouldRenderSelf &&
             RenderPass.isFirstPerson(ClientDataHolderVR.getInstance().currentPass) &&
@@ -56,9 +55,7 @@ public abstract class ItemInHandLayerMixin extends RenderLayer {
             // don't cancel climbing claws, unless menu hand
             (ClientDataHolderVR.getInstance().vrSettings.modelArmsMode != VRSettings.ModelArmsMode.COMPLETE ||
                 ClientDataHolderVR.getInstance().isMenuHand(arm) ||
-                !(ClientDataHolderVR.getInstance().climbTracker.isActive(Minecraft.getInstance().player) &&
-                    ClimbTracker.hasClimbeyClimbEquipped(Minecraft.getInstance().player)
-                )
+                !(ClientDataHolderVR.getInstance().climbTracker.isClimbeyClimb() || ClimbTracker.isClaws(itemStack))
             ))
         {
             ci.cancel();
@@ -101,13 +98,9 @@ public abstract class ItemInHandLayerMixin extends RenderLayer {
             !(ImmersivePortalsHelper.isLoaded() && ImmersivePortalsHelper.isRenderingPortal()))
         {
             // make the item scale equal in all directions
-            if (getParentModel() instanceof VRPlayerModel_WithArms<?>) {
-                poseStack.translate(0.0F, 0.65F, 0.0F);
-            }
+            poseStack.translate(0.0F, 0.65F, 0.0F);
             poseStack.scale(1F, ClientDataHolderVR.getInstance().vrSettings.playerModelArmsScale,  1f);
-            if (getParentModel() instanceof VRPlayerModel_WithArms<?>) {
-                poseStack.translate(0.0F, -0.65F, 0.0F);
-            }
+            poseStack.translate(0.0F, -0.65F, 0.0F);
         }
 
 
