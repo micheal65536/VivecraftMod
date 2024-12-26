@@ -104,6 +104,7 @@ public class OptifineHelper {
 
     /**
      * binds the Shaders_ framebuffer
+     *
      * @return if the shader framebuffer got bound
      */
     public static boolean bindShaderFramebuffer() {
@@ -165,8 +166,9 @@ public class OptifineHelper {
 
     /**
      * sets the position of the shadow Camera
-     * @param poseStack PoseStack for orienting
-     * @param camera camera get the position frome
+     *
+     * @param poseStack   PoseStack for orienting
+     * @param camera      camera get the position frome
      * @param partialTick current partial tick
      */
     public static void setCameraShadow(PoseStack poseStack, Camera camera, float partialTick) {
@@ -252,6 +254,7 @@ public class OptifineHelper {
 
     /**
      * enables/disables render regions
+     *
      * @param active new state
      */
     public static void setRenderRegions(boolean active) {
@@ -264,11 +267,12 @@ public class OptifineHelper {
 
     /**
      * applies the RPs custom sky color
-     * @param skyColor original sky color
+     *
+     * @param skyColor    original sky color
      * @param blockAccess level this is checked for
-     * @param x player position x
-     * @param y player position y
-     * @param z player position z
+     * @param x           player position x
+     * @param y           player position y
+     * @param z           player position z
      * @return altered skyColor
      */
     public static Vec3 getCustomSkyColor(Vec3 skyColor, BlockAndTintGetter blockAccess, double x, double y, double z) {
@@ -282,6 +286,7 @@ public class OptifineHelper {
 
     /**
      * applies the RPs custom End sky color
+     *
      * @param skyColor original sky color
      * @return altered skyColor
      */
@@ -296,10 +301,11 @@ public class OptifineHelper {
 
     /**
      * gets the custom underwater fog color
+     *
      * @param blockAccess level this is checked for
-     * @param x player position x
-     * @param y player position y
-     * @param z player position z
+     * @param x           player position x
+     * @param y           player position y
+     * @param z           player position z
      * @return underwater fog color, or {@code null} on an error
      */
     public static Vec3 getCustomUnderwaterColor(BlockAndTintGetter blockAccess, double x, double y, double z) {
@@ -313,10 +319,11 @@ public class OptifineHelper {
 
     /**
      * gets the custom underlava fog color
+     *
      * @param blockAccess level this is checked for
-     * @param x player position x
-     * @param y player position y
-     * @param z player position z
+     * @param x           player position x
+     * @param y           player position y
+     * @param z           player position z
      * @return underlava fog color, or {@code null} on an error
      */
     public static Vec3 getCustomUnderlavaColor(BlockAndTintGetter blockAccess, double x, double y, double z) {
@@ -330,11 +337,12 @@ public class OptifineHelper {
 
     /**
      * applies the RPs custom fog color
-     * @param fogColor original fog color
+     *
+     * @param fogColor    original fog color
      * @param blockAccess level this is checked for
-     * @param x player position x
-     * @param y player position y
-     * @param z player position z
+     * @param x           player position x
+     * @param y           player position y
+     * @param z           player position z
      * @return altered fogColor
      */
     public static Vec3 getCustomFogColor(Vec3 fogColor, BlockAndTintGetter blockAccess, double x, double y, double z) {
@@ -348,6 +356,7 @@ public class OptifineHelper {
 
     /**
      * applies the RPs custom End fog color
+     *
      * @param fogColor original fog color
      * @return altered fogColor
      */
@@ -362,6 +371,7 @@ public class OptifineHelper {
 
     /**
      * applies the RPs custom Nether fog color
+     *
      * @param fogColor original fog color
      * @return altered fogColor
      */
@@ -400,6 +410,7 @@ public class OptifineHelper {
 
     /**
      * marks the given Sprite to be animated in this frame
+     *
      * @param sprite sprite to mark
      */
     public static void markTextureAsActive(TextureAtlasSprite sprite) {
@@ -412,8 +423,9 @@ public class OptifineHelper {
 
     /**
      * copies the cached position from one vertex to another one
+     *
      * @param source vertex to copy from
-     * @param dest vertex to copy to
+     * @param dest   vertex to copy to
      */
     public static void copyRenderPositions(ModelPart.Vertex source, ModelPart.Vertex dest) {
         if (Vertex_renderPositions != null) {
@@ -448,10 +460,13 @@ public class OptifineHelper {
             Options_ofAoLevel = Options.class.getField("ofAoLevel");
 
             CustomColors = Class.forName("net.optifine.CustomColors");
-            CustomColors_GetSkyColor = CustomColors.getMethod("getSkyColor", Vec3.class, BlockAndTintGetter.class, double.class, double.class, double.class);
+            CustomColors_GetSkyColor = CustomColors.getMethod("getSkyColor", Vec3.class, BlockAndTintGetter.class,
+                double.class, double.class, double.class);
 
-            CustomColors_GetUnderwaterColor = CustomColors.getMethod("getUnderwaterColor", BlockAndTintGetter.class, double.class, double.class, double.class);
-            CustomColors_GetUnderlavaColor = CustomColors.getMethod("getUnderlavaColor", BlockAndTintGetter.class, double.class, double.class, double.class);
+            CustomColors_GetUnderwaterColor = CustomColors.getMethod("getUnderwaterColor", BlockAndTintGetter.class,
+                double.class, double.class, double.class);
+            CustomColors_GetUnderlavaColor = CustomColors.getMethod("getUnderlavaColor", BlockAndTintGetter.class,
+                double.class, double.class, double.class);
 
             ShadersRender = Class.forName("net.optifine.shaders.ShadersRender");
             ShadersRender_BeginOutline = ShadersRender.getMethod("beginOutline");
@@ -469,7 +484,8 @@ public class OptifineHelper {
             // private methods
             CustomColors_GetSkyColoEnd = CustomColors.getDeclaredMethod("getSkyColorEnd", Vec3.class);
             CustomColors_GetSkyColoEnd.setAccessible(true);
-            CustomColors_GetFogColor = CustomColors.getDeclaredMethod("getFogColor", Vec3.class, BlockAndTintGetter.class, double.class, double.class, double.class);
+            CustomColors_GetFogColor = CustomColors.getDeclaredMethod("getFogColor", Vec3.class,
+                BlockAndTintGetter.class, double.class, double.class, double.class);
             CustomColors_GetFogColor.setAccessible(true);
             CustomColors_GetFogColorEnd = CustomColors.getDeclaredMethod("getFogColorEnd", Vec3.class);
             CustomColors_GetFogColorEnd.setAccessible(true);

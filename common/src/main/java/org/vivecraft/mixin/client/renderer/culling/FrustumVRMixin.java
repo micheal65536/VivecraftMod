@@ -11,7 +11,8 @@ import org.vivecraft.client_vr.extensions.FrustumExtension;
 public abstract class FrustumVRMixin implements FrustumExtension {
 
     @Shadow
-    protected abstract boolean cubeInFrustum(double minX, double minY, double minZ, double maxX, double maxY, double maxZ);
+    protected abstract boolean cubeInFrustum(
+        double minX, double minY, double minZ, double maxX, double maxY, double maxZ);
 
     @Override
     @Unique

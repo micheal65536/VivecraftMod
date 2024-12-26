@@ -7,11 +7,11 @@ import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
-import org.vivecraft.common.utils.MathUtils;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.gui.GuiKeyboard;
 import org.vivecraft.client_vr.gui.PhysicalKeyboard;
 import org.vivecraft.client_vr.provider.ControllerType;
+import org.vivecraft.common.utils.MathUtils;
 
 public class KeyboardHandler {
     public static final Minecraft MC = Minecraft.getInstance();
@@ -185,6 +185,7 @@ public class KeyboardHandler {
 
     /**
      * checks if the given controller points at the keyboard
+     *
      * @param type controller to check
      */
     public static boolean isUsingController(ControllerType type) {

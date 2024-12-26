@@ -39,11 +39,13 @@ public class VRArmorModel_WithArms<T extends LivingEntity> extends HumanoidArmor
 
         partDefinition.addOrReplaceChild("left_hand", CubeListBuilder.create()
                 .texOffs(40, 23 - lowerExtension)
-                .addBox(-2.0F, -5.0F - lowerExtension, -2.0F, 4.0F, 5.0F + lowerExtension, 4.0F, cubeDeformation.extend(lowerShrinkage)),
+                .addBox(-2.0F, -5.0F - lowerExtension, -2.0F, 4.0F, 5.0F + lowerExtension, 4.0F,
+                    cubeDeformation.extend(lowerShrinkage)),
             PartPose.offset(-5.0F, 2.5F, 0.0F));
         partDefinition.addOrReplaceChild("right_hand", CubeListBuilder.create()
                 .texOffs(40, 23 - lowerExtension)
-                .addBox(-2.0F, -5.0F - lowerExtension, -2.0F, 4.0F, 5.0F + lowerExtension, 4.0F, cubeDeformation.extend(lowerShrinkage)),
+                .addBox(-2.0F, -5.0F - lowerExtension, -2.0F, 4.0F, 5.0F + lowerExtension, 4.0F,
+                    cubeDeformation.extend(lowerShrinkage)),
             PartPose.offset(-5.0F, 2.5F, 0.0F));
 
 

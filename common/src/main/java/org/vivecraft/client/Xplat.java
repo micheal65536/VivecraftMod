@@ -31,7 +31,7 @@ public interface Xplat {
      * <a href="https://plugins.jetbrains.com/plugin/16210-architectury">You should also get the IntelliJ plugin to help with @ExpectPlatform.</a>
      */
 
-    enum ModLoader{
+    enum ModLoader {
         FABRIC("fabric"),
         FORGE("forge"),
         NEOFORGE("neoforge"),
@@ -61,6 +61,7 @@ public interface Xplat {
 
     /**
      * asks the mod loader for the config folder, and resolves the given file there
+     *
      * @param file file to get the path for
      * @return Path of {@code file} in the config folder
      */
@@ -103,6 +104,7 @@ public interface Xplat {
 
     /**
      * asks the mod loader to enable the stencil for the given RenderTarget
+     *
      * @param renderTarget RenderTarget to enable the Stencil on
      * @return true if the mod loader enabled the stencil
      */
@@ -129,8 +131,9 @@ public interface Xplat {
 
     /**
      * gets the TextureAtlasSprites for the given FluidState
-     * @param level level the fluid is in
-     * @param pos BlockPos of the fluid
+     *
+     * @param level      level the fluid is in
+     * @param pos        BlockPos of the fluid
      * @param fluidState State of the fluid
      * @return array of the textures of a fluid block
      */
@@ -159,9 +162,10 @@ public interface Xplat {
 
     /**
      * modifies {@code baseRange} with any modifiers for the entity reach of the given ItemStack
+     *
      * @param baseRange base item reach to start with
      * @param itemStack ItemStack to use the modifiers from
-     * @param slot slot where the item is in
+     * @param slot      slot where the item is in
      * @return modified range, if there are no changes then {@code baseRange} is returned
      */
     @ExpectPlatform
@@ -171,6 +175,7 @@ public interface Xplat {
 
     /**
      * wraps the given payload into the mod loader specific packet
+     *
      * @param payload payload to wrap
      * @return ServerboundCustomPayloadPacket
      */
@@ -181,6 +186,7 @@ public interface Xplat {
 
     /**
      * wraps the given payload into the mod loader specific packet
+     *
      * @param payload payload to wrap
      * @return ClientboundCustomPayloadPacket
      */
@@ -191,6 +197,7 @@ public interface Xplat {
 
     /**
      * checks if the given KeyMapping uses a key modifier to trigger
+     *
      * @param keyMapping KeyMapping to check
      * @return true if a key modifier is used
      */
@@ -201,6 +208,7 @@ public interface Xplat {
 
     /**
      * gets the key modifier for the given KeyMapping
+     *
      * @param keyMapping KeyMapping to check
      * @return one of the GLFW_MOD_X modifiers, or 0 if there is none
      */
@@ -211,6 +219,7 @@ public interface Xplat {
 
     /**
      * gets the key that corresponds to the key modifier for the given KeyMapping
+     *
      * @param keyMapping KeyMapping to check
      * @return one of the GLFW_KEY_X keys, or -1 if there is none
      */

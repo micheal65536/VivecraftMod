@@ -44,7 +44,8 @@ public class GuiMainVRSettings extends GuiVROptionsBase {
             "vivecraft.options.screen.radialmenu.button")
     };
     private final VROptionLayout[] vrSeatedOptions = new VROptionLayout[]{
-        new VROptionLayout(GuiSeatedOptions.class, VROptionLayout.Position.POS_LEFT, 4.0F, true, "vivecraft.options.screen.seated.button"),
+        new VROptionLayout(GuiSeatedOptions.class, VROptionLayout.Position.POS_LEFT, 4.0F, true,
+            "vivecraft.options.screen.seated.button"),
         new VROptionLayout(VRSettings.VrOptions.RESET_ORIGIN, (button, mousePos) -> {
             this.resetOrigin();
             return true;
@@ -81,10 +82,11 @@ public class GuiMainVRSettings extends GuiVROptionsBase {
                 super.init(this.vrStandingOptions, true);
 
                 if (this.dataHolder.vrSettings.allowStandingOriginOffset) {
-                    super.init(new VROptionLayout[]{new VROptionLayout(VRSettings.VrOptions.RESET_ORIGIN, (button, mousePos) -> {
-                        this.resetOrigin();
-                        return true;
-                    }, VROptionLayout.Position.POS_LEFT, 7.0F, true, null)
+                    super.init(new VROptionLayout[]{new VROptionLayout(VRSettings.VrOptions.RESET_ORIGIN,
+                        (button, mousePos) -> {
+                            this.resetOrigin();
+                            return true;
+                        }, VROptionLayout.Position.POS_LEFT, 7.0F, true, null)
                     }, false);
                 }
             }

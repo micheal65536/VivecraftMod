@@ -6,7 +6,8 @@ import org.vivecraft.common.network.packet.PayloadIdentifier;
 
 /**
  * legacy packet, holds the seated flag and the head pose
- * @param seated if the player is in seated mode
+ *
+ * @param seated  if the player is in seated mode
  * @param hmdPose pose of the players headset
  */
 public record LegacyHeadDataPayloadC2S(boolean seated, Pose hmdPose) implements VivecraftPayloadC2S {

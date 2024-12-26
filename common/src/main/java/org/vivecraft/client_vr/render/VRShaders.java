@@ -55,7 +55,8 @@ public class VRShaders {
     private VRShaders() {}
 
     public static void setupDepthMask() throws IOException {
-        MIXED_REALITY_SHADER = new ShaderInstance(Minecraft.getInstance().getResourceManager(), "mixedreality_vr", DefaultVertexFormat.POSITION_TEX);
+        MIXED_REALITY_SHADER = new ShaderInstance(Minecraft.getInstance().getResourceManager(), "mixedreality_vr",
+            DefaultVertexFormat.POSITION_TEX);
 
         MIXED_REALITY_HMD_VIEW_POSITION_UNIFORM = MIXED_REALITY_SHADER.safeGetUniform("hmdViewPosition");
         MIXED_REALITY_HMD_PLANE_NORMAL_UNIFORM = MIXED_REALITY_SHADER.safeGetUniform("hmdPlaneNormal");
@@ -67,14 +68,16 @@ public class VRShaders {
     }
 
     public static void setupFSAA() throws IOException {
-        LANCZOS_SHADER = new ShaderInstance(Minecraft.getInstance().getResourceManager(), "lanczos_vr", DefaultVertexFormat.POSITION_TEX);
+        LANCZOS_SHADER = new ShaderInstance(Minecraft.getInstance().getResourceManager(), "lanczos_vr",
+            DefaultVertexFormat.POSITION_TEX);
 
         LANCZOS_TEXEL_WIDTH_OFFSET_UNIFORM = LANCZOS_SHADER.safeGetUniform("texelWidthOffset");
         LANCZOS_TEXEL_HEIGHT_OFFSET_UNIFORM = LANCZOS_SHADER.safeGetUniform("texelHeightOffset");
     }
 
     public static void setupFOVReduction() throws IOException {
-        POST_PROCESSING_SHADER = new ShaderInstance(Minecraft.getInstance().getResourceManager(), "postprocessing_vr", DefaultVertexFormat.POSITION_TEX);
+        POST_PROCESSING_SHADER = new ShaderInstance(Minecraft.getInstance().getResourceManager(), "postprocessing_vr",
+            DefaultVertexFormat.POSITION_TEX);
 
         POST_PROCESSING_FOV_REDUCTION_RADIUS_UNIFORM = POST_PROCESSING_SHADER.safeGetUniform("circle_radius");
         POST_PROCESSING_FOV_REDUCTION_OFFSET_UNIFORM = POST_PROCESSING_SHADER.safeGetUniform("circle_offset");
@@ -90,11 +93,14 @@ public class VRShaders {
     }
 
     public static void setupBlitAspect() throws Exception {
-        BLIT_VR_SHADER = new ShaderInstance(Minecraft.getInstance().getResourceManager(), "blit_vr", DefaultVertexFormat.POSITION_TEX);
+        BLIT_VR_SHADER = new ShaderInstance(Minecraft.getInstance().getResourceManager(), "blit_vr",
+            DefaultVertexFormat.POSITION_TEX);
     }
 
     public static void setupPortalShaders() throws IOException {
-        RENDERTYPE_END_PORTAL_VR_SHADER = new ShaderInstance(Minecraft.getInstance().getResourceManager(), "rendertype_end_portal_vr", DefaultVertexFormat.POSITION);
-        RENDERTYPE_END_GATEWAY_VR_SHADER = new ShaderInstance(Minecraft.getInstance().getResourceManager(), "rendertype_end_gateway_vr", DefaultVertexFormat.POSITION);
+        RENDERTYPE_END_PORTAL_VR_SHADER = new ShaderInstance(Minecraft.getInstance().getResourceManager(),
+            "rendertype_end_portal_vr", DefaultVertexFormat.POSITION);
+        RENDERTYPE_END_GATEWAY_VR_SHADER = new ShaderInstance(Minecraft.getInstance().getResourceManager(),
+            "rendertype_end_gateway_vr", DefaultVertexFormat.POSITION);
     }
 }

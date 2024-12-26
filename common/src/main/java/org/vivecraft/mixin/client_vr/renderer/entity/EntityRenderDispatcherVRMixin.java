@@ -51,7 +51,9 @@ public abstract class EntityRenderDispatcherVRMixin implements EntityRenderDispa
     }
 
     @Inject(method = "onResourceManagerReload", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/EntityRenderers;createPlayerRenderers(Lnet/minecraft/client/renderer/entity/EntityRendererProvider$Context;)Ljava/util/Map;"))
-    private void vivecraft$reload(ResourceManager resourceManager, CallbackInfo ci, @Local EntityRendererProvider.Context context) {
+    private void vivecraft$reload(
+        ResourceManager resourceManager, CallbackInfo ci, @Local EntityRendererProvider.Context context)
+    {
         this.vivecraft$armSkinMap.put("default", new VRArmRenderer(context, false));
         this.vivecraft$armSkinMap.put("slim", new VRArmRenderer(context, true));
     }
@@ -65,9 +67,11 @@ public abstract class EntityRenderDispatcherVRMixin implements EntityRenderDispa
         } else {
             Vec3 source;
             if (RenderPass.isThirdPerson(ClientDataHolderVR.getInstance().currentPass)) {
-                source = ClientDataHolderVR.getInstance().vrPlayer.getVRDataWorld().getEye(ClientDataHolderVR.getInstance().currentPass).getPosition();
+                source = ClientDataHolderVR.getInstance().vrPlayer.getVRDataWorld()
+                    .getEye(ClientDataHolderVR.getInstance().currentPass).getPosition();
             } else {
-                source = ClientDataHolderVR.getInstance().vrPlayer.getVRDataWorld().getEye(RenderPass.CENTER).getPosition();
+                source = ClientDataHolderVR.getInstance().vrPlayer.getVRDataWorld().getEye(RenderPass.CENTER)
+                    .getPosition();
             }
             Vec3 direction = entity.position()
                 .add(0.0D, entity.getBbHeight() * scale + offset, 0.0D)

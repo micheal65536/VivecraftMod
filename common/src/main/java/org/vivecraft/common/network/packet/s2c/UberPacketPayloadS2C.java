@@ -8,9 +8,10 @@ import java.util.UUID;
 
 /**
  * holds a players data
- * @param playerID UUID of the player this data is for
- * @param state vr state of the player
- * @param worldScale world scale of the player
+ *
+ * @param playerID    UUID of the player this data is for
+ * @param state       vr state of the player
+ * @param worldScale  world scale of the player
  * @param heightScale calibrated height scale of the player
  */
 public record UberPacketPayloadS2C(UUID playerID, VrPlayerState state, float worldScale,

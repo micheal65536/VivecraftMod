@@ -24,7 +24,8 @@ public class InputSimulator {
 
     public static void pressKey(int key, int modifiers) {
         PRESSED_KEYS.add(key);
-        Minecraft.getInstance().keyboardHandler.keyPress(Minecraft.getInstance().getWindow().getWindow(), key, 0, 1, modifiers);
+        Minecraft.getInstance().keyboardHandler.keyPress(Minecraft.getInstance().getWindow().getWindow(), key, 0, 1,
+            modifiers);
     }
 
     public static void pressKey(int key) {
@@ -33,7 +34,8 @@ public class InputSimulator {
 
     public static void releaseKey(int key, int modifiers) {
         PRESSED_KEYS.remove(key);
-        Minecraft.getInstance().keyboardHandler.keyPress(Minecraft.getInstance().getWindow().getWindow(), key, 0, 0, modifiers);
+        Minecraft.getInstance().keyboardHandler.keyPress(Minecraft.getInstance().getWindow().getWindow(), key, 0, 0,
+            modifiers);
     }
 
     public static void releaseKey(int key) {
@@ -42,7 +44,8 @@ public class InputSimulator {
 
     public static void pressModifier(int key, int modifiers) {
         PRESSED_MODIFIERS.merge(key, 1, Integer::sum);
-        Minecraft.getInstance().keyboardHandler.keyPress(Minecraft.getInstance().getWindow().getWindow(), key, 0, 1, modifiers);
+        Minecraft.getInstance().keyboardHandler.keyPress(Minecraft.getInstance().getWindow().getWindow(), key, 0, 1,
+            modifiers);
     }
 
     public static void pressModifier(int key) {
@@ -51,7 +54,8 @@ public class InputSimulator {
 
     public static void releaseModifier(int key, int modifiers) {
         PRESSED_MODIFIERS.merge(key, -1, Integer::sum);
-        Minecraft.getInstance().keyboardHandler.keyPress(Minecraft.getInstance().getWindow().getWindow(), key, 0, 0, modifiers);
+        Minecraft.getInstance().keyboardHandler.keyPress(Minecraft.getInstance().getWindow().getWindow(), key, 0, 0,
+            modifiers);
     }
 
     public static void releaseModifier(int key) {
@@ -59,7 +63,8 @@ public class InputSimulator {
     }
 
     public static void typeChar(char character, int modifiers) {
-        Minecraft.getInstance().keyboardHandler.charTyped(Minecraft.getInstance().getWindow().getWindow(), character, modifiers);
+        Minecraft.getInstance().keyboardHandler.charTyped(Minecraft.getInstance().getWindow().getWindow(), character,
+            modifiers);
     }
 
     public static void typeChar(char character) {
@@ -67,7 +72,8 @@ public class InputSimulator {
     }
 
     public static void pressMouse(int button, int modifiers) {
-        Minecraft.getInstance().mouseHandler.onPress(Minecraft.getInstance().getWindow().getWindow(), button, 1, modifiers);
+        Minecraft.getInstance().mouseHandler.onPress(Minecraft.getInstance().getWindow().getWindow(), button, 1,
+            modifiers);
     }
 
     public static void pressMouse(int button) {
@@ -75,7 +81,8 @@ public class InputSimulator {
     }
 
     public static void releaseMouse(int button, int modifiers) {
-        Minecraft.getInstance().mouseHandler.onPress(Minecraft.getInstance().getWindow().getWindow(), button, 0, modifiers);
+        Minecraft.getInstance().mouseHandler.onPress(Minecraft.getInstance().getWindow().getWindow(), button, 0,
+            modifiers);
     }
 
     public static void releaseMouse(int button) {
@@ -87,7 +94,8 @@ public class InputSimulator {
     }
 
     public static void scrollMouse(double xOffset, double yOffset) {
-        Minecraft.getInstance().mouseHandler.onScroll(Minecraft.getInstance().getWindow().getWindow(), xOffset, yOffset);
+        Minecraft.getInstance().mouseHandler.onScroll(Minecraft.getInstance().getWindow().getWindow(), xOffset,
+            yOffset);
     }
 
     public static void typeChars(CharSequence characters) {

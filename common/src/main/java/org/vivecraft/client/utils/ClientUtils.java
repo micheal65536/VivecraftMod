@@ -22,6 +22,7 @@ public class ClientUtils {
 
     /**
      * tries to read the give registry key from the Windows registry
+     *
      * @param key registry key to look up
      * @return value of the registry key, or {@code null} on error
      */
@@ -46,11 +47,12 @@ public class ClientUtils {
 
     /**
      * spawns {@code count} particles at the given {@code position} in a {@code size} sized area
-     * @param type particle type to spawn
-     * @param count how many particles to spawn
+     *
+     * @param type     particle type to spawn
+     * @param count    how many particles to spawn
      * @param position position to spawn the particles at
-     * @param size size of an area the particles should spawn in
-     * @param speed speed of particles in random directions
+     * @param size     size of an area the particles should spawn in
+     * @param speed    speed of particles in random directions
      */
     public static void spawnParticles(ParticleOptions type, int count, Vec3 position, Vec3 size, double speed) {
         Minecraft minecraft = Minecraft.getInstance();
@@ -76,9 +78,10 @@ public class ClientUtils {
 
     /**
      * gives the combined sky/block light at the given {@code pos} position, with block light clamped to {@code minLight}
+     *
      * @param lightReader level to get the light from
-     * @param pos position to get the light at
-     * @param minLight minimum block light value
+     * @param pos         position to get the light at
+     * @param minLight    minimum block light value
      * @return combined sky/block light
      */
     public static int getCombinedLightWithMin(BlockAndTintGetter lightReader, BlockPos pos, int minLight) {
@@ -95,6 +98,7 @@ public class ClientUtils {
 
     /**
      * triggers the minecraft takes screenshot method with the given RenderTarget
+     *
      * @param fb RenderTarget to capture the screenshot from
      */
     public static void takeScreenshot(RenderTarget fb) {

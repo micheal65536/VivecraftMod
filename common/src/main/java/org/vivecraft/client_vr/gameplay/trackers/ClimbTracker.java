@@ -19,18 +19,19 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.joml.Vector3f;
 import org.vivecraft.client.VivecraftVRMod;
 import org.vivecraft.client.network.ClientNetworking;
-import org.vivecraft.data.BlockTags;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.extensions.PlayerExtension;
 import org.vivecraft.client_vr.gameplay.VRPlayer;
 import org.vivecraft.client_vr.provider.ControllerType;
 import org.vivecraft.common.network.packet.c2s.ClimbingPayloadC2S;
+import org.vivecraft.data.BlockTags;
 import org.vivecraft.server.config.ClimbeyBlockmode;
 
 import java.util.*;
 
 public class ClimbTracker extends Tracker {
-    public static final ModelResourceLocation CLAWS_MODEL = new ModelResourceLocation("vivecraft", "climb_claws", "inventory");
+    public static final ModelResourceLocation CLAWS_MODEL = new ModelResourceLocation("vivecraft", "climb_claws",
+        "inventory");
 
     public Set<Block> blocklist = new HashSet<>();
     public ClimbeyBlockmode serverBlockmode = ClimbeyBlockmode.DISABLED;
@@ -126,7 +127,8 @@ public class ClimbTracker extends Tracker {
                 return false;
             } else {
                 BlockPos above2 = above.above();
-                VoxelShape above2BlockShape = player.level().getBlockState(above2).getCollisionShape(player.level(), above2);
+                VoxelShape above2BlockShape = player.level().getBlockState(above2)
+                    .getCollisionShape(player.level(), above2);
                 return above2BlockShape.isEmpty() || above2BlockShape.bounds().maxY <= 0.0D;
             }
         } else {
@@ -267,19 +269,27 @@ public class ClimbTracker extends Tracker {
                         //if (blockState.getValue(VineBlock.UP) && this.mc.level.getBlockState(blockPos.above()).canOcclude())
                         //	bbs.add(upBB);
 
-                        if (blockState.getValue(VineBlock.NORTH) && this.mc.level.getBlockState(blockPos.north()).canOcclude()) {
+                        if (blockState.getValue(VineBlock.NORTH) &&
+                            this.mc.level.getBlockState(blockPos.north()).canOcclude())
+                        {
                             BBs.add(this.southBB);
                         }
 
-                        if (blockState.getValue(VineBlock.EAST) && this.mc.level.getBlockState(blockPos.east()).canOcclude()) {
+                        if (blockState.getValue(VineBlock.EAST) &&
+                            this.mc.level.getBlockState(blockPos.east()).canOcclude())
+                        {
                             BBs.add(this.westBB);
                         }
 
-                        if (blockState.getValue(VineBlock.SOUTH) && this.mc.level.getBlockState(blockPos.south()).canOcclude()) {
+                        if (blockState.getValue(VineBlock.SOUTH) &&
+                            this.mc.level.getBlockState(blockPos.south()).canOcclude())
+                        {
                             BBs.add(this.northBB);
                         }
 
-                        if (blockState.getValue(VineBlock.WEST) && this.mc.level.getBlockState(blockPos.west()).canOcclude()) {
+                        if (blockState.getValue(VineBlock.WEST) &&
+                            this.mc.level.getBlockState(blockPos.west()).canOcclude())
+                        {
                             BBs.add(this.eastBB);
                         }
                     }
@@ -366,7 +376,8 @@ public class ClimbTracker extends Tracker {
                 }
 
                 if ((!this.wasInBlock[c] && this.inBlock[c] && button[c]) ||
-                    (!this.wasButton[c] && button[c] && this.inBlock[c])) {
+                    (!this.wasButton[c] && button[c] && this.inBlock[c]))
+                {
                     // Grab
                     grabbed = true;
                     this.wantJump = false;
@@ -388,7 +399,8 @@ public class ClimbTracker extends Tracker {
                     ((PlayerExtension) this.mc.player).vivecraft$stepSound(blockPos, this.latchStart[c]);
 
                     if (!ladder) { // dust when climbey grabbing
-                        this.dh.vrPlayer.blockDust(this.latchStart[c].x, this.latchStart[c].y, this.latchStart[c].z, 5, blockPos, blockState, 0.1F, 0.2F);
+                        this.dh.vrPlayer.blockDust(this.latchStart[c].x, this.latchStart[c].y, this.latchStart[c].z, 5,
+                            blockPos, blockState, 0.1F, 0.2F);
                     }
                 }
             }
@@ -414,14 +426,16 @@ public class ClimbTracker extends Tracker {
                     if (!ladder) {
                         BlockPos blockPos = BlockPos.containing(this.latchStart[c]);
                         BlockState blockState = this.mc.level.getBlockState(blockPos);
-                        this.dh.vrPlayer.blockDust(this.latchStart[c].x, this.latchStart[c].y, this.latchStart[c].z, 5, blockPos, blockState, 0.1F, 0.2F);
+                        this.dh.vrPlayer.blockDust(this.latchStart[c].x, this.latchStart[c].y, this.latchStart[c].z, 5,
+                            blockPos, blockState, 0.1F, 0.2F);
                     }
                 }
             }
         }
 
         if (!this.wantJump && !ladder) {
-            this.wantJump = VivecraftVRMod.INSTANCE.keyClimbeyJump.isDown() && JumpTracker.hasClimbeyJumpEquipped(player);
+            this.wantJump =
+                VivecraftVRMod.INSTANCE.keyClimbeyJump.isDown() && JumpTracker.hasClimbeyJumpEquipped(player);
         }
 
         jump &= this.wantJump;
@@ -453,16 +467,20 @@ public class ClimbTracker extends Tracker {
             if (!ladder) {
                 BlockPos blockPos = BlockPos.containing(this.latchStart[this.latchStartController]);
                 BlockState blockState = this.mc.level.getBlockState(blockPos);
-                this.dh.vrPlayer.blockDust(this.latchStart[this.latchStartController].x, this.latchStart[this.latchStartController].y, this.latchStart[this.latchStartController].z, 1, blockPos, blockState, 0.1F, 0.2F);
+                this.dh.vrPlayer.blockDust(this.latchStart[this.latchStartController].x,
+                    this.latchStart[this.latchStartController].y, this.latchStart[this.latchStartController].z, 1,
+                    blockPos, blockState, 0.1F, 0.2F);
             }
         }
 
         Vec3 now = this.dh.vrPlayer.vrdata_world_pre.getController(this.latchStartController).getPosition();
-        Vec3 start = VRPlayer.roomToWorldPos(this.latchStart_room[this.latchStartController], this.dh.vrPlayer.vrdata_world_pre);
+        Vec3 start = VRPlayer.roomToWorldPos(this.latchStart_room[this.latchStartController],
+            this.dh.vrPlayer.vrdata_world_pre);
 
         Vec3 delta = now.subtract(start);
 
-        this.latchStart_room[this.latchStartController] = this.dh.vrPlayer.vrdata_room_pre.getController(this.latchStartController).getPositionF();
+        this.latchStart_room[this.latchStartController] = this.dh.vrPlayer.vrdata_room_pre.getController(
+            this.latchStartController).getPositionF();
 
         if (this.wantJump) {
             // bzzzzzz
@@ -510,14 +528,17 @@ public class ClimbTracker extends Tracker {
             }
 
             double hmd = this.dh.vrPlayer.vrdata_room_pre.getHeadPivot().y;
-            double controller = this.dh.vrPlayer.vrdata_room_pre.getController(this.latchStartController).getPosition().y;
+            double controller = this.dh.vrPlayer.vrdata_room_pre.getController(this.latchStartController)
+                .getPosition().y;
 
             // check for getting off on top
             if (!this.wantJump && // not jumping
                 this.latchBox[this.latchStartController] != null && // uhh why?
                 controller <= hmd / 2.0D && // hands down below waist
-                this.latchStart[this.latchStartController].y > this.latchBox[this.latchStartController].maxY * 0.8D + blockPos.getY() // latched onto top 20% of block
-            ) {
+                this.latchStart[this.latchStartController].y > this.latchBox[this.latchStartController].maxY * 0.8D +
+                    blockPos.getY() // latched onto top 20% of block
+            )
+            {
                 Vector3f horizontalDir = this.dh.vrPlayer.vrdata_world_pre.hmd.getDirection();
                 horizontalDir.y = 0.0F;
                 horizontalDir.normalize().mul(0.1F); // check if free spot
@@ -623,8 +644,9 @@ public class ClimbTracker extends Tracker {
     /**
      * checks if the given {@code blockState} is a climbable trapdoor, they are climbable when they are open and have a ladder below them
      * copied from {@link net.minecraft.world.entity.LivingEntity#trapdoorUsableAsLadder(BlockPos, BlockState)}
-     * @param level level the {@code blockState} is from
-     * @param blockPos position of the {@code blockState}
+     *
+     * @param level      level the {@code blockState} is from
+     * @param blockPos   position of the {@code blockState}
      * @param blockState BlockState to check
      * @return if the block is a climbable trapdoor
      */
@@ -638,7 +660,7 @@ public class ClimbTracker extends Tracker {
     }
 
     private boolean allowed(BlockState bs) {
-        return switch(this.serverBlockmode) {
+        return switch (this.serverBlockmode) {
             case DISABLED -> true;
             case WHITELIST -> this.blocklist.contains(bs.getBlock());
             case BLACKLIST -> !this.blocklist.contains(bs.getBlock());

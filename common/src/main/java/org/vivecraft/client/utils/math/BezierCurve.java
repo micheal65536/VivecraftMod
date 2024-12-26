@@ -45,7 +45,7 @@ public class BezierCurve {
      * the same amount of intermediate Vertices as longer paths between Nodes.
      *
      * @param perc position on Path in interval [0,1] (inclusive interval)
-     * */
+     */
     public Vec3 getPointOnPath(double perc) {
         // first node is counted as another virtual node if we are circular
         int nodeCount = this.circular ? this.nodes.size() : this.nodes.size() - 1;

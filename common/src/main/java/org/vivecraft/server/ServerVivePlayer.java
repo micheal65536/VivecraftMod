@@ -35,7 +35,8 @@ public class ServerVivePlayer {
 
     /**
      * transforms the local {@code direction} vector on limb {@code limb} into world space
-     * @param limb limb to get the direction on, if not available, will use the MAIN_HAND
+     *
+     * @param limb      limb to get the direction on, if not available, will use the MAIN_HAND
      * @param direction local direction to transform
      * @return direction in world space
      */
@@ -105,7 +106,7 @@ public class ServerVivePlayer {
     }
 
     /**
-     * @param limb limb to get the position for, if not available, will use the MAIN_HAND
+     * @param limb         limb to get the position for, if not available, will use the MAIN_HAND
      * @param realPosition if true disables the seated override
      * @return controller position in world space
      */
@@ -128,7 +129,7 @@ public class ServerVivePlayer {
                     dir.z * 0.3F * this.worldScale);
             }
 
-            Vector3fc conPos = switch(limb) {
+            Vector3fc conPos = switch (limb) {
                 case OFF_HAND -> this.vrPlayerState.offHand().position();
                 case LEFT_FOOT -> this.vrPlayerState.leftFoot().position();
                 case RIGHT_FOOT -> this.vrPlayerState.rightFoot().position();

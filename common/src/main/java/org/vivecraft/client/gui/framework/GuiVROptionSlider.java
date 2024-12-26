@@ -15,7 +15,9 @@ public class GuiVROptionSlider extends AbstractSliderButton implements GuiVROpti
     private int id = -1;
     private final boolean valueOnly;
 
-    public GuiVROptionSlider(int id, int x, int y, int width, int height, VRSettings.VrOptions option, boolean valueOnly) {
+    public GuiVROptionSlider(
+        int id, int x, int y, int width, int height, VRSettings.VrOptions option, boolean valueOnly)
+    {
         super(x, y, width, height,
             Component.literal(ClientDataHolderVR.getInstance().vrSettings.getButtonDisplayString(option, valueOnly)),
             option.normalizeValue(ClientDataHolderVR.getInstance().vrSettings.getOptionFloatValue(option)));
@@ -25,7 +27,9 @@ public class GuiVROptionSlider extends AbstractSliderButton implements GuiVROpti
         this.valueOnly = valueOnly;
 
         ClientDataHolderVR dataholder = ClientDataHolderVR.getInstance();
-        if (dataholder.vrSettings.overrides.hasSetting(option) && dataholder.vrSettings.overrides.getSetting(option).isValueOverridden()) {
+        if (dataholder.vrSettings.overrides.hasSetting(option) &&
+            dataholder.vrSettings.overrides.getSetting(option).isValueOverridden())
+        {
             this.active = false;
         }
     }
@@ -36,7 +40,8 @@ public class GuiVROptionSlider extends AbstractSliderButton implements GuiVROpti
 
     @Override
     protected void updateMessage() {
-        this.setMessage(Component.literal(ClientDataHolderVR.getInstance().vrSettings.getButtonDisplayString(this.enumOptions, this.valueOnly)));
+        this.setMessage(Component.literal(
+            ClientDataHolderVR.getInstance().vrSettings.getButtonDisplayString(this.enumOptions, this.valueOnly)));
     }
 
     @Override

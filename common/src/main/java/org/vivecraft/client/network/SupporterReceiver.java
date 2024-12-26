@@ -46,7 +46,7 @@ public class SupporterReceiver {
                                 }
                             }
                         } catch (Exception e) {
-                            VRSettings.LOGGER.error("Vivecraft: error with supporters txt: {}", user,  e);
+                            VRSettings.LOGGER.error("Vivecraft: error with supporters txt: {}", user, e);
                         }
                     }
 
@@ -74,8 +74,10 @@ public class SupporterReceiver {
                         String viveModSupportersUrl = "https://raw.githubusercontent.com/Vivecraft/VivecraftSupporters/supporters/supporters.txt";
                         new Thread(() -> {
                             try {
-                                String ogSupporters = IOUtils.toString(new URL(ogSupportersUrl), StandardCharsets.UTF_8);
-                                String viveModSupporters = IOUtils.toString(new URL(viveModSupportersUrl), StandardCharsets.UTF_8);
+                                String ogSupporters = IOUtils.toString(new URL(ogSupportersUrl),
+                                    StandardCharsets.UTF_8);
+                                String viveModSupporters = IOUtils.toString(new URL(viveModSupportersUrl),
+                                    StandardCharsets.UTF_8);
                                 fileDownloadFinished(ogSupportersUrl, ogSupporters, false);
                                 fileDownloadFinished(viveModSupportersUrl, viveModSupporters, true);
                                 synchronized (LOCK) {
@@ -87,7 +89,8 @@ public class SupporterReceiver {
                         }).start();
                     }
                 } else {
-                    ClientVRPlayers.getInstance().setHMD(p.getUUID(), CACHE.getOrDefault(p.getGameProfile().getName().toLowerCase(), 0));
+                    ClientVRPlayers.getInstance()
+                        .setHMD(p.getUUID(), CACHE.getOrDefault(p.getGameProfile().getName().toLowerCase(), 0));
                 }
             }
         }

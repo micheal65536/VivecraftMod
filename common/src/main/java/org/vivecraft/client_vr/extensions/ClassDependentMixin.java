@@ -15,6 +15,7 @@ public @interface ClassDependentMixin {
     /**
      * The classname of the class that should be present to
      * load the mixin annotated with this Interface.
+     *
      * @return The String classname.
      */
     String value();

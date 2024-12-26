@@ -7,11 +7,11 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.material.FogType;
 import org.joml.Vector3f;
-import org.vivecraft.common.utils.MathUtils;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.VRData;
 import org.vivecraft.client_vr.render.helpers.RenderHelper;
 import org.vivecraft.client_xr.render_pass.RenderPassType;
+import org.vivecraft.common.utils.MathUtils;
 
 /**
  * an extension of the Camera, to correctly set up the camera position for the current pass
@@ -19,14 +19,17 @@ import org.vivecraft.client_xr.render_pass.RenderPassType;
 public class XRCamera extends Camera {
     /**
      * override to position the camera for the current pass
-     * @param level rendered level
-     * @param entity camera entity
-     * @param detached third or first person
+     *
+     * @param level              rendered level
+     * @param entity             camera entity
+     * @param detached           third or first person
      * @param thirdPersonReverse front or back third person
-     * @param partialTick current partial tick
+     * @param partialTick        current partial tick
      */
     @Override
-    public void setup(BlockGetter level, Entity entity, boolean detached, boolean thirdPersonReverse, float partialTick) {
+    public void setup(
+        BlockGetter level, Entity entity, boolean detached, boolean thirdPersonReverse, float partialTick)
+    {
         if (RenderPassType.isVanilla()) {
             super.setup(level, entity, detached, thirdPersonReverse, partialTick);
             return;
@@ -68,6 +71,7 @@ public class XRCamera extends Camera {
 
     /**
      * the detached state is used to check if the player should be rendered, we only want that in external passes
+     *
      * @return if the camera is not first person
      */
     @Override
@@ -86,7 +90,7 @@ public class XRCamera extends Camera {
     /**
      * gets the fluid state of the camera
      * we override this because some mods call this, when querying the sunrise color in the menu world, where the level is null
-      */
+     */
     @Override
     public FogType getFluidInCamera() {
         if (this.level == null) {

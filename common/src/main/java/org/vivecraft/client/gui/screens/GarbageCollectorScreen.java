@@ -37,7 +37,8 @@ public class GarbageCollectorScreen extends Screen {
             Component.literal("-XX:+UseZGC").withStyle(s -> s
                 .withColor(ChatFormatting.GOLD)
                 .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, "-XX:+UseZGC"))
-                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click")))),
+                .withHoverEvent(
+                    new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click")))),
             Component.translatable("vivecraft.gui.openguide").withStyle(style -> style
                 .withUnderlined(true)
                 .withColor(ChatFormatting.GREEN)

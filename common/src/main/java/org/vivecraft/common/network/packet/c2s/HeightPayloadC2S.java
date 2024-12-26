@@ -5,6 +5,7 @@ import org.vivecraft.common.network.packet.PayloadIdentifier;
 
 /**
  * holds the clients height scale
+ *
  * @param heightScale players calibrated height scale
  */
 public record HeightPayloadC2S(float heightScale) implements VivecraftPayloadC2S {

@@ -1,7 +1,10 @@
 package org.vivecraft.client_vr.render.helpers;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -99,24 +102,30 @@ public class VRWidgetHelper {
 
     /**
      * renders a camera model with screen
-     * @param poseStack PoseStack used for positioning
-     * @param offsetX model x offset
-     * @param offsetY model y offset
-     * @param offsetZ model z offset
-     * @param scale size of the model
-     * @param renderPass RenderPass this camera shows, the camera will be placed there
-     * @param model camera model to render
-     * @param displayModel model of the display that shows the camera view
+     *
+     * @param poseStack       PoseStack used for positioning
+     * @param offsetX         model x offset
+     * @param offsetY         model y offset
+     * @param offsetZ         model z offset
+     * @param scale           size of the model
+     * @param renderPass      RenderPass this camera shows, the camera will be placed there
+     * @param model           camera model to render
+     * @param displayModel    model of the display that shows the camera view
      * @param displayBindFunc function that binds the camera buffer, or something else
      * @param displayFaceFunc function that specifies if the view should be mirrored, normal or not shown at all
      */
-    public static void renderVRCameraWidget(PoseStack poseStack, float offsetX, float offsetY, float offsetZ, float scale, RenderPass renderPass, ModelResourceLocation model, ModelResourceLocation displayModel, Runnable displayBindFunc, Function<Direction, DisplayFace> displayFaceFunc) {
+    public static void renderVRCameraWidget(
+        PoseStack poseStack, float offsetX, float offsetY, float offsetZ, float scale, RenderPass renderPass,
+        ModelResourceLocation model, ModelResourceLocation displayModel, Runnable displayBindFunc,
+        Function<Direction, DisplayFace> displayFaceFunc)
+    {
 
         poseStack.pushPose();
 
         // model position relative to the view position
         Vec3 widgetPosition = DATA_HOLDER.vrPlayer.vrdata_world_render.getEye(renderPass).getPosition();
-        Vec3 eye = RenderHelper.getSmoothCameraPosition(DATA_HOLDER.currentPass, DATA_HOLDER.vrPlayer.vrdata_world_render);
+        Vec3 eye = RenderHelper.getSmoothCameraPosition(DATA_HOLDER.currentPass,
+            DATA_HOLDER.vrPlayer.vrdata_world_render);
         Vector3f widgetOffset = MathUtils.subtractToVector3f(widgetPosition, eye);
 
         // orient and scale model
@@ -138,7 +147,8 @@ public class VRWidgetHelper {
         poseStack.translate(offsetX, offsetY, offsetZ);
 
         // lighting for the model
-        BlockPos blockpos = BlockPos.containing(DATA_HOLDER.vrPlayer.vrdata_world_render.getEye(renderPass).getPosition());
+        BlockPos blockpos = BlockPos.containing(
+            DATA_HOLDER.vrPlayer.vrdata_world_render.getEye(renderPass).getPosition());
         int combinedLight = ClientUtils.getCombinedLightWithMin(MC.level, blockpos, 0);
 
         RenderSystem.enableDepthTest();
@@ -159,7 +169,9 @@ public class VRWidgetHelper {
         // render camera model
         bufferBuilder.begin(Mode.QUADS, DefaultVertexFormat.NEW_ENTITY);
 
-        MC.getBlockRenderer().getModelRenderer().renderModel(poseStack.last(), bufferBuilder, null, MC.getModelManager().getModel(model), 1.0F, 1.0F, 1.0F, combinedLight, OverlayTexture.NO_OVERLAY);
+        MC.getBlockRenderer().getModelRenderer()
+            .renderModel(poseStack.last(), bufferBuilder, null, MC.getModelManager().getModel(model), 1.0F, 1.0F, 1.0F,
+                combinedLight, OverlayTexture.NO_OVERLAY);
         tesselator.end();
 
         // render camera display
@@ -171,7 +183,9 @@ public class VRWidgetHelper {
 
         // need to render this manually, because the uvs in the model are for the atlas texture, and not fullscreen
         for (BakedQuad bakedquad : MC.getModelManager().getModel(displayModel).getQuads(null, null, RANDOM)) {
-            if (displayFaceFunc.apply(bakedquad.getDirection()) != DisplayFace.NONE && bakedquad.getSprite().contents().name().equals(TRANSPARENT_TEXTURE)) {
+            if (displayFaceFunc.apply(bakedquad.getDirection()) != DisplayFace.NONE &&
+                bakedquad.getSprite().contents().name().equals(TRANSPARENT_TEXTURE))
+            {
                 int[] vertexList = bakedquad.getVertices();
                 boolean mirrored = displayFaceFunc.apply(bakedquad.getDirection()) == DisplayFace.MIRROR;
                 int step = vertexList.length / 4;

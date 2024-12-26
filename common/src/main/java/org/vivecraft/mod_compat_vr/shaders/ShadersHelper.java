@@ -10,6 +10,7 @@ public class ShadersHelper {
 
     /**
      * gets the minimum light to apply to hand/gui, depending on if shaders are active or not
+     *
      * @return minimum light to apply
      */
     public static int ShaderLight() {
@@ -36,7 +37,9 @@ public class ShadersHelper {
      */
     public static boolean isRenderingShadows() {
         return (IrisHelper.isLoaded() && IrisHelper.isShaderActive() && IrisHelper.isRenderingShadows()) ||
-            (OptifineHelper.isOptifineLoaded() && OptifineHelper.isShaderActive() && OptifineHelper.isRenderingShadows());
+            (OptifineHelper.isOptifineLoaded() && OptifineHelper.isShaderActive() &&
+                OptifineHelper.isRenderingShadows()
+            );
     }
 
     /**

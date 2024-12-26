@@ -312,7 +312,9 @@ public class ConfigBuilder {
     public static class InListValue<T> extends ConfigValue<T> {
         private final Collection<? extends T> validValues;
 
-        public InListValue(CommentedConfig config, List<String> path, T defaultValue, Collection<? extends T> validValues) {
+        public InListValue(
+            CommentedConfig config, List<String> path, T defaultValue, Collection<? extends T> validValues)
+        {
             super(config, path, defaultValue);
             this.validValues = validValues;
         }
@@ -329,6 +331,7 @@ public class ConfigBuilder {
 
     public static class EnumValue<T extends Enum<T>> extends ConfigValue<T> {
         private final Class<T> enumClass;
+
         public EnumValue(CommentedConfig config, List<String> path, T defaultValue, Class<T> enumClass) {
             super(config, path, defaultValue);
             this.enumClass = enumClass;
@@ -372,7 +375,9 @@ public class ConfigBuilder {
         }
 
         public double normalize() {
-            return Mth.clamp((this.get().doubleValue() - this.min.doubleValue()) / (this.max.doubleValue() - this.min.doubleValue()), 0.0D, 1.0D);
+            return Mth.clamp(
+                (this.get().doubleValue() - this.min.doubleValue()) / (this.max.doubleValue() - this.min.doubleValue()),
+                0.0D, 1.0D);
         }
 
         abstract public void fromNormalized(double value);

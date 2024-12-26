@@ -20,12 +20,12 @@ public class MultilineComponent extends AbstractWidget {
     private final List<FormattedCharSequence> text;
 
     /**
-     * @param x x position, when {@code centered} is active, this is the center, else it's the left edge
-     * @param y y position, top edge of the text
-     * @param width width the text should be wrapped to
-     * @param message Text to show
+     * @param x        x position, when {@code centered} is active, this is the center, else it's the left edge
+     * @param y        y position, top edge of the text
+     * @param width    width the text should be wrapped to
+     * @param message  Text to show
      * @param centered centered text orr left aligned
-     * @param font Font to use
+     * @param font     Font to use
      */
     public MultilineComponent(int x, int y, int width, Component message, boolean centered, Font font) {
         super(centered ? x - width / 2 : x, y, width, 0, message);

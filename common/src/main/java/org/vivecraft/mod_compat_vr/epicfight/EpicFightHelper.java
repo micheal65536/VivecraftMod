@@ -14,6 +14,7 @@ public class EpicFightHelper {
 
     /**
      * triggers the epic fight attack
+     *
      * @return if this handled the attack
      */
     public static boolean attack() {

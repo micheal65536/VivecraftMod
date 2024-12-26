@@ -16,6 +16,8 @@ import org.joml.Vector3fc;
 import org.vivecraft.client.extensions.SparkParticleExtension;
 import org.vivecraft.client.utils.ClientUtils;
 import org.vivecraft.client.utils.ModelUtils;
+import org.vivecraft.client_vr.ClientDataHolderVR;
+import org.vivecraft.client_vr.VRData;
 import org.vivecraft.client_vr.VRState;
 import org.vivecraft.client_vr.extensions.GameRendererExtension;
 import org.vivecraft.client_vr.provider.MCVR;
@@ -23,10 +25,8 @@ import org.vivecraft.client_vr.render.helpers.RenderHelper;
 import org.vivecraft.client_vr.settings.AutoCalibration;
 import org.vivecraft.client_vr.settings.VRSettings;
 import org.vivecraft.common.network.FBTMode;
-import org.vivecraft.common.utils.MathUtils;
-import org.vivecraft.client_vr.ClientDataHolderVR;
-import org.vivecraft.client_vr.VRData;
 import org.vivecraft.common.network.VrPlayerState;
+import org.vivecraft.common.utils.MathUtils;
 
 import java.util.*;
 
@@ -69,6 +69,7 @@ public class ClientVRPlayers {
 
     /**
      * checks if there is VR data for the given player
+     *
      * @param player Player to check
      * @return true if data is available
      */
@@ -78,6 +79,7 @@ public class ClientVRPlayers {
 
     /**
      * checks if there is VR data for the given UUID of a player
+     *
      * @param uuid UUID to check
      * @return true if data is available
      */
@@ -88,6 +90,7 @@ public class ClientVRPlayers {
 
     /**
      * checks if the given player is in VR and using reversed hands, without lerping the RotInfo
+     *
      * @param uuid UUID of the player
      * @return if the player is in VR and using reversed hands
      */
@@ -339,8 +342,8 @@ public class ClientVRPlayers {
                         new Quaternionf());
                     lerpRotInfo.leftElbowQuat = lastRotInfo.leftElbowQuat.nlerp(newRotInfo.leftElbowQuat, partialTick,
                         new Quaternionf());
-                    lerpRotInfo.rightElbowQuat = lastRotInfo.rightElbowQuat.nlerp(newRotInfo.rightElbowQuat, partialTick,
-                        new Quaternionf());
+                    lerpRotInfo.rightElbowQuat = lastRotInfo.rightElbowQuat.nlerp(newRotInfo.rightElbowQuat,
+                        partialTick, new Quaternionf());
                 }
             }
 
@@ -352,7 +355,8 @@ public class ClientVRPlayers {
 
     /**
      * returns the RotInfo object for the current client VR state
-     * @param player player to center the data around
+     *
+     * @param player      player to center the data around
      * @param partialTick partial tick to get the player position
      * @return up to date RotInfo
      */
@@ -389,7 +393,7 @@ public class ClientVRPlayers {
 
         Vec3 pos;
         if (player == Minecraft.getInstance().player) {
-            pos = ((GameRendererExtension)Minecraft.getInstance().gameRenderer).vivecraft$getRvePos(partialTick);
+            pos = ((GameRendererExtension) Minecraft.getInstance().gameRenderer).vivecraft$getRvePos(partialTick);
         } else {
             pos = player.getPosition(partialTick);
         }
@@ -444,7 +448,7 @@ public class ClientVRPlayers {
      * @return the yaw of the direction the head is oriented in, no matter their pitch
      * Is not the same as the hmd yaw. Creates better results at extreme pitches
      * Simplified: Takes hmd-forward when looking at horizon, takes hmd-up when looking at ground.
-     * */
+     */
     public static float getFacingYaw(RotInfo rotInfo) {
         Vector3f facingVec = getOrientVec(rotInfo.headQuat);
         return (float) Math.toDegrees(Math.atan2(facingVec.x, facingVec.z));
@@ -494,7 +498,7 @@ public class ClientVRPlayers {
         public Quaternionfc leftElbowQuat;
 
         /**
-         *  IMPORTANT!!! when changing this, also change {@link VRData#getBodyYawRad()}
+         * IMPORTANT!!! when changing this, also change {@link VRData#getBodyYawRad()}
          */
         public float getBodyYawRad() {
             Vector3f dir = new Vector3f();

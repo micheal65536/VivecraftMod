@@ -29,9 +29,10 @@ public class FileUtils {
 
     /**
      * unpacks an asset through the Resource manager, this means a resource pack can override the file
+     *
      * @param sourcePath Path to the source file inside the mods assets
      * @param targetFile File to the destination file on disk
-     * @param required if set and an error occurs, it will not be caught
+     * @param required   if set and an error occurs, it will not be caught
      */
     public static void unpackAsset(String sourcePath, String targetFile, boolean required) {
         try {
@@ -46,16 +47,17 @@ public class FileUtils {
                 // couldn't get asset from ResourceManager, unpack directly from jar
                 unpackFile("assets/vivecraft/" + sourcePath, targetFile, required);
             }
-        } catch(Exception exception) {
+        } catch (Exception exception) {
             handleAssetException(exception, sourcePath, required);
         }
     }
 
     /**
      * unpacks an asset through the Resource manager, this means a resource pack can override the file
-     * @param sourcePath Path to the source file inside the mods assets
+     *
+     * @param sourcePath   Path to the source file inside the mods assets
      * @param targetFolder Folder where to write file on disk, with the same sub folder structure as {@code sourcePath}
-     * @param required if set and an error occurs, it will not be caught
+     * @param required     if set and an error occurs, it will not be caught
      */
     public static void unpackAssetToFolder(String sourcePath, String targetFolder, boolean required) {
         unpackAsset(sourcePath, targetFolder + "/" + sourcePath, required);
@@ -73,9 +75,10 @@ public class FileUtils {
 
     /**
      * unpacks the given file at the given {@code sourcePath} to the given {@code targetFile} on disk
+     *
      * @param sourcePath Path to the source file inside the mod jar
      * @param targetFile File to the destination file on disk
-     * @param required if set and an error occurs, it will not be caught
+     * @param required   if set and an error occurs, it will not be caught
      * @return if a file was unpacked
      */
     private static boolean unpackFile(Path sourcePath, File targetFile, boolean required) {
@@ -95,9 +98,10 @@ public class FileUtils {
 
     /**
      * unpacks the given {@code sourceFile} to the given {@code targetFile} on disk
+     *
      * @param sourceFile path to the source file inside the mod jar
      * @param targetFile path to the destination file on disk
-     * @param required if set and an error occurs, it will not be caught
+     * @param required   if set and an error occurs, it will not be caught
      * @return if a file was unpacked
      */
     public static boolean unpackFile(String sourceFile, String targetFile, boolean required) {
@@ -106,6 +110,7 @@ public class FileUtils {
 
     /**
      * unpacks all files in the given {@code source} folder to the given {@code target} folder
+     *
      * @param source path to the source folder inside the mod jar
      * @param target path to the destination folder on disk
      * @return if a file was unpacked
@@ -134,9 +139,10 @@ public class FileUtils {
 
     /**
      * reads the first line of a text file from the given {@code url}
+     *
      * @param url url to the source file
      * @return first line in the source text file
-     * @throws IOException if an error occurred connecting to the url
+     * @throws IOException          if an error occurred connecting to the url
      * @throws UncheckedIOException if a read error occurred
      */
     public static String httpReadLine(String url) throws IOException {
@@ -154,9 +160,10 @@ public class FileUtils {
 
     /**
      * reads a text file from the given {@code url} and returns a list of all lines
+     *
      * @param url url to the source file
      * @return List of all lines in the source text file
-     * @throws IOException if an error occurred connecting to the url
+     * @throws IOException          if an error occurred connecting to the url
      * @throws UncheckedIOException if a read error occurred
      */
     public static List<String> httpReadAllLines(String url) throws IOException, UncheckedIOException {
@@ -167,7 +174,8 @@ public class FileUtils {
 
     /**
      * writes the data from the given {@code url} to the {@code file} location
-     * @param url url to the source file
+     *
+     * @param url  url to the source file
      * @param file File object to write to
      * @throws IOException if a write/read error occurred
      */
@@ -177,6 +185,7 @@ public class FileUtils {
 
     /**
      * generates a checksum for the given file
+     *
      * @param file      File to get the checksum for
      * @param algorithm checksum type to generate
      * @return hex string of the checksum
@@ -186,7 +195,7 @@ public class FileUtils {
     public static String getFileChecksum(File file, String algorithm) throws IOException, NoSuchAlgorithmException {
         // read file
         byte[] bytes;
-        try (InputStream is = new FileInputStream(file)){
+        try (InputStream is = new FileInputStream(file)) {
             bytes = IOUtils.toByteArray(is);
         }
 

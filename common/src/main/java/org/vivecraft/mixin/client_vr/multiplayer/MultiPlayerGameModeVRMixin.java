@@ -37,14 +37,17 @@ public class MultiPlayerGameModeVRMixin {
         Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir)
     {
         if (VRState.VR_RUNNING) {
-            ClientNetworking.overrideLook(player, ClientDataHolderVR.getInstance().vrPlayer.getRightClickLookOverride(player, hand.ordinal()));
+            ClientNetworking.overrideLook(player,
+                ClientDataHolderVR.getInstance().vrPlayer.getRightClickLookOverride(player, hand.ordinal()));
         }
     }
 
     @Inject(method = "releaseUsingItem", at = @At("HEAD"))
     private void vivecraft$overrideReleaseUse(Player player, CallbackInfo ci) {
         if (VRState.VR_RUNNING) {
-            ClientNetworking.overrideLook(player, ClientDataHolderVR.getInstance().vrPlayer.getRightClickLookOverride(player, player.getUsedItemHand().ordinal()));
+            ClientNetworking.overrideLook(player,
+                ClientDataHolderVR.getInstance().vrPlayer.getRightClickLookOverride(player,
+                    player.getUsedItemHand().ordinal()));
         }
     }
 
@@ -53,7 +56,8 @@ public class MultiPlayerGameModeVRMixin {
         LocalPlayer player, InteractionHand hand, BlockHitResult result, CallbackInfoReturnable<InteractionResult> cir)
     {
         if (VRState.VR_RUNNING) {
-            ClientNetworking.overrideLook(player, result.getLocation().subtract(player.getEyePosition(1.0F)).normalize());
+            ClientNetworking.overrideLook(player,
+                result.getLocation().subtract(player.getEyePosition(1.0F)).normalize());
         }
     }
 
@@ -64,7 +68,8 @@ public class MultiPlayerGameModeVRMixin {
             // but still make both items work
             Limb lastLimb = ClientNetworking.LAST_SENT_LIMB;
             ClientNetworking.LAST_SENT_LIMB = Limb.MAIN_HAND;
-            boolean sameItem = original.call(stack, other) || original.call(this.minecraft.player.getOffhandItem(), other);
+            boolean sameItem =
+                original.call(stack, other) || original.call(this.minecraft.player.getOffhandItem(), other);
             ClientNetworking.LAST_SENT_LIMB = lastLimb;
             return sameItem;
         } else {

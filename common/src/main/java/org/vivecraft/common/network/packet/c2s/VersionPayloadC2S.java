@@ -6,11 +6,12 @@ import org.vivecraft.common.network.packet.PayloadIdentifier;
 
 /**
  * packet that holds the Vivecraft client version, mode and network version support
- * @param version Version String of the client
- * @param vr if the client was in vr when they connected
+ *
+ * @param version    Version String of the client
+ * @param vr         if the client was in vr when they connected
  * @param maxVersion maximum supported network protocol version
  * @param minVersion minimum supported network protocol version
- * @param legacy if the client is a legacy client, before the network protocol version was added
+ * @param legacy     if the client is a legacy client, before the network protocol version was added
  */
 public record VersionPayloadC2S(String version, boolean vr, int maxVersion, int minVersion,
                                 boolean legacy) implements VivecraftPayloadC2S
@@ -40,7 +41,7 @@ public record VersionPayloadC2S(String version, boolean vr, int maxVersion, int 
         buffer.readBytes(stringBytes);
         String[] parts = new String(stringBytes).split("\\n");
 
-        boolean vr = !parts[0]. contains("NONVR");
+        boolean vr = !parts[0].contains("NONVR");
         if (parts.length >= 3) {
             return new VersionPayloadC2S(parts[0], vr, Integer.parseInt(parts[1]), Integer.parseInt(parts[2]), false);
         } else {

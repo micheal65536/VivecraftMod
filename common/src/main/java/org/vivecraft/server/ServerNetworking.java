@@ -45,8 +45,9 @@ public class ServerNetworking {
 
     /**
      * handles a {@link VivecraftPayloadC2S} sent to the server
-     * @param c2sPayload payload that needs to be handled
-     * @param player ServerPlayer that sent the packet
+     *
+     * @param c2sPayload     payload that needs to be handled
+     * @param player         ServerPlayer that sent the packet
      * @param packetConsumer consumer to send packets back with
      */
     public static void handlePacket(
@@ -180,8 +181,8 @@ public class ServerNetworking {
                     sendPacketToTrackingPlayers(vivePlayer, new VRActivePayloadS2C(false, player.getUUID()));
                 }
             }
-            case DRAW -> vivePlayer.draw = ((DrawPayloadC2S)c2sPayload).draw();
-            case VR_PLAYER_STATE -> vivePlayer.vrPlayerState = ((VRPlayerStatePayloadC2S)c2sPayload).playerState();
+            case DRAW -> vivePlayer.draw = ((DrawPayloadC2S) c2sPayload).draw();
+            case VR_PLAYER_STATE -> vivePlayer.vrPlayerState = ((VRPlayerStatePayloadC2S) c2sPayload).playerState();
             case WORLDSCALE -> vivePlayer.worldScale = ((WorldScalePayloadC2S) c2sPayload).worldScale();
             case HEIGHT -> vivePlayer.heightScale = ((HeightPayloadC2S) c2sPayload).heightScale();
             case TELEPORT -> {
@@ -253,7 +254,8 @@ public class ServerNetworking {
                     LEGACY_DATA_MAP.remove(player.getUUID());
                 }
             }
-            default -> throw new IllegalStateException("Vivecraft: got unexpected packet on server: " + c2sPayload.payloadId());
+            default -> throw new IllegalStateException(
+                "Vivecraft: got unexpected packet on server: " + c2sPayload.payloadId());
         }
     }
 
@@ -279,6 +281,7 @@ public class ServerNetworking {
 
     /**
      * send the players VR data to all other players that can see them
+     *
      * @param vivePlayer player to send the VR data for
      */
     public static void sendVrPlayerStateToClients(ServerVivePlayer vivePlayer) {
@@ -295,19 +298,22 @@ public class ServerNetworking {
 
     /**
      * gets all players that can see {@code player}
+     *
      * @param player ServerPlayer to check
      * @return unmodifiableSet set of all other players that can see {@code player}
      */
     public static Set<ServerPlayerConnection> getTrackingPlayers(ServerPlayer player) {
         ChunkMap chunkMap = player.serverLevel().getChunkSource().chunkMap;
         TrackedEntityAccessor playerTracker = ((ChunkMapAccessor) chunkMap).getTrackedEntities().get(player.getId());
-        return playerTracker != null ? Collections.unmodifiableSet(playerTracker.getPlayersTracking()) : Collections.emptySet();
+        return playerTracker != null ? Collections.unmodifiableSet(playerTracker.getPlayersTracking()) :
+            Collections.emptySet();
     }
 
     /**
      * sends a packet to all players that can see {@code vivePlayer}
+     *
      * @param vivePlayer player that needs to be seen to get the packet
-     * @param payload payload to send
+     * @param payload    payload to send
      */
     private static void sendPacketToTrackingPlayers(ServerVivePlayer vivePlayer, VivecraftPayloadS2C payload) {
         Packet<?> packet = Xplat.getS2CPacket(payload);
@@ -316,7 +322,8 @@ public class ServerNetworking {
 
     /**
      * sends a packet to all players that can see {@code vivePlayer}
-     * @param vivePlayer player that needs to be seen to get the packet
+     *
+     * @param vivePlayer     player that needs to be seen to get the packet
      * @param packetProvider provider for network packets, based on client network version
      */
     private static void sendPacketToTrackingPlayers(

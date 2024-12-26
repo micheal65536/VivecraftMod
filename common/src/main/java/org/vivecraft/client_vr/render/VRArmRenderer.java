@@ -23,34 +23,46 @@ public class VRArmRenderer extends PlayerRenderer {
     }
 
     @Override
-    public void renderRightHand(PoseStack poseStack, MultiBufferSource buffer, int combinedLight, AbstractClientPlayer player) {
-        this.renderHand(ControllerType.RIGHT, poseStack, buffer, combinedLight, player, this.model.rightArm, this.model.rightSleeve);
+    public void renderRightHand(
+        PoseStack poseStack, MultiBufferSource buffer, int combinedLight, AbstractClientPlayer player)
+    {
+        this.renderHand(ControllerType.RIGHT, poseStack, buffer, combinedLight, player, this.model.rightArm,
+            this.model.rightSleeve);
     }
 
     @Override
-    public void renderLeftHand(PoseStack poseStack, MultiBufferSource buffer, int combinedLight, AbstractClientPlayer player) {
-        this.renderHand(ControllerType.LEFT, poseStack, buffer, combinedLight, player, this.model.leftArm, this.model.leftSleeve);
+    public void renderLeftHand(
+        PoseStack poseStack, MultiBufferSource buffer, int combinedLight, AbstractClientPlayer player)
+    {
+        this.renderHand(ControllerType.LEFT, poseStack, buffer, combinedLight, player, this.model.leftArm,
+            this.model.leftSleeve);
     }
 
     /**
      * renders the player hand<br>
      * copy of {@link PlayerRenderer#renderHand}
-     * @param side controller this hand belongs to
-     * @param poseStack PoseStack top use for rendering
-     * @param buffer MultiBufferSource to use
-     * @param combinedLight brightness of the hand
-     * @param player Player the hand is from
-     * @param rendererArm Arm to render
+     *
+     * @param side            controller this hand belongs to
+     * @param poseStack       PoseStack top use for rendering
+     * @param buffer          MultiBufferSource to use
+     * @param combinedLight   brightness of the hand
+     * @param player          Player the hand is from
+     * @param rendererArm     Arm to render
      * @param rendererArmwear Armor to render
      */
-    private void renderHand(ControllerType side, PoseStack poseStack, MultiBufferSource buffer, int combinedLight, AbstractClientPlayer player, ModelPart rendererArm, ModelPart rendererArmwear) {
+    private void renderHand(
+        ControllerType side, PoseStack poseStack, MultiBufferSource buffer, int combinedLight,
+        AbstractClientPlayer player, ModelPart rendererArm, ModelPart rendererArmwear)
+    {
         PlayerModel<AbstractClientPlayer> playerModel = this.getModel();
         this.setModelProperties(player);
 
         // blending, since we render the arm translucent
         RenderSystem.enableBlend();
         RenderSystem.enableCull();
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
+            GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
+            GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
         playerModel.attackTime = 0.0F;
         playerModel.crouching = false;
@@ -65,10 +77,12 @@ public class VRArmRenderer extends PlayerRenderer {
         ResourceLocation playerSkin = this.getTextureLocation(player);
 
         // render hand
-        rendererArm.render(poseStack, buffer.getBuffer(RenderType.entityTranslucent(playerSkin)), combinedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, alpha);
+        rendererArm.render(poseStack, buffer.getBuffer(RenderType.entityTranslucent(playerSkin)), combinedLight,
+            OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, alpha);
 
         // render armor
-        rendererArmwear.render(poseStack, buffer.getBuffer(RenderType.entityTranslucent(playerSkin)), combinedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, alpha);
+        rendererArmwear.render(poseStack, buffer.getBuffer(RenderType.entityTranslucent(playerSkin)), combinedLight,
+            OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, alpha);
 
         RenderSystem.disableBlend();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);

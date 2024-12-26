@@ -6,10 +6,10 @@ import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
-import org.vivecraft.common.utils.MathUtils;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.gameplay.VRPlayer;
 import org.vivecraft.client_vr.settings.VRSettings;
+import org.vivecraft.common.utils.MathUtils;
 
 public class HorseTracker extends Tracker {
     private static final double BOOST_TRIGGER = 1.4D;
@@ -75,8 +75,10 @@ public class HorseTracker extends Tracker {
         Vector3f left = MathUtils.LEFT.rotateY(-this.horse.yBodyRot, new Vector3f());
         Vector3f right = MathUtils.RIGHT.rotateY(-this.horse.yBodyRot, new Vector3f());
 
-        Vector3f roomPosL = this.dh.vr.controllerHistory[1].latest().rotateY(VRSettings.INSTANCE.worldRotation, new Vector3f());
-        Vector3f roomPosR = this.dh.vr.controllerHistory[0].latest().rotateY(VRSettings.INSTANCE.worldRotation, new Vector3f());
+        Vector3f roomPosL = this.dh.vr.controllerHistory[1].latest()
+            .rotateY(VRSettings.INSTANCE.worldRotation, new Vector3f());
+        Vector3f roomPosR = this.dh.vr.controllerHistory[0].latest()
+            .rotateY(VRSettings.INSTANCE.worldRotation, new Vector3f());
         Vec3 posL = VRPlayer.get().roomOrigin.add(roomPosL.x, roomPosL.y, roomPosL.z);
         Vec3 posR = VRPlayer.get().roomOrigin.add(roomPosR.x, roomPosR.y, roomPosR.z);
 

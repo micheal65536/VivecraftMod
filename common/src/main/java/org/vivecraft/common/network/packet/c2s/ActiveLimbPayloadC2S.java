@@ -8,6 +8,7 @@ import org.vivecraft.common.network.packet.PayloadIdentifier;
 
 /**
  * holds the clients current active limb, this is the limb that caused the next action
+ *
  * @param limb the active limb
  */
 public record ActiveLimbPayloadC2S(Limb limb) implements VivecraftPayloadC2S {

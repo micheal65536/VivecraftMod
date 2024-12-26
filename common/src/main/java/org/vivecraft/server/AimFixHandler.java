@@ -23,6 +23,7 @@ public class AimFixHandler extends ChannelInboundHandlerAdapter {
 
     /**
      * checks if the {@code msg}  uses the players aim, and changes it to the right position before handling
+     *
      * @param ctx context when not handling the message
      * @param msg Packet to handle
      */
@@ -100,7 +101,9 @@ public class AimFixHandler extends ChannelInboundHandlerAdapter {
             }
 
             // if the packed changed the player position, use that
-            if ((aimPos != null && !serverPlayer.position().equals(aimPos)) || (aimPos == null && !serverPlayer.position().equals(pos))) {
+            if ((aimPos != null && !serverPlayer.position().equals(aimPos)) ||
+                (aimPos == null && !serverPlayer.position().equals(pos)))
+            {
                 pos = serverPlayer.position();
                 if (ServerConfig.DEBUG.get()) {
                     ServerNetworking.LOGGER.info("Vivecraft: AimFix moved Player to: {} {} {}", pos.x, pos.y, pos.z);

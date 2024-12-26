@@ -56,7 +56,8 @@ public abstract class AbstractClientPlayerMixin extends LivingEntityMixin {
             if (rotInfo != null) {
                 Vec3 pos;
                 if (this.getUsedItemHand() == InteractionHand.MAIN_HAND) {
-                    pos = this.position().add(rotInfo.mainHandPos.x(), rotInfo.mainHandPos.y(), rotInfo.mainHandPos.z());
+                    pos = this.position()
+                        .add(rotInfo.mainHandPos.x(), rotInfo.mainHandPos.y(), rotInfo.mainHandPos.z());
                 } else {
                     pos = this.position().add(rotInfo.offHandPos.x(), rotInfo.offHandPos.y(), rotInfo.offHandPos.z());
                 }

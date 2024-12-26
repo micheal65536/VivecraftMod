@@ -5,6 +5,7 @@ import org.vivecraft.common.network.packet.PayloadIdentifier;
 
 /**
  * holds if the client started or stopped crawling
+ *
  * @param crawling if the player started or stopped crawling
  */
 public record CrawlPayloadC2S(boolean crawling) implements VivecraftPayloadC2S {

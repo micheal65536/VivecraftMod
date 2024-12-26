@@ -25,6 +25,7 @@ public class MathUtils {
 
     /**
      * subtracts {@code b} from {@code a}, anmd returns the result as a Vector3f, should only be used to get local position differences
+     *
      * @param a starting vector
      * @param b vector to subtract from {@code a}
      * @return the result of the subtraction as a Vector3f
@@ -83,6 +84,7 @@ public class MathUtils {
 
     /**
      * lerps the radians rotation from start to end
+     *
      * @return lerped rotation
      */
     public static float rotLerpRad(float delta, float start, float end) {
@@ -91,8 +93,9 @@ public class MathUtils {
 
     /**
      * lerp for Minecrafts double Vector
-     * @param start start point
-     * @param end end point
+     *
+     * @param start    start point
+     * @param end      end point
      * @param fraction interpolation amount, 0 will return {@code start}, and 1 return {@code end}
      * @return interpolated vector
      */
@@ -105,10 +108,11 @@ public class MathUtils {
 
     /**
      * lerp {@code start} to the given end point
-     * @param start start point
-     * @param endX X of the end point
-     * @param endY Y of the end point
-     * @param endZ Z of the end point
+     *
+     * @param start    start point
+     * @param endX     X of the end point
+     * @param endY     Y of the end point
+     * @param endZ     Z of the end point
      * @param fraction interpolation amount, 0 will return {@code start}, and 1 return {@code end}
      * @return {@code start} containing the lerped vector
      */
@@ -136,7 +140,8 @@ public class MathUtils {
 
     /**
      * rotates the given vector around the X axis, based on the provided sin and cos
-     * @param v Vector to rotate
+     *
+     * @param v   Vector to rotate
      * @param sin precomputed sinus of the rotation
      * @param cos precomputed cosinus of the rotation
      */
@@ -149,6 +154,7 @@ public class MathUtils {
     /**
      * calculates the euler angles of the given Quaternion in the YZX order
      * the returned Vector3f has pitch in X, yaw in Y and roll in Z
+     *
      * @param rot quaternion to get the euler angles for
      * @return Euler angles for the given {@code rot}
      */
@@ -163,7 +169,8 @@ public class MathUtils {
     /**
      * fixed version of {@link Quaternionf#getEulerAnglesZYX(Vector3f)}
      * this was fixed in joml 1.10.6, but Minecraft ships with 1.10.5
-     * @param rot Quaternion to get the euler angles for
+     *
+     * @param rot         Quaternion to get the euler angles for
      * @param eulerAngles Vector3f to store the angles in
      * @return
      */
@@ -178,9 +185,10 @@ public class MathUtils {
 
     /**
      * calculates the body yaw based on the two controller positions and the head direction
+     *
      * @param rightHand right controller position
-     * @param leftHand left controller position
-     * @param headDir head direction
+     * @param leftHand  left controller position
+     * @param headDir   head direction
      * @return ywa in radians
      */
     public static float bodyYawRad(Vector3fc rightHand, Vector3fc leftHand, Vector3fc headDir) {

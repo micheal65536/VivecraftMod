@@ -56,7 +56,8 @@ public class GuiRadialItemsList extends ObjectSelectionList<GuiRadialItemsList.B
             GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY,
             boolean hovering, float partialTick)
         {
-            guiGraphics.drawString(Minecraft.getInstance().font, this.labelText, (Minecraft.getInstance().screen.width / 2 - this.labelWidth / 2),
+            guiGraphics.drawString(Minecraft.getInstance().font, this.labelText,
+                (Minecraft.getInstance().screen.width / 2 - this.labelWidth / 2),
                 (top + height - 9 - 1), 0x67697F);
         }
     }
@@ -82,7 +83,8 @@ public class GuiRadialItemsList extends ObjectSelectionList<GuiRadialItemsList.B
             }
 
             guiGraphics.drawString(Minecraft.getInstance().font, chatformatting + I18n.get(this.myKey.getName()),
-                (Minecraft.getInstance().screen.width / 2 - MAX_LIST_LABEL_WIDTH / 2), (top + height / 2 - 9 / 2), 0xFFFFFF);
+                (Minecraft.getInstance().screen.width / 2 - MAX_LIST_LABEL_WIDTH / 2), (top + height / 2 - 9 / 2),
+                0xFFFFFF);
         }
 
         @Override

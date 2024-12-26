@@ -14,16 +14,16 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.phys.Vec3;
 import org.vivecraft.client.ClientVRPlayers;
-import org.vivecraft.client.render.armor.VRArmorModel_WithArms;
 import org.vivecraft.client.render.armor.VRArmorLayer;
+import org.vivecraft.client.render.armor.VRArmorModel_WithArms;
 import org.vivecraft.client.render.armor.VRArmorModel_WithArmsLegs;
 import org.vivecraft.client.utils.ScaleHelper;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.VRState;
 import org.vivecraft.client_vr.render.RenderPass;
 import org.vivecraft.client_vr.settings.VRSettings;
-import org.vivecraft.mod_compat_vr.shaders.ShadersHelper;
 import org.vivecraft.mod_compat_vr.immersiveportals.ImmersivePortalsHelper;
+import org.vivecraft.mod_compat_vr.shaders.ShadersHelper;
 
 public class VRPlayerRenderer extends PlayerRenderer {
     // Vanilla model
@@ -104,7 +104,7 @@ public class VRPlayerRenderer extends PlayerRenderer {
      * @param renderLayer RenderLayer to check
      * @return if a layer of the given class is already registered
      */
-    public boolean hasLayerType(RenderLayer<?,?> renderLayer) {
+    public boolean hasLayerType(RenderLayer<?, ?> renderLayer) {
         return this.layers.stream().anyMatch(layer -> {
             if (renderLayer.getClass() == HumanoidArmorLayer.class) {
                 return layer.getClass() == renderLayer.getClass() || layer.getClass() == VRArmorLayer.class;
@@ -132,7 +132,7 @@ public class VRPlayerRenderer extends PlayerRenderer {
             if (player.isAutoSpinAttack()) {
                 // offset player to head
                 float offset = player.getViewXRot(partialTick) / 90F * 0.2F;
-                poseStack.translate(0, rotInfo.headPos.y() + offset,0);
+                poseStack.translate(0, rotInfo.headPos.y() + offset, 0);
             }
 
             poseStack.scale(scale, scale, scale);
@@ -222,7 +222,9 @@ public class VRPlayerRenderer extends PlayerRenderer {
     }
 
     @Override
-    protected void setupRotations(AbstractClientPlayer player, PoseStack poseStack, float ageInTicks, float rotationYaw, float partialTick) {
+    protected void setupRotations(
+        AbstractClientPlayer player, PoseStack poseStack, float ageInTicks, float rotationYaw, float partialTick)
+    {
         if (ClientDataHolderVR.getInstance().currentPass != RenderPass.GUI &&
             ClientVRPlayers.getInstance().isVRPlayer(player))
         {

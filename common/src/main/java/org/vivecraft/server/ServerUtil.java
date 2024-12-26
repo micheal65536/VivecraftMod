@@ -45,18 +45,21 @@ public class ServerUtil {
     /**
      * schedules delayed welcome/kick messages for the give player <br>
      * the delay is for  the case that the clients VERSION packed isn't received immediately
+     *
      * @param serverPlayer player to send messages for / kick
      */
     public static void scheduleWelcomeMessageOrKick(ServerPlayer serverPlayer) {
         if (ServerConfig.MESSAGES_ENABLED.get() ||
-            (ServerConfig.VIVE_ONLY.get() || ServerConfig.VR_ONLY.get())) {
+            (ServerConfig.VIVE_ONLY.get() || ServerConfig.VR_ONLY.get()))
+        {
             SCHEDULER.schedule(() -> {
                 // only do stuff, if the player is still on the server
                 if (!serverPlayer.hasDisconnected()) {
                     ServerVivePlayer vivePlayer = ServerVRPlayers.getVivePlayer(serverPlayer);
                     String message = "";
 
-                    boolean isOpAndAllowed = ServerConfig.ALLOW_OP.get() && serverPlayer.server.getPlayerList().isOp(serverPlayer.getGameProfile());
+                    boolean isOpAndAllowed = ServerConfig.ALLOW_OP.get() &&
+                        serverPlayer.server.getPlayerList().isOp(serverPlayer.getGameProfile());
 
                     // kick non VR players
                     if (!isOpAndAllowed && ServerConfig.VR_ONLY.get() && (vivePlayer == null || !vivePlayer.isVR())) {
@@ -65,21 +68,22 @@ public class ServerUtil {
                             kickMessage = kickMessage.formatted(serverPlayer.getName().getString());
                         } catch (IllegalFormatException e) {
                             // catch errors users might put into the messages, to not crash other stuff
-                            ServerNetworking.LOGGER.error("Vivecraft: KickVROnly message '{}' has errors: ", kickMessage, e);
+                            ServerNetworking.LOGGER.error("Vivecraft: KickVROnly message '{}' has errors: ",
+                                kickMessage, e);
                         }
                         serverPlayer.connection.disconnect(Component.literal(kickMessage));
                         return;
                     }
 
                     // kick non vivecraft players
-                    if (!isOpAndAllowed && ServerConfig.VIVE_ONLY.get()
-                        && (vivePlayer == null)) {
+                    if (!isOpAndAllowed && ServerConfig.VIVE_ONLY.get() && vivePlayer == null) {
                         String kickMessage = ServerConfig.MESSAGES_KICK_VIVE_ONLY.get();
                         try {
                             kickMessage = kickMessage.formatted(serverPlayer.getName().getString());
                         } catch (IllegalFormatException e) {
                             // catch errors users might put into the messages, to not crash other stuff
-                            ServerNetworking.LOGGER.error("Vivecraft: KickViveOnly message '{}' has errors: ", kickMessage, e);
+                            ServerNetworking.LOGGER.error("Vivecraft: KickViveOnly message '{}' has errors: ",
+                                kickMessage, e);
                         }
                         serverPlayer.connection.disconnect(Component.literal(kickMessage));
                         return;
@@ -101,10 +105,12 @@ public class ServerUtil {
                         // actually send the message, if there is one set
                         if (!message.isEmpty()) {
                             try {
-                                serverPlayer.server.getPlayerList().broadcastSystemMessage(Component.literal(message.formatted(serverPlayer.getName().getString())), false);
+                                serverPlayer.server.getPlayerList().broadcastSystemMessage(
+                                    Component.literal(message.formatted(serverPlayer.getName().getString())), false);
                             } catch (IllegalFormatException e) {
                                 // catch errors users might put into the messages, to not crash other stuff
-                                ServerNetworking.LOGGER.error("Vivecraft: Welcome message '{}' has errors: ", message, e);
+                                ServerNetworking.LOGGER.error("Vivecraft: Welcome message '{}' has errors: ", message,
+                                    e);
                             }
                         }
                     }
@@ -115,16 +121,20 @@ public class ServerUtil {
 
     /**
      * notifies the given player for vivecraft updates, if they areOP and the setting is enabled
+     *
      * @param serverPlayer player to notify
      */
     public static void sendUpdateNotificationIfOP(ServerPlayer serverPlayer) {
         if (ServerConfig.CHECK_FOR_UPDATES.get()) {
             // don't send update notifications on singleplayer
-            if (serverPlayer.server.isDedicatedServer() && serverPlayer.server.getPlayerList().isOp(serverPlayer.getGameProfile())) {
+            if (serverPlayer.server.isDedicatedServer() &&
+                serverPlayer.server.getPlayerList().isOp(serverPlayer.getGameProfile()))
+            {
                 // check for update on not the main thread
                 SCHEDULER.schedule(() -> {
                     if (UpdateChecker.checkForUpdates()) {
-                        serverPlayer.sendSystemMessage(Component.literal("Vivecraft update available: §a" + UpdateChecker.NEWEST_VERSION));
+                        serverPlayer.sendSystemMessage(
+                            Component.literal("Vivecraft update available: §a" + UpdateChecker.NEWEST_VERSION));
                     }
                 }, 0, TimeUnit.MILLISECONDS);
             }
@@ -133,9 +143,12 @@ public class ServerUtil {
 
     /**
      * registers Vivecraft server commands, to change config settings with commands
+     *
      * @param dispatcher dispatcher to use for registering
      */
-    public static void registerCommands(CommandDispatcher<net.minecraft.commands.CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
+    public static void registerCommands(
+        CommandDispatcher<net.minecraft.commands.CommandSourceStack> dispatcher, CommandBuildContext buildContext)
+    {
         // reload command
         dispatcher.register(Commands.literal("vivecraft-server-config")
             .requires(source -> source.hasPermission(4))
@@ -249,7 +262,8 @@ public class ServerUtil {
                     .then(Commands.argument("block", BlockStateArgument.block(buildContext))
                         .executes(context -> {
                             try {
-                                String newValue = BuiltInRegistries.BLOCK.getKey(context.getArgument("block", BlockInput.class).getState().getBlock()).toString();
+                                String newValue = BuiltInRegistries.BLOCK.getKey(
+                                    context.getArgument("block", BlockInput.class).getState().getBlock()).toString();
                                 List list = listConfig.get();
                                 list.add(newValue);
                                 listConfig.set(list);
@@ -319,6 +333,7 @@ public class ServerUtil {
 
     /**
      * spawn particles to indicate server state of the {@code vivePlayer} data
+     *
      * @param vivePlayer vive vivePlayer to spawn particles for
      */
     public static void debugParticleAxes(ServerVivePlayer vivePlayer) {
@@ -344,14 +359,15 @@ public class ServerUtil {
 
     /**
      * spawns particles for the given position and rotation
-     * @param level server level to spawn the particles in
+     *
+     * @param level    server level to spawn the particles in
      * @param position origin of the device
-     * @param rot rotation of the device
+     * @param rot      rotation of the device
      */
     public static void debugParticleAxes(ServerLevel level, Vec3 position, Quaternionfc rot) {
-        final Vector3f red = new Vector3f(1F,0F,0F);
-        final Vector3f green = new Vector3f(0F,1F,0F);
-        final Vector3f blue = new Vector3f(0F,0F,1F);
+        final Vector3f red = new Vector3f(1F, 0F, 0F);
+        final Vector3f green = new Vector3f(0F, 1F, 0F);
+        final Vector3f blue = new Vector3f(0F, 0F, 1F);
 
         Vector3f forward = rot.transform(MathUtils.BACK, new Vector3f());
         Vector3f up = rot.transform(MathUtils.UP, new Vector3f());
@@ -364,8 +380,9 @@ public class ServerUtil {
 
     /**
      * spawns particles with the given {@code color} at the given {@code position} in the given {@code direction}
-     * @param color color of the particles
-     * @param position position to spawn the particles at
+     *
+     * @param color     color of the particles
+     * @param position  position to spawn the particles at
      * @param direction direction ot spawn the particles to
      */
     public static void spawnParticlesDirection(ServerLevel level, Vector3f color, Vec3 position, Vector3f direction) {

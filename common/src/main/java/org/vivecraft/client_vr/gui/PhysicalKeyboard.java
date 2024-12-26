@@ -2,7 +2,10 @@ package org.vivecraft.client_vr.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -402,7 +405,8 @@ public class PhysicalKeyboard {
         matrix.mul(new Matrix4f(KeyboardHandler.ROTATION_ROOM).invert());
         matrix.translate(-KeyboardHandler.POS_ROOM.x, -KeyboardHandler.POS_ROOM.y, -KeyboardHandler.POS_ROOM.z);
 
-        Vector3f pos = matrix.transformPosition(this.dh.vrPlayer.vrdata_room_pre.getController(controller.ordinal()).getPositionF());
+        Vector3f pos = matrix.transformPosition(
+            this.dh.vrPlayer.vrdata_room_pre.getController(controller.ordinal()).getPositionF());
 
         // Do intersection checks
         for (KeyButton key : this.keys) {
@@ -543,7 +547,8 @@ public class PhysicalKeyboard {
         } else {
             this.keys.forEach(button -> {
                 if (this.dh.vrSettings.physicalKeyboardTheme == KeyboardTheme.CUSTOM) {
-                    RGBAColor color = this.customTheme.get(this.shift && button.id < 1000 ? button.id + 500 : button.id);
+                    RGBAColor color = this.customTheme.get(
+                        this.shift && button.id < 1000 ? button.id + 500 : button.id);
                     if (color != null) {
                         button.color.r = color.r;
                         button.color.g = color.g;
@@ -704,7 +709,8 @@ public class PhysicalKeyboard {
         }
 
         public AABB getRenderBoundingBox() {
-            return this.pressed ? this.boundingBox.move(0.0D, 0.0D, 0.012D * PhysicalKeyboard.this.scale) : this.boundingBox;
+            return this.pressed ? this.boundingBox.move(0.0D, 0.0D, 0.012D * PhysicalKeyboard.this.scale) :
+                this.boundingBox;
         }
 
         public AABB getCollisionBoundingBox() {

@@ -6,8 +6,9 @@ import org.vivecraft.common.network.packet.PayloadIdentifier;
 
 /**
  * legacy packet, holds the reversed hand flag and the main hand controller pose
+ *
  * @param leftHanded if the player has reversed hands set
- * @param mainHand pose of the players offhand controller
+ * @param mainHand   pose of the players offhand controller
  */
 public record LegacyController0DataPayloadC2S(boolean leftHanded, Pose mainHand) implements VivecraftPayloadC2S {
     @Override

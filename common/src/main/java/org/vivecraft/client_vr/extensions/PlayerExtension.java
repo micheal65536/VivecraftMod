@@ -8,25 +8,29 @@ import net.minecraft.world.phys.Vec3;
 public interface PlayerExtension {
     /**
      * sets if the player used the vivecraft teleport to move
+     *
      * @param teleported if the player teleported
      */
     void vivecraft$setTeleported(boolean teleported);
 
     /**
      * sets the given ItemStack as used by the player
-     * @param itemStack ItemStack to use
+     *
+     * @param itemStack       ItemStack to use
      * @param interactionHand hand that used the ItemStack
      */
     void vivecraft$setItemInUseClient(ItemStack itemStack, InteractionHand interactionHand);
 
     /**
      * sets the ticks the used item has remaining
+     *
      * @param remaining ticks remaining to use
      */
     void vivecraft$setItemInUseRemainingClient(int remaining);
 
     /**
      * plays the sound of the block at {@code blockPos} at the {@code soundPos} location, in the level the player is in.
+     *
      * @param blockPos position of the block for the sound, in world space
      * @param soundPos position of where to play the sound, in world space
      */

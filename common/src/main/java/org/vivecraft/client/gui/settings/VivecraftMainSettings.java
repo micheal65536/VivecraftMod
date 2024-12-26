@@ -20,7 +20,8 @@ public class VivecraftMainSettings extends GuiListScreen {
         List<SettingsList.BaseEntry> entries = new LinkedList<>();
 
         SettingsList.BaseEntry vrButton = SettingsList.vrOptionToEntry(VRSettings.VrOptions.VR_ENABLED);
-        vrButton.setActive(vrButton.isActive() && (ClientNetworking.SERVER_ALLOWS_VR_SWITCHING || this.minecraft.player == null));
+        vrButton.setActive(
+            vrButton.isActive() && (ClientNetworking.SERVER_ALLOWS_VR_SWITCHING || this.minecraft.player == null));
         entries.add(vrButton);
 
         entries.add(SettingsList.vrOptionToEntry(VRSettings.VrOptions.VR_REMEMBER_ENABLED));
@@ -60,7 +61,8 @@ public class VivecraftMainSettings extends GuiListScreen {
 
         entries.add(new SettingsList.WidgetEntry(
             Component.translatable("vivecraft.options.screen.debug"),
-            Button.builder(Component.translatable("vivecraft.options.screen.debug"), button -> this.minecraft.setScreen(new GuiDebugRenderSettings(this)))
+            Button.builder(Component.translatable("vivecraft.options.screen.debug"),
+                    button -> this.minecraft.setScreen(new GuiDebugRenderSettings(this)))
                 .size(SettingsList.WidgetEntry.VALUE_BUTTON_WIDTH, 20)
                 .build()
         ));

@@ -22,7 +22,8 @@ public class ErrorScreen extends Screen {
     @Override
     protected void init() {
 
-        this.addRenderableWidget(new TextScrollWidget(this.width / 2 - 155, 30, 310, this.height - 30 - 36, this.error));
+        this.addRenderableWidget(
+            new TextScrollWidget(this.width / 2 - 155, 30, 310, this.height - 30 - 36, this.error));
 
         this.addRenderableWidget(new Button.Builder(Component.translatable("gui.back"), (p) ->
             Minecraft.getInstance().setScreen(this.lastScreen))
@@ -30,7 +31,8 @@ public class ErrorScreen extends Screen {
             .size(150, 20)
             .build());
         this.addRenderableWidget(new Button.Builder(Component.translatable("chat.copy.click"), (p) ->
-            Minecraft.getInstance().keyboardHandler.setClipboard(this.title.getString() + "\n" + this.error.getString()))
+            Minecraft.getInstance().keyboardHandler.setClipboard(
+                this.title.getString() + "\n" + this.error.getString()))
             .pos(this.width / 2 - 155, this.height - 32)
             .size(150, 20)
             .build());

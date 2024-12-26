@@ -34,27 +34,45 @@ public class GuiMixedRealitySettings extends GuiVROptionsBase {
         for (int i = 0; i < newOptions.length; ++i) {
             VRSettings.VrOptions optionToCheck = newOptions[i];
 
-            if (optionToCheck == VRSettings.VrOptions.MONO_FOV && (!this.dataHolder.vrSettings.mixedRealityUndistorted || !this.dataHolder.vrSettings.mixedRealityUnityLike)) {
+            if (optionToCheck == VRSettings.VrOptions.MONO_FOV &&
+                (!this.dataHolder.vrSettings.mixedRealityUndistorted ||
+                    !this.dataHolder.vrSettings.mixedRealityUnityLike
+                ))
+            {
                 newOptions[i] = VRSettings.VrOptions.DUMMY;
             }
 
-            if (optionToCheck == VRSettings.VrOptions.MIXED_REALITY_ALPHA_MASK && !this.dataHolder.vrSettings.mixedRealityUnityLike) {
+            if (optionToCheck == VRSettings.VrOptions.MIXED_REALITY_ALPHA_MASK &&
+                !this.dataHolder.vrSettings.mixedRealityUnityLike)
+            {
                 newOptions[i] = VRSettings.VrOptions.DUMMY;
             }
 
-            if (optionToCheck == VRSettings.VrOptions.MIXED_REALITY_UNDISTORTED && !this.dataHolder.vrSettings.mixedRealityUnityLike) {
+            if (optionToCheck == VRSettings.VrOptions.MIXED_REALITY_UNDISTORTED &&
+                !this.dataHolder.vrSettings.mixedRealityUnityLike)
+            {
                 newOptions[i] = VRSettings.VrOptions.DUMMY;
             }
 
-            if (optionToCheck == VRSettings.VrOptions.MIXED_REALITY_KEY_COLOR && this.dataHolder.vrSettings.mixedRealityAlphaMask && this.dataHolder.vrSettings.mixedRealityUnityLike) {
+            if (optionToCheck == VRSettings.VrOptions.MIXED_REALITY_KEY_COLOR &&
+                this.dataHolder.vrSettings.mixedRealityAlphaMask && this.dataHolder.vrSettings.mixedRealityUnityLike)
+            {
                 newOptions[i] = VRSettings.VrOptions.DUMMY;
             }
 
-            if (optionToCheck == VRSettings.VrOptions.MIRROR_CENTER_SMOOTH && (!this.dataHolder.vrSettings.mixedRealityUndistorted || !this.dataHolder.vrSettings.mixedRealityUnityLike)) {
+            if (optionToCheck == VRSettings.VrOptions.MIRROR_CENTER_SMOOTH &&
+                (!this.dataHolder.vrSettings.mixedRealityUndistorted ||
+                    !this.dataHolder.vrSettings.mixedRealityUnityLike
+                ))
+            {
                 newOptions[i] = VRSettings.VrOptions.DUMMY;
             }
 
-            if (optionToCheck == VRSettings.VrOptions.MIRROR_EYE && (this.dataHolder.vrSettings.mixedRealityUndistorted || !this.dataHolder.vrSettings.mixedRealityUnityLike)) {
+            if (optionToCheck == VRSettings.VrOptions.MIRROR_EYE &&
+                (this.dataHolder.vrSettings.mixedRealityUndistorted ||
+                    !this.dataHolder.vrSettings.mixedRealityUnityLike
+                ))
+            {
                 newOptions[i] = VRSettings.VrOptions.DUMMY;
             }
         }

@@ -44,7 +44,7 @@ public class PlayerModelMixin<T extends LivingEntity> extends HumanoidModel<T> {
                 this.vivecraft$tempV, this.vivecraft$tempV2, this.vivecraft$tempM);
 
             // we do the positioning in CapeLayerMixin
-            this.cloak.setPos(0,0,0);
+            this.cloak.setPos(0, 0, 0);
         }
     }
 }

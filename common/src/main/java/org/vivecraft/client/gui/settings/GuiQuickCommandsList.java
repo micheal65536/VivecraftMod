@@ -21,8 +21,9 @@ public class GuiQuickCommandsList extends ObjectSelectionList<GuiQuickCommandsLi
     }
 
     @Override
-    protected void renderSelection(GuiGraphics guiGraphics, int top, int width, int height, int outerColor, int innerColor) {
-    }
+    protected void renderSelection(
+        GuiGraphics guiGraphics, int top, int width, int height, int outerColor, int innerColor)
+    {}
 
     public class CommandEntry extends Entry<CommandEntry> {
         private final Button btnDelete;
@@ -59,10 +60,14 @@ public class GuiQuickCommandsList extends ObjectSelectionList<GuiQuickCommandsLi
 
         @Override
         public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-            if (this.btnDelete.isMouseOver(mouseX, mouseY) && this.btnDelete.mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
+            if (this.btnDelete.isMouseOver(mouseX, mouseY) &&
+                this.btnDelete.mouseDragged(mouseX, mouseY, button, dragX, dragY))
+            {
                 return true;
             } else {
-                return (this.txt.isMouseOver(mouseX, mouseY) && this.txt.mouseDragged(mouseX, mouseY, button, dragX, dragY)) || super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+                return (this.txt.isMouseOver(mouseX, mouseY) &&
+                    this.txt.mouseDragged(mouseX, mouseY, button, dragX, dragY)
+                ) || super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
             }
         }
 
@@ -80,22 +85,28 @@ public class GuiQuickCommandsList extends ObjectSelectionList<GuiQuickCommandsLi
             if (this.btnDelete.mouseScrolled(mouseX, mouseY, scrollX, scrollY)) {
                 return true;
             } else {
-                return this.txt.mouseScrolled(mouseX, mouseY, scrollX, scrollY) || super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+                return this.txt.mouseScrolled(mouseX, mouseY, scrollX, scrollY) ||
+                    super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
             }
         }
 
         @Override
         public boolean charTyped(char codePoint, int modifiers) {
-            return this.txt.isFocused() ? this.txt.charTyped(codePoint, modifiers) : super.charTyped(codePoint, modifiers);
+            return this.txt.isFocused() ? this.txt.charTyped(codePoint, modifiers) :
+                super.charTyped(codePoint, modifiers);
         }
 
         @Override
         public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-            return this.txt.isFocused() ? this.txt.keyPressed(keyCode, scanCode, modifiers) : super.keyPressed(keyCode, scanCode, modifiers);
+            return this.txt.isFocused() ? this.txt.keyPressed(keyCode, scanCode, modifiers) :
+                super.keyPressed(keyCode, scanCode, modifiers);
         }
 
         @Override
-        public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
+        public void render(
+            GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY,
+            boolean hovering, float partialTick)
+        {
             this.txt.setX(left);
             this.txt.setY(top);
             this.txt.render(guiGraphics, mouseX, mouseY, partialTick);

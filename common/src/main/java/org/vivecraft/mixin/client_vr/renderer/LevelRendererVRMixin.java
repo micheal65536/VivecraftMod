@@ -47,8 +47,8 @@ import org.vivecraft.client_vr.render.helpers.VREffectsHelper;
 import org.vivecraft.client_vr.settings.VRSettings;
 import org.vivecraft.client_xr.render_pass.RenderPassManager;
 import org.vivecraft.client_xr.render_pass.RenderPassType;
-import org.vivecraft.mod_compat_vr.shaders.ShadersHelper;
 import org.vivecraft.mod_compat_vr.optifine.OptifineHelper;
+import org.vivecraft.mod_compat_vr.shaders.ShadersHelper;
 
 import javax.annotation.Nullable;
 
@@ -92,7 +92,8 @@ public abstract class LevelRendererVRMixin implements ResourceManagerReloadListe
             ClientDataHolderVR.getInstance().currentPass == RenderPass.RIGHT
         ))
         {
-            centerPos.set(ClientDataHolderVR.getInstance().vrPlayer.vrdata_world_render.getEye(RenderPass.CENTER).getPosition());
+            centerPos.set(
+                ClientDataHolderVR.getInstance().vrPlayer.vrdata_world_render.getEye(RenderPass.CENTER).getPosition());
             return centerPos.get().x;
         } else {
             return x;
@@ -149,7 +150,7 @@ public abstract class LevelRendererVRMixin implements ResourceManagerReloadListe
     @ModifyExpressionValue(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;isSleeping()Z"))
     private boolean vivecraft$noPlayerWhenSleeping(boolean isSleeping) {
         // no self render, we don't want an out-of-body experience
-       return isSleeping && !RenderPassType.isVanilla();
+        return isSleeping && !RenderPassType.isVanilla();
     }
 
     @Inject(method = "renderEntity", at = @At("HEAD"))
@@ -206,7 +207,7 @@ public abstract class LevelRendererVRMixin implements ResourceManagerReloadListe
             if (interactTracker.isInteractActive(c) &&
                 (interactTracker.inBlockHit[c] != null || interactTracker.bukkit[c]))
             {
-                BlockPos blockpos =interactTracker.inBlockHit[c] != null ?
+                BlockPos blockpos = interactTracker.inBlockHit[c] != null ?
                     interactTracker.inBlockHit[c].getBlockPos() : BlockPos.containing(
                     ClientDataHolderVR.getInstance().vrPlayer.vrdata_world_render.getController(c).getPosition());
                 BlockState blockstate = this.level.getBlockState(blockpos);
@@ -307,13 +308,11 @@ public abstract class LevelRendererVRMixin implements ResourceManagerReloadListe
                  */
                 case LevelEvent.SOUND_ZOMBIE_WOODEN_DOOR,
                      LevelEvent.SOUND_ZOMBIE_IRON_DOOR,
-                     LevelEvent.SOUND_ZOMBIE_DOOR_CRASH
-                    -> {
+                     LevelEvent.SOUND_ZOMBIE_DOOR_CRASH -> {
                     ClientDataHolderVR.getInstance().vr.triggerHapticPulse(0, 750);
                     ClientDataHolderVR.getInstance().vr.triggerHapticPulse(1, 750);
                 }
-                case LevelEvent.SOUND_ANVIL_USED ->
-                    ClientDataHolderVR.getInstance().vr.triggerHapticPulse(0, 500);
+                case LevelEvent.SOUND_ANVIL_USED -> ClientDataHolderVR.getInstance().vr.triggerHapticPulse(0, 500);
                 case LevelEvent.SOUND_ANVIL_LAND -> {
                     ClientDataHolderVR.getInstance().vr.triggerHapticPulse(0, 1250);
                     ClientDataHolderVR.getInstance().vr.triggerHapticPulse(1, 1250);

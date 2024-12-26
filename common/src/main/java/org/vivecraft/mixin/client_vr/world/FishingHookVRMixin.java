@@ -44,12 +44,14 @@ public abstract class FishingHookVRMixin extends Entity {
             if (this.biting && !this.vivecraft$wasBiting) {
                 // bite, big feedback
                 MCVR.get().triggerHapticPulse(
-                    player.getMainHandItem().getItem() instanceof FishingRodItem ? ControllerType.RIGHT : ControllerType.LEFT,
+                    player.getMainHandItem().getItem() instanceof FishingRodItem ? ControllerType.RIGHT :
+                        ControllerType.LEFT,
                     0.005F, 160.0F, 0.5F);
             } else if (getDeltaMovement().y < -0.01 && !this.vivecraft$wasNibble) {
                 // nibble, small feedback
                 MCVR.get().triggerHapticPulse(
-                    player.getMainHandItem().getItem() instanceof FishingRodItem ? ControllerType.RIGHT : ControllerType.LEFT,
+                    player.getMainHandItem().getItem() instanceof FishingRodItem ? ControllerType.RIGHT :
+                        ControllerType.LEFT,
                     0.0005F, 160.0F, 0.05F);
                 this.vivecraft$wasNibble = true;
             }

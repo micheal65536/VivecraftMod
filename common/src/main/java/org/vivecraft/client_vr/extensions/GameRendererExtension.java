@@ -49,6 +49,7 @@ public interface GameRendererExtension {
 
     /**
      * resets the projection matrix
+     *
      * @param partialTick partial ticks to interpolate fov changes
      */
     void vivecraft$resetProjectionMatrix(float partialTick);
@@ -65,6 +66,7 @@ public interface GameRendererExtension {
 
     /**
      * sets if the GamerRenderer should run through the screen rendering part of {@code GameRenderer.render()}
+     *
      * @param shouldDrawScreen if screen rendering should happen
      */
     void vivecraft$setShouldDrawScreen(boolean shouldDrawScreen);
@@ -72,6 +74,7 @@ public interface GameRendererExtension {
     /**
      * sets if the GamerRenderer should run through the gui rendering part of {@code GameRenderer.render()} <br>
      * if {@code shouldDrawScreen} is false, this part isn't reached
+     *
      * @param shouldDrawGui if gui rendering should happen
      */
     void vivecraft$setShouldDrawGui(boolean shouldDrawGui);

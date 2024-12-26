@@ -1,7 +1,6 @@
 package org.vivecraft.mixin.client;
 
 import net.minecraft.client.ResourceLoadStateTracker;
-import javax.annotation.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -11,6 +10,8 @@ import org.vivecraft.client.Xplat;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.VRState;
 import org.vivecraft.client_vr.settings.VRSettings;
+
+import javax.annotation.Nullable;
 
 // we want to be late here, because some mods initialize keybinds after the first reload
 @Mixin(value = ResourceLoadStateTracker.class, priority = 9999)
@@ -22,7 +23,9 @@ public abstract class ResourceLoadStateTrackerMixin {
 
     @Inject(method = "finishReload", at = @At("TAIL"))
     private void vivecraft$initializeVR(CallbackInfo ci) {
-        if (this.reloadState != null && this.reloadState.reloadReason == ResourceLoadStateTracker.ReloadReason.INITIAL) {
+        if (this.reloadState != null &&
+            this.reloadState.reloadReason == ResourceLoadStateTracker.ReloadReason.INITIAL)
+        {
             Xplat.init();
             // init vr after first resource loading
             try {

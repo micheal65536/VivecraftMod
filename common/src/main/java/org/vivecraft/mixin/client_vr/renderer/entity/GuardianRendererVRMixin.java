@@ -21,7 +21,8 @@ public abstract class GuardianRendererVRMixin {
         Operation<Vec3> original)
     {
         if (!RenderPassType.isVanilla() && livingEntity == Minecraft.getInstance().getCameraEntity()) {
-            return ClientDataHolderVR.getInstance().vrPlayer.getVRDataWorld().getEye(RenderPass.CENTER).getPosition().subtract(0.0D, 0.3F * ClientDataHolderVR.getInstance().vrPlayer.worldScale, 0.0D);
+            return ClientDataHolderVR.getInstance().vrPlayer.getVRDataWorld().getEye(RenderPass.CENTER).getPosition()
+                .subtract(0.0D, 0.3F * ClientDataHolderVR.getInstance().vrPlayer.worldScale, 0.0D);
         } else {
             return original.call(instance, livingEntity, yOffset, partialTick);
         }

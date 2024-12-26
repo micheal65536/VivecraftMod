@@ -36,8 +36,9 @@ public class ShaderHelper {
 
     /**
      * renders a fullscreen quad with the given shader, and the given RenderTarget bound as "Sampler0"
+     *
      * @param instance shader to use to render
-     * @param source RenderTarget to sample from
+     * @param source   RenderTarget to sample from
      */
     public static void renderFullscreenQuad(@NotNull ShaderInstance instance, @NotNull RenderTarget source) {
         RenderSystem.colorMask(true, true, true, false);
@@ -57,6 +58,7 @@ public class ShaderHelper {
 
     /**
      * tessellates a fullscreen quad and draws it with the bound shader
+     *
      * @param format VertexFormat to use for rendering
      */
     private static void drawFullscreenQuad(VertexFormat format) {
@@ -91,8 +93,9 @@ public class ShaderHelper {
      * screen dimming when sleeping
      * fov reduction when walking
      * water and portal wobbles
-     * @param eye RenderPass that is being post processed, LEFT or RIGHT
-     * @param source RenderTarget that holds the rendered image
+     *
+     * @param eye         RenderPass that is being post processed, LEFT or RIGHT
+     * @param source      RenderTarget that holds the rendered image
      * @param partialTick current partial tick
      */
     public static void doVrPostProcess(RenderPass eye, RenderTarget source, float partialTick) {
@@ -332,10 +335,12 @@ public class ShaderHelper {
             ((GameRendererExtension) MC.gameRenderer).vivecraft$getThirdPassProjectionMatrix());
         VRShaders.MIXED_REALITY_VIEW_MATRIX_UNIFORM.set(viewMatrix);
 
-        VRShaders.MIXED_REALITY_HMD_VIEW_POSITION_UNIFORM.set((float) camPlayer.x, (float) camPlayer.y, (float) camPlayer.z);
+        VRShaders.MIXED_REALITY_HMD_VIEW_POSITION_UNIFORM.set((float) camPlayer.x, (float) camPlayer.y,
+            (float) camPlayer.z);
         VRShaders.MIXED_REALITY_HMD_PLANE_NORMAL_UNIFORM.set(-cameraLook.x, 0.0F, -cameraLook.z);
 
-        boolean alphaMask = DATA_HOLDER.vrSettings.mixedRealityUnityLike && DATA_HOLDER.vrSettings.mixedRealityAlphaMask;
+        boolean alphaMask =
+            DATA_HOLDER.vrSettings.mixedRealityUnityLike && DATA_HOLDER.vrSettings.mixedRealityAlphaMask;
 
         if (!alphaMask) {
             VRShaders.MIXED_REALITY_KEY_COLOR_UNIFORM.set(
@@ -380,8 +385,9 @@ public class ShaderHelper {
 
     /**
      * uses a lanczos filter to scale the source RenderTarget to the secondPass RenderTarget size
-     * @param source RenderTarget with the low/high resolution frame
-     * @param firstPass RenderTarget with source height and target width, for the intermediary step
+     *
+     * @param source     RenderTarget with the low/high resolution frame
+     * @param firstPass  RenderTarget with source height and target width, for the intermediary step
      * @param secondPass RenderTarget with the target size
      */
     public static void doFSAA(RenderTarget source, RenderTarget firstPass, RenderTarget secondPass) {
@@ -428,16 +434,20 @@ public class ShaderHelper {
      * blits the given {@code source} RenderTarget to the screen/bound buffer<br>
      * the {@code source} is drawn to the rectangle at {@code left},{@code top} with a size of {@code width},{@code height}<br>
      * if {@code xCropFactor} or {@code yCropFactor} are non 0 the {@code source} gets zoomed in
-     * @param source RenderTarget to draw to the screen
-     * @param left left edge of the target area
-     * @param width width of the target area
-     * @param height height of the target area
-     * @param top top edge of the target area
+     *
+     * @param source      RenderTarget to draw to the screen
+     * @param left        left edge of the target area
+     * @param width       width of the target area
+     * @param height      height of the target area
+     * @param top         top edge of the target area
      * @param xCropFactor vertical crop factor for the {@code source}
      * @param yCropFactor horizontal crop factor for the {@code source}
-     * @param keepAspect keeps the aspect ratio in takt when cropping the buffer
+     * @param keepAspect  keeps the aspect ratio in takt when cropping the buffer
      */
-    public static void blitToScreen(RenderTarget source, int left, int width, int height, int top, float xCropFactor, float yCropFactor, boolean keepAspect) {
+    public static void blitToScreen(
+        RenderTarget source, int left, int width, int height, int top, float xCropFactor, float yCropFactor,
+        boolean keepAspect)
+    {
         RenderSystem.assertOnRenderThread();
         RenderSystem.colorMask(true, true, true, false);
         RenderSystem.disableDepthTest();

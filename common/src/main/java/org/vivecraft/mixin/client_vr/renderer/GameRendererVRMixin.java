@@ -56,7 +56,8 @@ import org.vivecraft.mod_compat_vr.immersiveportals.ImmersivePortalsHelper;
 
 @Mixin(GameRenderer.class)
 public abstract class GameRendererVRMixin
-    implements ResourceManagerReloadListener, AutoCloseable, GameRendererExtension {
+    implements ResourceManagerReloadListener, AutoCloseable, GameRendererExtension
+{
 
     @Unique
     private static final ClientDataHolderVR vivecraft$DATA_HOLDER = ClientDataHolderVR.getInstance();
@@ -150,8 +151,10 @@ public abstract class GameRendererVRMixin
         if (!VRState.VR_RUNNING) {
             return original.call(instance, hitDistance, partialTick, hitFluids);
         } else {
-            this.vivecraft$crossVec = vivecraft$DATA_HOLDER.vrPlayer.AimedPointAtDistance(vivecraft$DATA_HOLDER.vrPlayer.vrdata_world_render, 0, hitDistance);
-            return vivecraft$DATA_HOLDER.vrPlayer.rayTraceBlocksVR(vivecraft$DATA_HOLDER.vrPlayer.vrdata_world_render, 0, hitDistance, hitFluids);
+            this.vivecraft$crossVec = vivecraft$DATA_HOLDER.vrPlayer.AimedPointAtDistance(
+                vivecraft$DATA_HOLDER.vrPlayer.vrdata_world_render, 0, hitDistance);
+            return vivecraft$DATA_HOLDER.vrPlayer.rayTraceBlocksVR(vivecraft$DATA_HOLDER.vrPlayer.vrdata_world_render,
+                0, hitDistance, hitFluids);
         }
     }
 
@@ -197,7 +200,8 @@ public abstract class GameRendererVRMixin
 
     @WrapOperation(method = "getProjectionMatrix", at = @At(value = "INVOKE", target = "Lorg/joml/Matrix4f;setPerspective(FFFF)Lorg/joml/Matrix4f;", remap = false), remap = true)
     private Matrix4f vivecraft$customProjectionMatrix(
-        Matrix4f instance, float fovy, float aspect, float zNear, float zFar, Operation<Matrix4f> original) {
+        Matrix4f instance, float fovy, float aspect, float zNear, float zFar, Operation<Matrix4f> original)
+    {
         if (VRState.VR_RUNNING) {
             zNear = vivecraft$MIN_CLIP_DISTANCE;
             if (MethodHolder.isInMenuRoom()) {
@@ -246,7 +250,9 @@ public abstract class GameRendererVRMixin
             {
                 // don't render outline when aiming with tp, or the user disabled it
                 cir.setReturnValue(false);
-            } else if (vivecraft$DATA_HOLDER.vrSettings.renderBlockOutlineMode == VRSettings.RenderPointerElement.ALWAYS) {
+            } else if (vivecraft$DATA_HOLDER.vrSettings.renderBlockOutlineMode ==
+                VRSettings.RenderPointerElement.ALWAYS)
+            {
                 // skip vanilla check and always render the outline
                 cir.setReturnValue(true);
             }
@@ -261,7 +267,8 @@ public abstract class GameRendererVRMixin
 
     @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;renderLevel(FJLcom/mojang/blaze3d/vertex/PoseStack;)V"))
     private void vivecraft$renderFaceOverlay(
-        GameRenderer instance, float partialTick, long finishTimeNano, PoseStack poseStack, Operation<Void> original) {
+        GameRenderer instance, float partialTick, long finishTimeNano, PoseStack poseStack, Operation<Void> original)
+    {
         original.call(instance, partialTick, finishTimeNano, poseStack);
         if (VRState.VR_RUNNING && vivecraft$DATA_HOLDER.currentPass != RenderPass.THIRD &&
             vivecraft$DATA_HOLDER.currentPass != RenderPass.CAMERA)
@@ -327,7 +334,9 @@ public abstract class GameRendererVRMixin
                     VREffectsHelper.renderPhysicalKeyboard(partialTick, poseStack);
                 } else {
                     VREffectsHelper.render2D(partialTick, KeyboardHandler.FRAMEBUFFER, KeyboardHandler.POS_ROOM,
-                        KeyboardHandler.ROTATION_ROOM, vivecraft$DATA_HOLDER.vrSettings.menuAlwaysFollowFace && MethodHolder.isInMenuRoom(), poseStack);
+                        KeyboardHandler.ROTATION_ROOM,
+                        vivecraft$DATA_HOLDER.vrSettings.menuAlwaysFollowFace && MethodHolder.isInMenuRoom(),
+                        poseStack);
                 }
             }
 
@@ -351,7 +360,8 @@ public abstract class GameRendererVRMixin
 
     @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;renderItemActivationAnimation(IIF)V"))
     private void vivecraft$noItemActivationAnimationOnGUI(
-        GameRenderer instance, int width, int height, float partialTick, Operation<Void> original) {
+        GameRenderer instance, int width, int height, float partialTick, Operation<Void> original)
+    {
         if (RenderPassType.isVanilla()) {
             original.call(instance, width, height, partialTick);
         }
@@ -396,7 +406,8 @@ public abstract class GameRendererVRMixin
 
     @WrapOperation(method = "renderItemActivationAnimation", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;translate(FFF)V"))
     private void vivecraft$noTranslateItemInVR(
-        PoseStack instance, float x, float y, float z, Operation<Void> original) {
+        PoseStack instance, float x, float y, float z, Operation<Void> original)
+    {
         if (RenderPassType.isVanilla()) {
             original.call(instance, x, y, z);
         }
@@ -420,8 +431,10 @@ public abstract class GameRendererVRMixin
             // call the scale with original to allow operation stacking
             original.call(poseStack, sinProgress, sinProgress, sinProgress);
 
-            poseStack.mulPose(Axis.YP.rotation(-ClientDataHolderVR.getInstance().vrPlayer.getVRDataWorld().getEye(ClientDataHolderVR.getInstance().currentPass).getYawRad()));
-            poseStack.mulPose(Axis.XP.rotation(-ClientDataHolderVR.getInstance().vrPlayer.getVRDataWorld().getEye(ClientDataHolderVR.getInstance().currentPass).getPitchRad()));
+            poseStack.mulPose(Axis.YP.rotation(-ClientDataHolderVR.getInstance().vrPlayer.getVRDataWorld()
+                .getEye(ClientDataHolderVR.getInstance().currentPass).getYawRad()));
+            poseStack.mulPose(Axis.XP.rotation(-ClientDataHolderVR.getInstance().vrPlayer.getVRDataWorld()
+                .getEye(ClientDataHolderVR.getInstance().currentPass).getPitchRad()));
         }
     }
 
@@ -535,7 +548,7 @@ public abstract class GameRendererVRMixin
                 this.vivecraft$rvelastyaw = livingEntity.yHeadRotO;
             } else {
                 this.vivecraft$rveyaw = entity.getYRot();
-                this.vivecraft$rvelastyaw = entity.yRotO;;
+                this.vivecraft$rvelastyaw = entity.yRotO;
             }
             this.vivecraft$cached = true;
         }

@@ -5,6 +5,7 @@ import org.vivecraft.common.network.packet.PayloadIdentifier;
 
 /**
  * packet that holds the Vivecraft server version
+ *
  * @param version Version String of the server
  */
 public record VersionPayloadS2C(String version) implements VivecraftPayloadS2C {

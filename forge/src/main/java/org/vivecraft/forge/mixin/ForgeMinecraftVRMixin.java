@@ -26,7 +26,9 @@ public class ForgeMinecraftVRMixin {
     private float pausePartialTick;
 
     @Inject(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/event/ForgeEventFactory;onRenderTickEnd(F)V", shift = At.Shift.AFTER, remap = false), remap = true)
-    private void vivecraft$renderVRPassesForge(boolean renderLevel, CallbackInfo ci, @Local(ordinal = 0) long nanoTime) {
+    private void vivecraft$renderVRPassesForge(
+        boolean renderLevel, CallbackInfo ci, @Local(ordinal = 0) long nanoTime)
+    {
         if (VRState.VR_RUNNING) {
             VRPassHelper.renderAndSubmit(renderLevel, nanoTime,
                 this.pause ? this.pausePartialTick : this.timer.partialTick);

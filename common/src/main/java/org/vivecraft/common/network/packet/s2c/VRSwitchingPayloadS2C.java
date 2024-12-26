@@ -5,6 +5,7 @@ import org.vivecraft.common.network.packet.PayloadIdentifier;
 
 /**
  * packet that holds if the server allows switching between VR and NONVR
+ *
  * @param allowed if hot switching is allowed
  */
 public record VRSwitchingPayloadS2C(boolean allowed) implements VivecraftPayloadS2C {

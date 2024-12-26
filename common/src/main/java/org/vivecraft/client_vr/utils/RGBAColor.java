@@ -42,7 +42,8 @@ public class RGBAColor {
 
     /**
      * HSB to RGB conversion, pinched from {@link java.awt.Color}.
-     * @param hue any floating point number, fraction of it is multiplied by 360 to produce the hue angle
+     *
+     * @param hue        any floating point number, fraction of it is multiplied by 360 to produce the hue angle
      * @param saturation (0..1.0f)
      * @param brightness (0..1.0f)
      */

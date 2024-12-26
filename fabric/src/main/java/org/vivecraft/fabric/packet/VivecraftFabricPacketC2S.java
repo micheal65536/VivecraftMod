@@ -9,8 +9,7 @@ import org.vivecraft.common.network.packet.c2s.VivecraftPayloadC2S;
 /**
  * Fabric network packet
  */
-public record VivecraftFabricPacketC2S(VivecraftPayloadC2S data) implements FabricPacket
-{
+public record VivecraftFabricPacketC2S(VivecraftPayloadC2S data) implements FabricPacket {
     /**
      * Identifier for this packet
      */
@@ -19,6 +18,7 @@ public record VivecraftFabricPacketC2S(VivecraftPayloadC2S data) implements Fabr
 
     /**
      * reads and creates a VivecraftDataPacket from {@code buffer}
+     *
      * @param buffer buffer to read from
      */
     public VivecraftFabricPacketC2S(FriendlyByteBuf buffer) {
@@ -27,6 +27,7 @@ public record VivecraftFabricPacketC2S(VivecraftPayloadC2S data) implements Fabr
 
     /**
      * writes the packet to {@code buffer}
+     *
      * @param buffer buffer to write to
      */
     @Override

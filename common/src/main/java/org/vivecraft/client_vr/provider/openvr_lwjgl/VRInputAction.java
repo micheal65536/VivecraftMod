@@ -79,8 +79,7 @@ public class VRInputAction {
     public float getAxis1D(boolean delta) {
         return switch (this.type) {
             case "boolean" -> this.digitalToAnalog(delta);
-            case "vector1", "vector2", "vector3" ->
-                delta ? this.analogData().deltaX : this.analogData().x;
+            case "vector1", "vector2", "vector3" -> delta ? this.analogData().deltaX : this.analogData().x;
             default -> 0.0F;
         };
     }
@@ -90,8 +89,7 @@ public class VRInputAction {
             case "boolean" -> new Vector2f(this.digitalToAnalog(delta), 0.0F);
             case "vector1" ->
                 delta ? new Vector2f(this.analogData().deltaX, 0.0F) : new Vector2f(this.analogData().x, 0.0F);
-            case "vector2", "vector3" ->
-                delta ? new Vector2f(this.analogData().deltaX, this.analogData().deltaY) :
+            case "vector2", "vector3" -> delta ? new Vector2f(this.analogData().deltaX, this.analogData().deltaY) :
                 new Vector2f(this.analogData().x, this.analogData().y);
             default -> new Vector2f();
         };
@@ -284,6 +282,7 @@ public class VRInputAction {
 
     /**
      * adds a KeyListener that gets notified for state changes
+     *
      * @param listener KeyListener to register
      */
     public void registerListener(KeyListener listener) {
@@ -300,8 +299,9 @@ public class VRInputAction {
 
     /**
      * notifies all registered KeyListener in priority order
+     *
      * @param pressed if presses or released
-     * @param hand controller this was triggered by
+     * @param hand    controller this was triggered by
      * @return if any KeyListener triggered
      */
     public boolean notifyListeners(boolean pressed, ControllerType hand) {
@@ -409,7 +409,9 @@ public class VRInputAction {
         InputConstants.Key key = this.keyBinding.key;
 
         // need to simulate the modifier or the binding wouldn't be pressed
-        if (key.getValue() != -1 && (!VivecraftVRMod.INSTANCE.isSafeBinding(this.keyBinding) || Xplat.hasKeyModifier(this.keyBinding))) {
+        if (key.getValue() != -1 &&
+            (!VivecraftVRMod.INSTANCE.isSafeBinding(this.keyBinding) || Xplat.hasKeyModifier(this.keyBinding)))
+        {
             if (key.getType() == InputConstants.Type.KEYSYM) {
                 if (Xplat.hasKeyModifier(this.keyBinding)) {
                     InputSimulator.pressModifier(Xplat.getKeyModifierKey(this.keyBinding));
@@ -434,7 +436,9 @@ public class VRInputAction {
     public void unpressKey() {
         InputConstants.Key key = this.keyBinding.key;
 
-        if (key.getValue() != -1 && (!VivecraftVRMod.INSTANCE.isSafeBinding(this.keyBinding) || Xplat.hasKeyModifier(this.keyBinding))) {
+        if (key.getValue() != -1 &&
+            (!VivecraftVRMod.INSTANCE.isSafeBinding(this.keyBinding) || Xplat.hasKeyModifier(this.keyBinding)))
+        {
             if (key.getType() == InputConstants.Type.KEYSYM) {
                 InputSimulator.releaseKey(key.getValue());
                 if (Xplat.hasKeyModifier(this.keyBinding)) {

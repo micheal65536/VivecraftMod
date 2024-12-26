@@ -103,7 +103,8 @@ public class ServerConfig {
         if (listener == null) {
             listener = (action, path, incorrectValue, correctedValue) -> {
                 if (incorrectValue != null) {
-                    ServerNetworking.LOGGER.info("Vivecraft: Corrected setting '{}': was '{}', is now '{}'", String.join(".", path),
+                    ServerNetworking.LOGGER.info("Vivecraft: Corrected setting '{}': was '{}', is now '{}'",
+                        String.join(".", path),
                         incorrectValue, correctedValue);
                 }
             };
@@ -134,7 +135,8 @@ public class ServerConfig {
             .defineInList("r", Arrays.asList("r", "b", "a"));
         VR_ONLY = BUILDER
             .push("vr_only")
-            .comment("Set to true to only allow VR players to play.\n If enabled, VR hotswitching will be automatically disabled.")
+            .comment(
+                "Set to true to only allow VR players to play.\n If enabled, VR hotswitching will be automatically disabled.")
             .define(false);
         VIVE_ONLY = BUILDER
             .push("vive_only")
@@ -146,7 +148,8 @@ public class ServerConfig {
             .define(true);
         MESSAGE_KICK_DELAY = BUILDER
             .push("messageAndKickDelay")
-            .comment("Seconds to wait before kicking a player or sending welcome messages. The player's client must send a Vivecraft VERSION info in that time.")
+            .comment(
+                "Seconds to wait before kicking a player or sending welcome messages. The player's client must send a Vivecraft VERSION info in that time.")
             .defineInRange(10.0, 0.0, 100.0);
         VR_FUN = BUILDER
             .push("vrFun")
@@ -165,7 +168,8 @@ public class ServerConfig {
         // welcome messages
         MESSAGES_WELCOME_VR = BUILDER
             .push("welcomeVR")
-            .comment("set message to nothing to not send. ex: leaveMessage = \"\"\n put '%s' in any message for the player name")
+            .comment(
+                "set message to nothing to not send. ex: leaveMessage = \"\"\n put '%s' in any message for the player name")
             .define("%s has joined with standing VR!");
         MESSAGES_WELCOME_NONVR = BUILDER
             .push("welcomeNonVR")
@@ -307,7 +311,8 @@ public class ServerConfig {
             .define(true);
         CLIMBEY_BLOCKMODE = BUILDER
             .push("blockmode")
-            .comment("Sets which blocks are climb-able. Options are:\n \"DISABLED\" = List ignored. All blocks are climbable.\n \"WHITELIST\" = Only blocks on the list are climbable.\n \"BLACKLIST\" = All blocks are climbable except those on the list")
+            .comment(
+                "Sets which blocks are climb-able. Options are:\n \"DISABLED\" = List ignored. All blocks are climbable.\n \"WHITELIST\" = Only blocks on the list are climbable.\n \"BLACKLIST\" = All blocks are climbable except those on the list")
             .defineEnum(ClimbeyBlockmode.DISABLED, ClimbeyBlockmode.class);
         CLIMBEY_BLOCKLIST = BUILDER
             .push("blocklist")
@@ -324,7 +329,8 @@ public class ServerConfig {
                     valid = false;
                 }
                 if (!valid) {
-                    ServerNetworking.LOGGER.error("Vivecraft: Ignoring invalid/unknown block in climbey blocklist: {}", s);
+                    ServerNetworking.LOGGER.error("Vivecraft: Ignoring invalid/unknown block in climbey blocklist: {}",
+                        s);
                 }
                 // return true or the whole list would be reset
                 return true;
@@ -347,7 +353,8 @@ public class ServerConfig {
             .comment("Teleport settings");
         TELEPORT_ENABLED = BUILDER
             .push("enabled")
-            .comment("Whether direct teleport is enabled. It is recommended to leave this enabled for players prone to VR sickness.")
+            .comment(
+                "Whether direct teleport is enabled. It is recommended to leave this enabled for players prone to VR sickness.")
             .define(true);
         TELEPORT_LIMITED_SURVIVAL = BUILDER
             .push("limitedSurvival")
@@ -405,7 +412,8 @@ public class ServerConfig {
             .comment("VR hotswitch settings");
         VR_SWITCHING_ENABLED = BUILDER
             .push("enabled")
-            .comment("Allows players to switch between VR and NONVR on the fly.\n If disabled, they will be locked to the mode they joined with.")
+            .comment(
+                "Allows players to switch between VR and NONVR on the fly.\n If disabled, they will be locked to the mode they joined with.")
             .define(true);
         // end vrSwitching
         BUILDER.pop();
@@ -423,7 +431,7 @@ public class ServerConfig {
         BUILDER.pop();
 
         // fix any enums that are loaded as strings first
-        for (ConfigBuilder.ConfigValue<?> configValue: BUILDER.getConfigValues()) {
+        for (ConfigBuilder.ConfigValue<?> configValue : BUILDER.getConfigValues()) {
             if (configValue instanceof ConfigBuilder.EnumValue enumValue && enumValue.get() != null) {
                 enumValue.set(enumValue.getEnumValue(enumValue.get()));
             }

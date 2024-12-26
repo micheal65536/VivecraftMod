@@ -168,7 +168,8 @@ public class JumpTracker extends Tracker {
                 Vector3f movement = this.dh.vr.controllerHistory[0].netMovement(0.3D)
                     .add(this.dh.vr.controllerHistory[1].netMovement(0.3D));
 
-                float speed = this.dh.vr.controllerHistory[0].averageSpeed(0.3D) + this.dh.vr.controllerHistory[1].averageSpeed(0.3D) * 0.5F;
+                float speed = this.dh.vr.controllerHistory[0].averageSpeed(0.3D) +
+                    this.dh.vr.controllerHistory[1].averageSpeed(0.3D) * 0.5F;
 
                 movement.mul(0.33F * speed);
 
@@ -214,9 +215,10 @@ public class JumpTracker extends Tracker {
                 this.dh.vrPlayer.setRoomOrigin(thing.x, thing.y, thing.z, false);
             }
         }
-        if ((!climbeyEquipped || ClientDataHolderVR.getInstance().vrSettings.realisticJumpEnabled == VRSettings.RealisticJump.ON) &&
+        if ((!climbeyEquipped || this.dh.vrSettings.realisticJumpEnabled == VRSettings.RealisticJump.ON) &&
             this.dh.vr.hmdPivotHistory.netMovement(0.25D).y > 0.1D &&
-            this.dh.vr.hmdPivotHistory.latest().y() - AutoCalibration.getPlayerHeight() > this.dh.vrSettings.jumpThreshold)
+            this.dh.vr.hmdPivotHistory.latest().y() - AutoCalibration.getPlayerHeight() >
+                this.dh.vrSettings.jumpThreshold)
         {
             player.jumpFromGround();
         }

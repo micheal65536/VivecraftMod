@@ -31,7 +31,8 @@ public class EntityRendererMixin {
         if (overrides != null) {
             for (int i = 0; i < overrides.length; i++) {
                 if (overrides[i][0] > 0F) {
-                    buildVertexTexCoord(VERTEX_TEXTURES[i], overrides[i][1], overrides[i][2], overrides[i][3], overrides[i][4]);
+                    buildVertexTexCoord(VERTEX_TEXTURES[i], overrides[i][1], overrides[i][2], overrides[i][3],
+                        overrides[i][4]);
                 }
             }
         }

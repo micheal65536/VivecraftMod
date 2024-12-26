@@ -17,7 +17,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
-import org.joml.*;
+import org.joml.Matrix3f;
+import org.joml.Vector3f;
 import org.vivecraft.client.ClientVRPlayers;
 import org.vivecraft.client.utils.ClientUtils;
 import org.vivecraft.client.utils.ModelUtils;
@@ -28,11 +29,9 @@ import org.vivecraft.client_vr.render.RenderPass;
 import org.vivecraft.client_vr.settings.VRSettings;
 import org.vivecraft.common.network.FBTMode;
 import org.vivecraft.common.utils.MathUtils;
-import org.vivecraft.mod_compat_vr.shaders.ShadersHelper;
 import org.vivecraft.mod_compat_vr.immersiveportals.ImmersivePortalsHelper;
 import org.vivecraft.mod_compat_vr.mca.MCAHelper;
-
-import java.lang.Math;
+import org.vivecraft.mod_compat_vr.shaders.ShadersHelper;
 
 public class VRPlayerModel<T extends LivingEntity> extends PlayerModel<T> {
     public ModelPart vrHMD;
@@ -126,7 +125,7 @@ public class VRPlayerModel<T extends LivingEntity> extends PlayerModel<T> {
         boolean laying = model.swimAmount > 0.0F || player.isFallFlying();
         float layAmount = player.isFallFlying() ? 1F : model.swimAmount;
 
-        boolean swimming = (laying && player.isInWater()) || player.isFallFlying() ;
+        boolean swimming = (laying && player.isInWater()) || player.isFallFlying();
         boolean noLowerBodyAnimation = swimming || rotInfo.fbtMode == FBTMode.ARMS_ONLY;
 
         float bodyScale = 1F;

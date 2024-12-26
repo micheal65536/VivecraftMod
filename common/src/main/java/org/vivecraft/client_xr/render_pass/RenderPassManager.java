@@ -22,6 +22,7 @@ public class RenderPassManager {
     /**
      * sets the current pass to {@code wrp} <br>
      * this sets the main RenderTarget, and any post effect that is linked to that pass
+     *
      * @param wrp WorldRenderPass to set
      */
     public static void setWorldRenderPass(WorldRenderPass wrp) {

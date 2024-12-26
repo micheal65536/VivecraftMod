@@ -20,7 +20,8 @@ public class IrisDHCompatVRMixin {
     private static void vivecraft$correctProjection(CallbackInfoReturnable<Matrix4f> cir) {
         if (!RenderPassType.isVanilla()) {
             if (ClientDataHolderVR.getInstance().currentPass == RenderPass.LEFT ||
-                ClientDataHolderVR.getInstance().currentPass == RenderPass.RIGHT) {
+                ClientDataHolderVR.getInstance().currentPass == RenderPass.RIGHT)
+            {
                 // VR projections are not centered
 
                 Matrix4fc vrProjection = IrisHelper.getGbufferProjection(CapturedRenderingState.INSTANCE);

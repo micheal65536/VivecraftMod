@@ -11,7 +11,10 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import org.joml.*;
+import org.joml.Quaternionf;
+import org.joml.Quaternionfc;
+import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import org.vivecraft.client.VivecraftVRMod;
 import org.vivecraft.client.gui.widgets.MultilineComponent;
 import org.vivecraft.client_vr.ClientDataHolderVR;
@@ -20,8 +23,6 @@ import org.vivecraft.client_vr.provider.ControllerType;
 import org.vivecraft.client_vr.render.helpers.RenderHelper;
 import org.vivecraft.client_vr.settings.AutoCalibration;
 import org.vivecraft.common.utils.MathUtils;
-
-import java.lang.Math;
 
 public class FBTCalibrationScreen extends Screen {
 
@@ -305,12 +306,12 @@ public class FBTCalibrationScreen extends Screen {
         int main = dataHolder.vrSettings.reverseHands ? 1 : 0;
 
         this.rightHand = dataHolder.vrPlayer.vrdata_room_post.getController(main).getPositionF()
-            .sub(hmdPosAvg.x , 1.375F * scale, hmdPosAvg.z)
+            .sub(hmdPosAvg.x, 1.375F * scale, hmdPosAvg.z)
             .rotateY(this.yaw)
             .add(scale * 0.375F, 0F, 0F)
             .normalize();
         this.leftHand = dataHolder.vrPlayer.vrdata_room_post.getController(1 - main).getPositionF()
-            .sub(hmdPosAvg.x , 1.375F * scale, hmdPosAvg.z)
+            .sub(hmdPosAvg.x, 1.375F * scale, hmdPosAvg.z)
             .rotateY(this.yaw)
             .add(-scale * 0.375F, 0F, 0F)
             .normalize();

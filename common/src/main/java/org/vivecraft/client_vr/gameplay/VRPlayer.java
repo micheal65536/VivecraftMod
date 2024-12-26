@@ -26,10 +26,8 @@ import org.joml.Vector3fc;
 import org.vivecraft.client.VivecraftVRMod;
 import org.vivecraft.client.network.ClientNetworking;
 import org.vivecraft.client.utils.ClientUtils;
-import org.vivecraft.common.utils.MathUtils;
 import org.vivecraft.client.utils.ScaleHelper;
 import org.vivecraft.client_vr.ClientDataHolderVR;
-import org.vivecraft.data.ItemTags;
 import org.vivecraft.client_vr.MethodHolder;
 import org.vivecraft.client_vr.VRData;
 import org.vivecraft.client_vr.extensions.GameRendererExtension;
@@ -42,6 +40,8 @@ import org.vivecraft.client_vr.gameplay.trackers.VehicleTracker;
 import org.vivecraft.client_vr.render.RenderPass;
 import org.vivecraft.client_vr.settings.VRSettings;
 import org.vivecraft.common.VRServerPerms;
+import org.vivecraft.common.utils.MathUtils;
+import org.vivecraft.data.ItemTags;
 
 import java.util.ArrayList;
 
@@ -150,7 +150,8 @@ public class VRPlayer {
             this.worldScale,
             Mth.DEG_TO_RAD * this.dh.vrSettings.worldRotation);
 
-        VRSettings.ServerOverrides.Setting worldScaleOverride = this.dh.vrSettings.overrides.getSetting(VRSettings.VrOptions.WORLD_SCALE);
+        VRSettings.ServerOverrides.Setting worldScaleOverride = this.dh.vrSettings.overrides.getSetting(
+            VRSettings.VrOptions.WORLD_SCALE);
 
         // adjust world scale
         float scaleSetting = worldScaleOverride.getFloat();
@@ -178,11 +179,17 @@ public class VRPlayer {
 
                     // clamp wonder foods to server set worldscale limit to not cheat
                     if (this.wfMode > 0.0D) {
-                        if (this.rawWorldScale > Mth.clamp(20.0F, worldScaleOverride.getValueMin(), worldScaleOverride.getValueMax())) {
-                            this.rawWorldScale = Mth.clamp(20.0F, worldScaleOverride.getValueMin(), worldScaleOverride.getValueMax());
+                        if (this.rawWorldScale >
+                            Mth.clamp(20.0F, worldScaleOverride.getValueMin(), worldScaleOverride.getValueMax()))
+                        {
+                            this.rawWorldScale = Mth.clamp(20.0F, worldScaleOverride.getValueMin(),
+                                worldScaleOverride.getValueMax());
                         }
-                    } else if (this.wfMode < 0.0D && this.rawWorldScale < Mth.clamp(0.1F, worldScaleOverride.getValueMin(), worldScaleOverride.getValueMax())) {
-                        this.rawWorldScale = Mth.clamp(0.1F, worldScaleOverride.getValueMin(), worldScaleOverride.getValueMax());
+                    } else if (this.wfMode < 0.0D && this.rawWorldScale <
+                        Mth.clamp(0.1F, worldScaleOverride.getValueMin(), worldScaleOverride.getValueMax()))
+                    {
+                        this.rawWorldScale = Mth.clamp(0.1F, worldScaleOverride.getValueMin(),
+                            worldScaleOverride.getValueMax());
                     }
                 }
 
@@ -200,7 +207,9 @@ public class VRPlayer {
             this.worldScale = Mth.clamp(this.worldScale, 0.025F, 100F);
 
             // check that nobody tries to bypass the server set worldscale limit it with a runtime worldscale
-            if (this.mc.level != null && this.mc.isLocalServer() && (worldScaleOverride.isValueMinOverridden() || worldScaleOverride.isValueMaxOverridden())) {
+            if (this.mc.level != null && this.mc.isLocalServer() &&
+                (worldScaleOverride.isValueMinOverridden() || worldScaleOverride.isValueMaxOverridden()))
+            {
                 // a vr runtime worldscale also scales the distance between the eyes, so that can be used to calculate it
                 float measuredIPD = ClientDataHolderVR.getInstance().vr.getEyePosition(RenderPass.LEFT)
                     .sub(ClientDataHolderVR.getInstance().vr.getEyePosition(RenderPass.RIGHT)).length();
@@ -211,15 +220,22 @@ public class VRPlayer {
                 float actualWorldScale = this.rawWorldScale * runtimeWorldScale;
 
                 // check with slight wiggle room in case there is some imprecision
-                if (actualWorldScale < worldScaleOverride.getValueMin() * 0.99F || actualWorldScale > worldScaleOverride.getValueMax() * 1.01F) {
-                    VRSettings.LOGGER.info("VIVECRAFT: disconnected user from server. runtime IPD: {}, measured IPD: {}, runtime worldscale: {}", queriedIPD, measuredIPD, runtimeWorldScale);
+                if (actualWorldScale < worldScaleOverride.getValueMin() * 0.99F ||
+                    actualWorldScale > worldScaleOverride.getValueMax() * 1.01F)
+                {
+                    VRSettings.LOGGER.info(
+                        "VIVECRAFT: disconnected user from server. runtime IPD: {}, measured IPD: {}, runtime worldscale: {}",
+                        queriedIPD, measuredIPD, runtimeWorldScale);
                     this.mc.level.disconnect();
                     this.mc.disconnect(new DisconnectedScreen(new JoinMultiplayerScreen(new TitleScreen()),
                         Component.translatable("vivecraft.message.worldscaleOutOfRange.title"),
                         Component.translatable("vivecraft.message.worldscaleOutOfRange",
-                            Component.literal("%.2fx".formatted(worldScaleOverride.getValueMin())).withStyle(style -> style.withColor(ChatFormatting.GREEN)),
-                            Component.literal("%.2fx".formatted(worldScaleOverride.getValueMax())).withStyle(style -> style.withColor(ChatFormatting.GREEN)),
-                            Component.literal(ClientDataHolderVR.getInstance().vr.getRuntimeName()).withStyle(style -> style.withColor(ChatFormatting.GOLD)))));
+                            Component.literal("%.2fx".formatted(worldScaleOverride.getValueMin()))
+                                .withStyle(style -> style.withColor(ChatFormatting.GREEN)),
+                            Component.literal("%.2fx".formatted(worldScaleOverride.getValueMax()))
+                                .withStyle(style -> style.withColor(ChatFormatting.GREEN)),
+                            Component.literal(ClientDataHolderVR.getInstance().vr.getRuntimeName())
+                                .withStyle(style -> style.withColor(ChatFormatting.GOLD)))));
                 }
             }
         }
@@ -281,7 +297,8 @@ public class VRPlayer {
 
         float interpolatedWorldRotation_Radians = Mth.lerp(partialTick, start, end);
 
-        Vec3 interpolatedRoomOrigin = MathUtils.vecDLerp(this.vrdata_world_pre.origin, this.vrdata_world_post.origin, partialTick);
+        Vec3 interpolatedRoomOrigin = MathUtils.vecDLerp(this.vrdata_world_pre.origin, this.vrdata_world_post.origin,
+            partialTick);
 
         this.vrdata_world_render = new VRData(
             interpolatedRoomOrigin,
@@ -307,8 +324,7 @@ public class VRPlayer {
             this.dh.menuHandOff || (this.dh.interactTracker.hotbar >= 0 && this.dh.vrSettings.vrTouchHotbar);
     }
 
-    public void postRender(float partialTick) {
-    }
+    public void postRender(float partialTick) {}
 
     public void setRoomOrigin(double x, double y, double z, boolean reset) {
         if (reset && this.vrdata_world_pre != null) {
@@ -371,15 +387,15 @@ public class VRPlayer {
 
         if (!this.initDone) {
             VRSettings.LOGGER.info("""
-                Vivecraft: <Debug info start>
-                Room object: {}
-                Room origin: {}
-                Hmd position room: {}
-                Hmd position world: {}
-                Hmd Projection Left: {}
-                Hmd Projection Right: {}
-                <Debug info end>
-                """, this,
+                    Vivecraft: <Debug info start>
+                    Room object: {}
+                    Room origin: {}
+                    Hmd position room: {}
+                    Hmd position world: {}
+                    Hmd Projection Left: {}
+                    Hmd Projection Right: {}
+                    <Debug info end>
+                    """, this,
                 this.vrdata_world_pre.origin,
                 this.vrdata_room_pre.hmd.getPosition(),
                 this.vrdata_world_pre.hmd.getPosition(),
@@ -718,10 +734,11 @@ public class VRPlayer {
 
     /**
      * copy of {@link Entity#pick(double, float, boolean)}, modified to use the given VRData
-     * @param source VRData to base the raytrace off
-     * @param controller controller index to trace from
+     *
+     * @param source      VRData to base the raytrace off
+     * @param controller  controller index to trace from
      * @param hitDistance distance to trace
-     * @param hitFluids if fluids should be hit
+     * @param hitFluids   if fluids should be hit
      * @return hit block or miss
      */
     public HitResult rayTraceBlocksVR(VRData source, int controller, double hitDistance, boolean hitFluids) {

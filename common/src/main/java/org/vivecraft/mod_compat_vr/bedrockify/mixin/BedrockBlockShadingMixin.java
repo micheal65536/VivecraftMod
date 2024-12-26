@@ -22,7 +22,8 @@ public class BedrockBlockShadingMixin {
             MenuWorldRenderer menuWorldRenderer = ClientDataHolderVR.getInstance().menuWorldRenderer;
             if (menuWorldRenderer != null && menuWorldRenderer.getLevel() != null) {
                 // change brightness based on nether or not
-                cir.setReturnValue(menuWorldRenderer.getLevel().getDimensionReaderInfo().constantAmbientLight() ? 0.9f : 0.87f);
+                cir.setReturnValue(
+                    menuWorldRenderer.getLevel().getDimensionReaderInfo().constantAmbientLight() ? 0.9f : 0.87f);
             }
         }
     }

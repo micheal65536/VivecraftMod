@@ -11,7 +11,8 @@ public class ServerEvents {
     @SubscribeEvent
     public static void crashWithForgeExtension(ServerAboutToStartEvent event) {
         if (Xplat.isModLoaded("vivecraftforgeextensions")) {
-            throw new RuntimeException("The vivecraft mod cannot be used together with the 'Vivecraft Forge Extension'.\nThe Vivecraft Mod implements all features the forge extension has.\nRemove the 'Vivecraft Forge Extension' to resolve this error");
+            throw new RuntimeException(
+                "The vivecraft mod cannot be used together with the 'Vivecraft Forge Extension'.\nThe Vivecraft Mod implements all features the forge extension has.\nRemove the 'Vivecraft Forge Extension' to resolve this error");
         }
     }
 }

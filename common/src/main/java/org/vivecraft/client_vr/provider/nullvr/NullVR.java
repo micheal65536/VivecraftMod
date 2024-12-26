@@ -63,12 +63,12 @@ public class NullVR extends MCVR {
             .mul(-1, 1, 1, new Vector3f());
         this.deviceOffsets[RIGHT_ELBOW_TRACKER] = new Vector3f(0.3F, 1.25F, -0.1F);
         this.deviceOffsets[LEFT_ELBOW_TRACKER] = this.deviceOffsets[RIGHT_ELBOW_TRACKER]
-            .mul(-1,1,1, new Vector3f());
+            .mul(-1, 1, 1, new Vector3f());
         this.deviceOffsets[RIGHT_KNEE_TRACKER] = new Vector3f(0.15F, 0.5F, 0.0F);
         this.deviceOffsets[LEFT_KNEE_TRACKER] = this.deviceOffsets[RIGHT_KNEE_TRACKER]
-            .mul(-1,1,1, new Vector3f());
+            .mul(-1, 1, 1, new Vector3f());
 
-        for(int i = 0; i < TRACKABLE_DEVICE_COUNT; i++) {
+        for (int i = 0; i < TRACKABLE_DEVICE_COUNT; i++) {
             this.deviceRotations[i] = new Quaternionf();
         }
     }
@@ -216,7 +216,7 @@ public class NullVR extends MCVR {
     public List<Triple<DeviceSource, Integer, Matrix4fc>> getTrackers() {
         List<Triple<DeviceSource, Integer, Matrix4fc>> trackers = super.getTrackers();
         int trackerCount = this.fbtMode == FBTMode.ARMS_LEGS ? 3 : this.fbtMode == FBTMode.WITH_JOINTS ? 7 : 0;
-        for(int i = 3; i < 3 + trackerCount; i++) {
+        for (int i = 3; i < 3 + trackerCount; i++) {
             int type = -1;
             // check if we already know the role of the tracker
             for (int t = 0; t < TRACKABLE_DEVICE_COUNT; t++) {
@@ -225,8 +225,7 @@ public class NullVR extends MCVR {
                 }
             }
             int finalI = i;
-            if (trackers.stream().noneMatch(t -> t.getLeft().is(DeviceSource.Source.NULL, finalI)))
-            {
+            if (trackers.stream().noneMatch(t -> t.getLeft().is(DeviceSource.Source.NULL, finalI))) {
                 trackers.add(Triple.of(new DeviceSource(DeviceSource.Source.NULL, i), type,
                     new Matrix4f().rotation(this.deviceRotations[i]).setTranslation(this.deviceOffsets[i])));
             }
@@ -307,37 +306,37 @@ public class NullVR extends MCVR {
                 if (MethodHolder.isKeyDown(GLFW.GLFW_KEY_RIGHT_ALT)) {
                     // rotate current bodypart
                     if (key == GLFW.GLFW_KEY_KP_8) {
-                        rotateBody(-Mth.PI/18.0F, MathUtils.RIGHT);
+                        rotateBody(-Mth.PI / 18.0F, MathUtils.RIGHT);
                         triggered = true;
                     }
                     if (key == GLFW.GLFW_KEY_KP_2) {
-                        rotateBody(Mth.PI/18.0F, MathUtils.RIGHT);
+                        rotateBody(Mth.PI / 18.0F, MathUtils.RIGHT);
                         triggered = true;
                     }
                     if (key == GLFW.GLFW_KEY_KP_4) {
-                        rotateBody(Mth.PI/18.0F, MathUtils.UP);
+                        rotateBody(Mth.PI / 18.0F, MathUtils.UP);
                         triggered = true;
                     }
                     if (key == GLFW.GLFW_KEY_KP_6) {
-                        rotateBody(-Mth.PI/18.0F, MathUtils.UP);
+                        rotateBody(-Mth.PI / 18.0F, MathUtils.UP);
                         triggered = true;
                     }
                     if (key == GLFW.GLFW_KEY_KP_9) {
-                        rotateBody(Mth.PI/18.0F, MathUtils.BACK);
+                        rotateBody(Mth.PI / 18.0F, MathUtils.BACK);
                         triggered = true;
                     }
                     if (key == GLFW.GLFW_KEY_KP_7) {
-                        rotateBody(-Mth.PI/18.0F, MathUtils.BACK);
+                        rotateBody(-Mth.PI / 18.0F, MathUtils.BACK);
                         triggered = true;
                     }
                 } else {
                     // move current bodypart
                     if (key == GLFW.GLFW_KEY_KP_8) {
-                        translateBody(0F,0F,-0.01F);
+                        translateBody(0F, 0F, -0.01F);
                         triggered = true;
                     }
                     if (key == GLFW.GLFW_KEY_KP_2) {
-                        translateBody(0F,0F,0.01F);
+                        translateBody(0F, 0F, 0.01F);
                         triggered = true;
                     }
                     if (key == GLFW.GLFW_KEY_KP_4) {
@@ -373,6 +372,7 @@ public class NullVR extends MCVR {
             }
         }
     }
+
     private void translateBody(float x, float y, float z) {
         this.deviceOffsets[this.currentBodyPart.rightIndex].add(x, y, z);
         if (this.currentBodyPart.leftIndex != -1) {

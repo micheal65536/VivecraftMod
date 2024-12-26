@@ -13,7 +13,10 @@ public class VRTextureTarget extends RenderTarget {
 
     private final String name;
 
-    public VRTextureTarget(String name, int width, int height, boolean useDepth, int texId, boolean linearFilter, boolean mipmaps, boolean useStencil) {
+    public VRTextureTarget(
+        String name, int width, int height, boolean useDepth, int texId, boolean linearFilter, boolean mipmaps,
+        boolean useStencil)
+    {
         super(useDepth);
         this.name = name;
         RenderSystem.assertOnGameThreadOrInit();
@@ -42,10 +45,10 @@ public class VRTextureTarget extends RenderTarget {
             Size: %s x %s
             FB ID: %s
             Tex ID: %s"""
-        .formatted(
-            this.name,
-            this.viewWidth, this.viewHeight,
-            this.frameBufferId,
-            this.colorTextureId);
+            .formatted(
+                this.name,
+                this.viewWidth, this.viewHeight,
+                this.frameBufferId,
+                this.colorTextureId);
     }
 }

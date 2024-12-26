@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 /**
  * Vivecraft network payload that holds a raw packet, has no specific flow direction
  * this is only needed because NeoForge 1.20.4 uses the same payload for C2S and S2C
+ *
  * @param rawPayload raw payload with unspecified data
  * @param C2SPayload a payload sent to the server
  * @param S2CPayload a payload sent to the client
@@ -34,11 +35,12 @@ public record VivecraftPayloadBiDir(@Nullable VivecraftPayloadC2S C2SPayload,
 
     /**
      * writes the packet to {@code buffer}
+     *
      * @param buffer buffer to write to
      */
     @Override
     public void write(FriendlyByteBuf buffer) {
-        if (this.C2SPayload != null){
+        if (this.C2SPayload != null) {
             this.C2SPayload.write(buffer);
         } else if (this.S2CPayload != null) {
             this.S2CPayload.write(buffer);
@@ -49,7 +51,7 @@ public record VivecraftPayloadBiDir(@Nullable VivecraftPayloadC2S C2SPayload,
 
     @Override
     public PayloadIdentifier payloadId() {
-        if (this.C2SPayload != null){
+        if (this.C2SPayload != null) {
             return this.C2SPayload.payloadId();
         } else if (this.S2CPayload != null) {
             return this.S2CPayload.payloadId();

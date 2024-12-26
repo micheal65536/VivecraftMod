@@ -5,6 +5,7 @@ import org.vivecraft.common.network.packet.PayloadIdentifier;
 
 /**
  * holds the clients wanted teleport position
+ *
  * @param x x coordinate the player want to teleport to
  * @param y y coordinate the player want to teleport to
  * @param z z coordinate the player want to teleport to

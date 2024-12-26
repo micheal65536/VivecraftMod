@@ -17,13 +17,13 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 import org.vivecraft.client.VivecraftVRMod;
 import org.vivecraft.client.network.ClientNetworking;
-import org.vivecraft.common.utils.MathUtils;
-import org.vivecraft.data.BlockTags;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.VRData;
 import org.vivecraft.client_vr.extensions.PlayerExtension;
 import org.vivecraft.client_vr.gameplay.VRMovementStyle;
 import org.vivecraft.client_vr.render.helpers.RenderHelper;
+import org.vivecraft.common.utils.MathUtils;
+import org.vivecraft.data.BlockTags;
 
 import java.util.Random;
 
@@ -181,7 +181,9 @@ public class TeleportTracker extends Tracker {
         }
 
         //execute teleport
-        if (doTeleport && destination != null && (destination.x != 0.0D || destination.y != 0.0D || destination.z != 0.0D)) {
+        if (doTeleport && destination != null &&
+            (destination.x != 0.0D || destination.y != 0.0D || destination.z != 0.0D))
+        {
             this.movementTeleportDistance = destination.distanceTo(player.position());
 
             // execute teleport
@@ -199,7 +201,8 @@ public class TeleportTracker extends Tracker {
             this.doTeleportCallback();
 
             if (this.movementTeleportDistance > 0.0D && this.vrMovementStyle.endTeleportingSound != null) {
-                player.playSound(this.vrMovementStyle.endTeleportingSound, this.vrMovementStyle.endTeleportingSoundVolume, 1.0F);
+                player.playSound(this.vrMovementStyle.endTeleportingSound,
+                    this.vrMovementStyle.endTeleportingSoundVolume, 1.0F);
             } else {
                 ((PlayerExtension) player).vivecraft$stepSound(BlockPos.containing(destination), destination);
             }
@@ -358,8 +361,9 @@ public class TeleportTracker extends Tracker {
 
     /**
      * looks for a valid place to stand on the block that the trace collided with
-     * @param player Player to check the position for
-     * @param start aim start position, in world space
+     *
+     * @param player    Player to check the position for
+     * @param start     aim start position, in world space
      * @param collision block hit position to check
      * @return if the BlockHitResult is valid to stand in
      */
@@ -423,43 +427,45 @@ public class TeleportTracker extends Tracker {
         for (int i = 0; i < 2; i++) {
             blockState = player.level().getBlockState(hitBlock);
 
-			if (!blockState.getCollisionShape(this.mc.level, hitBlock).isEmpty()) {
-				double height = blockState.getCollisionShape(this.mc.level, hitBlock).max(Direction.Axis.Y);
+            if (!blockState.getCollisionShape(this.mc.level, hitBlock).isEmpty()) {
+                double height = blockState.getCollisionShape(this.mc.level, hitBlock).max(Direction.Axis.Y);
 
-				Vec3 hitVec = new Vec3(collision.getLocation().x, (double) hitBlock.getY() + height, collision.getLocation().z);
-				Vec3 offset = hitVec.subtract(player.getX(), player.getBoundingBox().minY, player.getZ());
-				AABB aabb = player.getBoundingBox().move(offset.x, offset.y, offset.z);
+                Vec3 hitVec = new Vec3(collision.getLocation().x, (double) hitBlock.getY() + height,
+                    collision.getLocation().z);
+                Vec3 offset = hitVec.subtract(player.getX(), player.getBoundingBox().minY, player.getZ());
+                AABB aabb = player.getBoundingBox().move(offset.x, offset.y, offset.z);
 
-				double ex = 0.0D;
+                double ex = 0.0D;
 
-				if (blockState.getBlock() == Blocks.SOUL_SAND || blockState.getBlock() == Blocks.HONEY_BLOCK) {
-					ex = 0.05D;
-				}
+                if (blockState.getBlock() == Blocks.SOUL_SAND || blockState.getBlock() == Blocks.HONEY_BLOCK) {
+                    ex = 0.05D;
+                }
 
                 boolean emptySpotReq = this.mc.level.noCollision(player, aabb) &&
                     !this.mc.level.noCollision(player, aabb.inflate(0.0D, 0.125D + ex, 0.0D));
 
-				if (!emptySpotReq) {
-					Vec3 center = Vec3.upFromBottomCenterOf(hitBlock, height);
-					offset = center.subtract(player.getX(), player.getBoundingBox().minY, player.getZ());
-					aabb = player.getBoundingBox().move(offset.x, offset.y, offset.z);
+                if (!emptySpotReq) {
+                    Vec3 center = Vec3.upFromBottomCenterOf(hitBlock, height);
+                    offset = center.subtract(player.getX(), player.getBoundingBox().minY, player.getZ());
+                    aabb = player.getBoundingBox().move(offset.x, offset.y, offset.z);
                     emptySpotReq = this.mc.level.noCollision(player, aabb) &&
                         !this.mc.level.noCollision(player, aabb.inflate(0.0D, 0.125D + ex, 0.0D));
-				}
+                }
 
-				if (emptySpotReq) {
-					Vec3 dest = new Vec3(aabb.getCenter().x, hitBlock.getY() + height, aabb.getCenter().z);
-					this.movementTeleportDestination = dest.scale(1.0D);
-					return true;
-				}
-			}
-			hitBlock = hitBlock.above();
-		}
+                if (emptySpotReq) {
+                    Vec3 dest = new Vec3(aabb.getCenter().x, hitBlock.getY() + height, aabb.getCenter().z);
+                    this.movementTeleportDestination = dest.scale(1.0D);
+                    return true;
+                }
+            }
+            hitBlock = hitBlock.above();
+        }
         return false;
     }
 
     /**
      * does a rough interpolation between arc locations
+     *
      * @param progress location of the point on the arc, 0-1
      * @return interpolated point
      */

@@ -46,6 +46,7 @@ public class SodiumHelper {
 
     /**
      * sodium does some mixins into BlockRenderer, calling it multiple times on first load causes issues with mixin applying multiple times
+     *
      * @return if blockmodels shouldn't be built in parallel immediately
      */
     public static boolean hasIssuesWithParallelBlockBuilding() {
@@ -59,6 +60,7 @@ public class SodiumHelper {
 
     /**
      * marks the given Sprite to be animated in this frame
+     *
      * @param sprite sprite to mark
      */
     public static void markTextureAsActive(TextureAtlasSprite sprite) {
@@ -74,10 +76,11 @@ public class SodiumHelper {
 
     /**
      * copies vertex info from one ModelPart face to another
-     * @param source source ModelPart to copy from
-     * @param dest target ModelPart to copy to
+     *
+     * @param source     source ModelPart to copy from
+     * @param dest       target ModelPart to copy to
      * @param sourcePoly source face to copy from
-     * @param destPoly target face to copy to
+     * @param destPoly   target face to copy to
      */
     public static void copyModelCuboidUV(ModelPart source, ModelPart dest, int sourcePoly, int destPoly) {
         if (init()) {
@@ -126,7 +129,8 @@ public class SodiumHelper {
                 }
             } catch (IllegalAccessException | ClassCastException e) {
                 VRSettings.LOGGER.error(
-                    "Vivecraft: sodium version has ModelCuboids, but fields are an unexpected type. VR hands will probably look wrong:", e);
+                    "Vivecraft: sodium version has ModelCuboids, but fields are an unexpected type. VR hands will probably look wrong:",
+                    e);
                 HAS_MODELCUBOID_FLOATS = false;
                 HAS_MODELCUBOID_QUADS = false;
             }
@@ -135,6 +139,7 @@ public class SodiumHelper {
 
     /**
      * sodium change the internal cube face indices, this maps the pre 0.5 indices to 0.5+ ones
+     *
      * @param old pre 0.5 face index
      * @return post 0.5 index
      */
@@ -151,6 +156,7 @@ public class SodiumHelper {
 
     /**
      * initializes all Reflections
+     *
      * @return if init was successful
      */
     private static boolean init() {
@@ -182,7 +188,6 @@ public class SodiumHelper {
                     Cube_sodium$cuboid = ModelPart.Cube.class.getDeclaredField("sodium$cuboid");
                     Cube_sodium$cuboid.setAccessible(true);
                     HAS_MODELCUBOID_CUBES = true;
-
                 }
                 try {
                     Class<?> ModelCuboid$Quad = getClassWithAlternative(
@@ -209,7 +214,9 @@ public class SodiumHelper {
             } catch (ClassNotFoundException ignored) {
                 // older versions didn't use that so can ignore it
             } catch (NoSuchFieldException e) {
-                VRSettings.LOGGER.error("Vivecraft: sodium version has ModelCuboids, but some fields are not found. VR hands will probably look wrong:", e);
+                VRSettings.LOGGER.error(
+                    "Vivecraft: sodium version has ModelCuboids, but some fields are not found. VR hands will probably look wrong:",
+                    e);
             }
         } catch (ClassNotFoundException | NoSuchMethodException e) {
             INIT_FAILED = true;
@@ -221,6 +228,7 @@ public class SodiumHelper {
 
     /**
      * does a class Lookup with an alternative, for convenience, since iris changed packages
+     *
      * @param class1 first option
      * @param class2 alternative option
      * @return found class

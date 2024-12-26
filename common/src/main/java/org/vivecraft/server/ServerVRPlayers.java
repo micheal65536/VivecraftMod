@@ -33,6 +33,7 @@ public class ServerVRPlayers {
 
     /**
      * sets the players pose to SWIMMING, when they are roomscale crawling
+     *
      * @param player player to set the pose fore
      */
     public static void overridePose(ServerPlayer player) {

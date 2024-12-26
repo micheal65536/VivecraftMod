@@ -37,8 +37,7 @@ public abstract class GuiVROptionsBase extends Screen {
     }
 
     protected void addDefaultButtons() {
-        this.addRenderableWidget(this.btnDone = new Button.Builder(Component.translatable("gui.back"), (p) ->
-        {
+        this.addRenderableWidget(this.btnDone = new Button.Builder(Component.translatable("gui.back"), (p) -> {
             if (!this.onDoneClicked()) {
                 this.dataHolder.vrSettings.saveOptions();
                 this.minecraft.setScreen(this.lastScreen);
@@ -47,15 +46,16 @@ public abstract class GuiVROptionsBase extends Screen {
             .pos(this.width / 2 + 5, this.height - 30)
             .size(150, 20)
             .build());
-        this.addRenderableWidget(this.btnDefaults = new Button.Builder(Component.translatable("vivecraft.gui.loaddefaults"), (p) ->
-        {
-            this.loadDefaults();
-            this.dataHolder.vrSettings.saveOptions();
-            this.reinit = true;
-        })
-            .pos(this.width / 2 - 155, this.height - 30)
-            .size(150, 20)
-            .build());
+
+        this.addRenderableWidget(
+            this.btnDefaults = new Button.Builder(Component.translatable("vivecraft.gui.loaddefaults"), (p) -> {
+                this.loadDefaults();
+                this.dataHolder.vrSettings.saveOptions();
+                this.reinit = true;
+            })
+                .pos(this.width / 2 - 155, this.height - 30)
+                .size(150, 20)
+                .build());
     }
 
     protected boolean onDoneClicked() {
@@ -75,47 +75,60 @@ public abstract class GuiVROptionsBase extends Screen {
         for (final VROptionLayout layout : settings) {
             if (layout.getOption() != null && layout.getOption().getEnumFloat()) {
                 // Option Slider
-                this.addRenderableWidget(new GuiVROptionSlider(layout.getOrdinal(), layout.getX(this.width), layout.getY(this.height), layout.getOption()) {
-                    @Override
-                    public void onClick(double mouseX, double mouseY) {
-                        if (layout.getCustomHandler() == null || !layout.getCustomHandler().apply(this, new Vec2((float) mouseX, (float) mouseY))) {
-                            super.onClick(mouseX, mouseY);
+                this.addRenderableWidget(
+                    new GuiVROptionSlider(layout.getOrdinal(), layout.getX(this.width), layout.getY(this.height),
+                        layout.getOption())
+                    {
+                        @Override
+                        public void onClick(double mouseX, double mouseY) {
+                            if (layout.getCustomHandler() == null ||
+                                !layout.getCustomHandler().apply(this, new Vec2((float) mouseX, (float) mouseY)))
+                            {
+                                super.onClick(mouseX, mouseY);
+                            }
                         }
-                    }
-                });
+                    });
             } else if (layout.getOption() != null) {
                 // Option Button
-                this.addRenderableWidget(new GuiVROptionButton(layout.getOrdinal(), layout.getX(this.width), layout.getY(this.height), layout.getOption(), layout.getButtonText(), (p) ->
-                {
-                    if (layout.getCustomHandler() == null || !layout.getCustomHandler().apply((GuiVROptionButton) p, new Vec2(0.0F, 0.0F))) {
-                        this.vrSettings.setOptionValue(((GuiVROptionButton) p).getOption());
-                        p.setMessage(Component.literal(layout.getButtonText()));
-                    }
-                }));
+                this.addRenderableWidget(
+                    new GuiVROptionButton(layout.getOrdinal(), layout.getX(this.width), layout.getY(this.height),
+                        layout.getOption(), layout.getButtonText(), (p) -> {
+                        if (layout.getCustomHandler() == null ||
+                            !layout.getCustomHandler().apply((GuiVROptionButton) p, new Vec2(0.0F, 0.0F)))
+                        {
+                            this.vrSettings.setOptionValue(((GuiVROptionButton) p).getOption());
+                            p.setMessage(Component.literal(layout.getButtonText()));
+                        }
+                    }));
             } else if (layout.getScreen() != null) {
                 // Screen button
-                this.addRenderableWidget(new GuiVROptionButton(layout.getOrdinal(), layout.getX(this.width), layout.getY(this.height), layout.getButtonText(), (p) ->
-                {
-                    try {
-                        if (layout.getCustomHandler() != null && layout.getCustomHandler().apply((GuiVROptionButton) p, new Vec2(0.0F, 0.0F))) {
-                            return;
-                        }
+                this.addRenderableWidget(
+                    new GuiVROptionButton(layout.getOrdinal(), layout.getX(this.width), layout.getY(this.height),
+                        layout.getButtonText(), (p) -> {
+                        try {
+                            if (layout.getCustomHandler() != null &&
+                                layout.getCustomHandler().apply((GuiVROptionButton) p, new Vec2(0.0F, 0.0F)))
+                            {
+                                return;
+                            }
 
-                        this.vrSettings.saveOptions();
-                        this.minecraft.setScreen(layout.getScreen().getConstructor(Screen.class).newInstance(this));
-                    } catch (ReflectiveOperationException e) {
-                        VRSettings.LOGGER.error("Vivecraft: error setting screen: ", e);
-                    }
-                }));
+                            this.vrSettings.saveOptions();
+                            this.minecraft.setScreen(layout.getScreen().getConstructor(Screen.class).newInstance(this));
+                        } catch (ReflectiveOperationException e) {
+                            VRSettings.LOGGER.error("Vivecraft: error setting screen: ", e);
+                        }
+                    }));
             } else if (layout.getCustomHandler() != null) {
                 // Custom click handler button
-                this.addRenderableWidget(new GuiVROptionButton(layout.getOrdinal(), layout.getX(this.width), layout.getY(this.height), layout.getButtonText(), (p) ->
-                {
-                    layout.getCustomHandler().apply((GuiVROptionButton) p, new Vec2(0.0F, 0.0F));
-                }));
+                this.addRenderableWidget(
+                    new GuiVROptionButton(layout.getOrdinal(), layout.getX(this.width), layout.getY(this.height),
+                        layout.getButtonText(),
+                        (p) -> layout.getCustomHandler().apply((GuiVROptionButton) p, new Vec2(0.0F, 0.0F))));
             } else {
                 // just a button, do something with it on your own time.
-                this.addRenderableWidget(new GuiVROptionButton(layout.getOrdinal(), layout.getX(this.width), layout.getY(this.height), layout.getButtonText(), (p) -> {}));
+                this.addRenderableWidget(
+                    new GuiVROptionButton(layout.getOrdinal(), layout.getX(this.width), layout.getY(this.height),
+                        layout.getButtonText(), (p) -> {}));
             }
         }
     }
@@ -191,7 +204,9 @@ public abstract class GuiVROptionsBase extends Screen {
             VRSettings.VrOptions selected = this.getFocused() instanceof GuiVROption option ? option.getOption() : null;
             this.init();
             if (selected != null) {
-                GuiEventListener newButton = this.children().stream().filter(listener -> listener instanceof GuiVROption option && option.getOption() == selected).findFirst().orElse(null);
+                GuiEventListener newButton = this.children().stream()
+                    .filter(listener -> listener instanceof GuiVROption option && option.getOption() == selected)
+                    .findFirst().orElse(null);
                 // refocus the new button, or clear it if it's not there
                 this.setFocused(newButton);
             }
@@ -216,11 +231,9 @@ public abstract class GuiVROptionsBase extends Screen {
         renderTooltip(guiGraphics, mouseX, mouseY);
     }
 
-    protected void actionPerformed(AbstractWidget widget) {
-    }
+    protected void actionPerformed(AbstractWidget widget) {}
 
-    protected void actionPerformedRightClick(AbstractWidget widget) {
-    }
+    protected void actionPerformedRightClick(AbstractWidget widget) {}
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -241,12 +254,14 @@ public abstract class GuiVROptionsBase extends Screen {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        return this.visibleList != null ? this.visibleList.mouseReleased(mouseX, mouseY, button) : super.mouseReleased(mouseX, mouseY, button);
+        return this.visibleList != null ? this.visibleList.mouseReleased(mouseX, mouseY, button) :
+            super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        return this.visibleList != null ? this.visibleList.mouseDragged(mouseX, mouseY, button, dragX, dragY) : super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+        return this.visibleList != null ? this.visibleList.mouseDragged(mouseX, mouseY, button, dragX, dragY) :
+            super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
     }
 
     @Override
@@ -281,7 +296,8 @@ public abstract class GuiVROptionsBase extends Screen {
 
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
-        return this.visibleList != null && this.visibleList.charTyped(codePoint, modifiers) || super.charTyped(codePoint, modifiers);
+        return this.visibleList != null && this.visibleList.charTyped(codePoint, modifiers) ||
+            super.charTyped(codePoint, modifiers);
     }
 
     private void renderTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
@@ -310,11 +326,15 @@ public abstract class GuiVROptionsBase extends Screen {
                     }
 
                     if (this.dataHolder.vrSettings.overrides.hasSetting(guiHover.getOption())) {
-                        VRSettings.ServerOverrides.Setting setting = this.dataHolder.vrSettings.overrides.getSetting(guiHover.getOption());
+                        VRSettings.ServerOverrides.Setting setting = this.dataHolder.vrSettings.overrides.getSetting(
+                            guiHover.getOption());
                         if (setting.isValueOverridden()) {
                             tooltip = I18n.get("vivecraft.message.overriddenbyserver") + tooltip;
-                        } else if (setting.isFloat() && (setting.isValueMinOverridden() || setting.isValueMaxOverridden())) {
-                            tooltip = I18n.get("vivecraft.message.limitedbyserver", setting.getValueMin(), setting.getValueMax()) + tooltip;
+                        } else if (setting.isFloat() &&
+                            (setting.isValueMinOverridden() || setting.isValueMaxOverridden()))
+                        {
+                            tooltip = I18n.get("vivecraft.message.limitedbyserver", setting.getValueMin(),
+                                setting.getValueMax()) + tooltip;
                         }
                     }
                     if (!tooltip.isEmpty()) {
@@ -322,14 +342,22 @@ public abstract class GuiVROptionsBase extends Screen {
                         tooltip = tooltip.replace("\n", "§r\n");
 
                         // make last line the roughly 308 wide
-                        List<FormattedText> formattedText = this.font.getSplitter().splitLines(tooltip, 308, Style.EMPTY);
-                        tooltip += " ".repeat((308 - (formattedText.isEmpty() ? 0 : this.font.width(formattedText.get(formattedText.size() - 1)))) / this.font.width(" "));
+                        List<FormattedText> formattedText = this.font.getSplitter()
+                            .splitLines(tooltip, 308, Style.EMPTY);
+                        tooltip += " ".repeat((308 -
+                            (formattedText.isEmpty() ? 0 : this.font.width(formattedText.get(formattedText.size() - 1)))
+                        ) / this.font.width(" "));
 
                         // if tooltip is not too low, draw below button, else above
-                        if (guiHover.getY() + guiHover.getHeight() + formattedText.size() * (this.font.lineHeight + 1) + 14 < this.height) {
-                            guiGraphics.renderTooltip(this.font, this.font.split(Component.literal(tooltip), 308), this.width / 2 - 166, guiHover.getY() + guiHover.getHeight() + 14);
+                        if (guiHover.getY() + guiHover.getHeight() + formattedText.size() * (this.font.lineHeight + 1) +
+                            14 < this.height)
+                        {
+                            guiGraphics.renderTooltip(this.font, this.font.split(Component.literal(tooltip), 308),
+                                this.width / 2 - 166, guiHover.getY() + guiHover.getHeight() + 14);
                         } else {
-                            guiGraphics.renderTooltip(this.font, this.font.split(Component.literal(tooltip), 308), this.width / 2 - 166, guiHover.getY() - formattedText.size() * (this.font.lineHeight + 1) + 9);
+                            guiGraphics.renderTooltip(this.font, this.font.split(Component.literal(tooltip), 308),
+                                this.width / 2 - 166,
+                                guiHover.getY() - formattedText.size() * (this.font.lineHeight + 1) + 9);
                         }
                     }
                 }
@@ -338,6 +366,7 @@ public abstract class GuiVROptionsBase extends Screen {
     }
 
     private boolean isMouseOver(AbstractWidget widget, double mouseX, double mouseY) {
-        return widget.visible && mouseX >= widget.getX() && mouseY >= widget.getY() && mouseX < (widget.getX() + widget.getWidth()) && mouseY < (widget.getY() + widget.getHeight());
+        return widget.visible && mouseX >= widget.getX() && mouseY >= widget.getY() &&
+            mouseX < (widget.getX() + widget.getWidth()) && mouseY < (widget.getY() + widget.getHeight());
     }
 }

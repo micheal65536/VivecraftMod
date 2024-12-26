@@ -125,6 +125,7 @@ public class ClientNetworking {
 
     /**
      * Sends the given {@code payload} to the server, but only if the server sent that it has vivecraft
+     *
      * @param payload Payload to send
      */
     public static void sendServerPacket(VivecraftPayloadC2S payload) {
@@ -154,15 +155,18 @@ public class ClientNetworking {
     // ServerSetting override checks
 
     public static boolean isThirdPersonItems() {
-        return ClientDataHolderVR.getInstance().vrSettings.overrides.getSetting(VRSettings.VrOptions.THIRDPERSON_ITEMTRANSFORMS).getBoolean();
+        return ClientDataHolderVR.getInstance().vrSettings.overrides.getSetting(
+            VRSettings.VrOptions.THIRDPERSON_ITEMTRANSFORMS).getBoolean();
     }
 
     public static boolean isThirdPersonItemsCustom() {
-        return ClientDataHolderVR.getInstance().vrSettings.overrides.getSetting(VRSettings.VrOptions.THIRDPERSON_ITEMTRANSFORMS_CUSTOM).getBoolean();
+        return ClientDataHolderVR.getInstance().vrSettings.overrides.getSetting(
+            VRSettings.VrOptions.THIRDPERSON_ITEMTRANSFORMS_CUSTOM).getBoolean();
     }
 
     public static boolean isLimitedSurvivalTeleport() {
-        return ClientDataHolderVR.getInstance().vrSettings.overrides.getSetting(VRSettings.VrOptions.LIMIT_TELEPORT).getBoolean();
+        return ClientDataHolderVR.getInstance().vrSettings.overrides.getSetting(VRSettings.VrOptions.LIMIT_TELEPORT)
+            .getBoolean();
     }
 
     public static boolean supportsReversedBow() {
@@ -171,15 +175,18 @@ public class ClientNetworking {
     }
 
     public static int getTeleportUpLimit() {
-        return ClientDataHolderVR.getInstance().vrSettings.overrides.getSetting(VRSettings.VrOptions.TELEPORT_UP_LIMIT).getInt();
+        return ClientDataHolderVR.getInstance().vrSettings.overrides.getSetting(VRSettings.VrOptions.TELEPORT_UP_LIMIT)
+            .getInt();
     }
 
     public static int getTeleportDownLimit() {
-        return ClientDataHolderVR.getInstance().vrSettings.overrides.getSetting(VRSettings.VrOptions.TELEPORT_DOWN_LIMIT).getInt();
+        return ClientDataHolderVR.getInstance().vrSettings.overrides.getSetting(
+            VRSettings.VrOptions.TELEPORT_DOWN_LIMIT).getInt();
     }
 
     public static int getTeleportHorizLimit() {
-        return ClientDataHolderVR.getInstance().vrSettings.overrides.getSetting(VRSettings.VrOptions.TELEPORT_HORIZ_LIMIT).getInt();
+        return ClientDataHolderVR.getInstance().vrSettings.overrides.getSetting(
+            VRSettings.VrOptions.TELEPORT_HORIZ_LIMIT).getInt();
     }
 
     public static void sendActiveHand(InteractionHand hand) {
@@ -218,7 +225,8 @@ public class ClientNetworking {
     public static void restoreLook(Player player) {
         if (!SERVER_WANTS_DATA) {
             if (OVERRIDE_ACTIVE) {
-                ((LocalPlayer) player).connection.send(new ServerboundMovePlayerPacket.Rot(CAPTURED_YAW, CAPTURED_PITCH, player.onGround()));
+                ((LocalPlayer) player).connection.send(
+                    new ServerboundMovePlayerPacket.Rot(CAPTURED_YAW, CAPTURED_PITCH, player.onGround()));
                 OVERRIDE_ACTIVE = false;
             }
         }
@@ -247,7 +255,9 @@ public class ClientNetworking {
                     mc.gui.getChat().addMessage(Component.translatable("vivecraft.messages.serverplugin",
                         ((VersionPayloadS2C) s2cPayload).version()));
                 }
-                if (VRState.VR_ENABLED && dataholder.vrSettings.manualCalibration == -1.0F && !dataholder.vrSettings.seated) {
+                if (VRState.VR_ENABLED && dataholder.vrSettings.manualCalibration == -1.0F &&
+                    !dataholder.vrSettings.seated)
+                {
                     mc.gui.getChat().addMessage(Component.translatable("vivecraft.messages.calibrateheight"));
                 }
             }
@@ -278,27 +288,32 @@ public class ClientNetworking {
             case TELEPORT -> ClientNetworking.SERVER_SUPPORTS_DIRECT_TELEPORT = true;
             case UBERPACKET -> {
                 UberPacketPayloadS2C packet = (UberPacketPayloadS2C) s2cPayload;
-                ClientVRPlayers.getInstance().update(packet.playerID(), packet.state(), packet.worldScale(), packet.heightScale());
+                ClientVRPlayers.getInstance()
+                    .update(packet.playerID(), packet.state(), packet.worldScale(), packet.heightScale());
             }
             case SETTING_OVERRIDE -> {
-                for (Map.Entry<String, String> override : ((SettingOverridePayloadS2C) s2cPayload).overrides().entrySet()) {
+                for (Map.Entry<String, String> override : ((SettingOverridePayloadS2C) s2cPayload).overrides()
+                    .entrySet()) {
                     String[] split = override.getKey().split("\\.", 2);
 
                     if (dataholder.vrSettings.overrides.hasSetting(split[0])) {
-                        VRSettings.ServerOverrides.Setting setting = dataholder.vrSettings.overrides.getSetting(split[0]);
+                        VRSettings.ServerOverrides.Setting setting = dataholder.vrSettings.overrides.getSetting(
+                            split[0]);
 
                         try {
                             if (split.length > 1) {
                                 switch (split[1]) {
                                     case "min" -> setting.setValueMin(Float.parseFloat(override.getValue()));
-                                    case "max"-> setting.setValueMax(Float.parseFloat(override.getValue()));
+                                    case "max" -> setting.setValueMax(Float.parseFloat(override.getValue()));
                                 }
                             } else {
                                 Object origValue = setting.getOriginalValue();
 
                                 if (origValue instanceof Boolean) {
                                     setting.setValue(override.getValue().equals("true"));
-                                } else if (origValue instanceof Integer || origValue instanceof Byte || origValue instanceof Short) {
+                                } else if (origValue instanceof Integer || origValue instanceof Byte ||
+                                    origValue instanceof Short)
+                                {
                                     setting.setValue(Integer.parseInt(override.getValue()));
                                 } else if (origValue instanceof Float || origValue instanceof Double) {
                                     setting.setValue(Float.parseFloat(override.getValue()));
@@ -307,7 +322,8 @@ public class ClientNetworking {
                                 }
                             }
 
-                            VRSettings.LOGGER.info("Vivecraft: Server setting override: {}={}", override.getKey(), override.getValue());
+                            VRSettings.LOGGER.info("Vivecraft: Server setting override: {}={}", override.getKey(),
+                                override.getValue());
                         } catch (Exception exception) {
                             VRSettings.LOGGER.error("Vivecraft: error parsing server setting override: ", exception);
                         }
@@ -321,7 +337,8 @@ public class ClientNetworking {
                 ClientNetworking.SERVER_ALLOWS_VR_SWITCHING = ((VRSwitchingPayloadS2C) s2cPayload).allowed();
                 if (VRState.VR_INITIALIZED) {
                     if (!ClientNetworking.SERVER_ALLOWS_VR_SWITCHING) {
-                        Minecraft.getInstance().gui.getChat().addMessage(Component.translatable("vivecraft.messages.novrhotswitching"));
+                        Minecraft.getInstance().gui.getChat()
+                            .addMessage(Component.translatable("vivecraft.messages.novrhotswitching"));
                     }
                     dataholder.vrPlayer.vrSwitchWarning = false;
                 }

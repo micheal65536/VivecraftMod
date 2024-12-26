@@ -64,19 +64,23 @@ public class VRPlayerModel_WithArmsLegs<T extends LivingEntity> extends VRPlayer
         // feet
         partDefinition.addOrReplaceChild("left_foot", CubeListBuilder.create()
                 .texOffs(16, 55 - lowerExtension)
-                .addBox(-2.0F, -5.0F - lowerExtension, -2.0F, 4.0F, 5.0F + lowerExtension, 4.0F, cubeDeformation.extend(lowerShrinkage)),
+                .addBox(-2.0F, -5.0F - lowerExtension, -2.0F, 4.0F, 5.0F + lowerExtension, 4.0F,
+                    cubeDeformation.extend(lowerShrinkage)),
             PartPose.offset(1.9F, 24.0F, 0.0F));
         partDefinition.addOrReplaceChild("left_foot_pants", CubeListBuilder.create()
                 .texOffs(0, 55 - lowerExtension)
-                .addBox(-2.0F, -5.0F - lowerExtension, -2.0F, 4.0F, 5.0F + lowerExtension, 4.0F, cubeDeformation.extend(0.25F + lowerShrinkage)),
+                .addBox(-2.0F, -5.0F - lowerExtension, -2.0F, 4.0F, 5.0F + lowerExtension, 4.0F,
+                    cubeDeformation.extend(0.25F + lowerShrinkage)),
             PartPose.offset(1.9F, 24.0F, 0.0F));
         partDefinition.addOrReplaceChild("right_foot", CubeListBuilder.create()
                 .texOffs(0, 23 - lowerExtension)
-                .addBox(-2.0F, -5.0F - lowerExtension, -2.0F, 4.0F, 5.0F + lowerExtension, 4.0F, cubeDeformation.extend(lowerShrinkage)),
+                .addBox(-2.0F, -5.0F - lowerExtension, -2.0F, 4.0F, 5.0F + lowerExtension, 4.0F,
+                    cubeDeformation.extend(lowerShrinkage)),
             PartPose.offset(-1.9F, 24.0F, 0.0F));
         partDefinition.addOrReplaceChild("right_foot_pants", CubeListBuilder.create()
                 .texOffs(0, 39 - lowerExtension)
-                .addBox(-2.0F, -5.0F - lowerExtension, -2.0F, 4.0F, 5.0F + lowerExtension, 4.0F, cubeDeformation.extend(0.25F + lowerShrinkage)),
+                .addBox(-2.0F, -5.0F - lowerExtension, -2.0F, 4.0F, 5.0F + lowerExtension, 4.0F,
+                    cubeDeformation.extend(0.25F + lowerShrinkage)),
             PartPose.offset(-1.9F, 24.0F, 0.0F));
 
         // thighs
@@ -161,8 +165,8 @@ public class VRPlayerModel_WithArmsLegs<T extends LivingEntity> extends VRPlayer
 
             this.footPos.add(this.footOffset);
             if (ClientDataHolderVR.getInstance().vrSettings.playerLimbsConnected) {
-                positionConnectedLimb(player, this.leftLeg, this.leftFoot, this.footPos, this.footQuat, 0F, kneePos, false,
-                    null);
+                positionConnectedLimb(player, this.leftLeg, this.leftFoot, this.footPos, this.footQuat, 0F, kneePos,
+                    false, null);
             } else {
                 this.footQuat.transform(MathUtils.BACK, this.footDir);
                 positionSplitLimb(player, this.leftLeg, this.leftFoot, this.footPos, this.footQuat, -Mth.HALF_PI, 0F,

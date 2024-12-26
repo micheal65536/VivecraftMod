@@ -180,6 +180,7 @@ public abstract class GuiVRMixin implements GuiExtension {
 
     /**
      * renders the vivecraft status icons above the hotbar
+     *
      * @param guiGraphics GuiGraphics to render with
      */
     @Unique

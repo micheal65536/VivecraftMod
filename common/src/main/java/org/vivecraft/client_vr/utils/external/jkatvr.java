@@ -35,7 +35,9 @@ public class jkatvr implements Library {
 
     public static native void Halt();
 
-    public static native boolean GetWalkerData(int var0, IntByReference var1, DoubleByReference var2, IntByReference var3, IntByReference var4, FloatByReference var5);
+    public static native boolean GetWalkerData(
+        int var0, IntByReference var1, DoubleByReference var2, IntByReference var3, IntByReference var4,
+        FloatByReference var5);
 
     public static void query() {
         try {

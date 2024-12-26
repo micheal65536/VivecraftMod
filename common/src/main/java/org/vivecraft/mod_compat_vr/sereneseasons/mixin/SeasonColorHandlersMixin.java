@@ -47,7 +47,10 @@ public class SeasonColorHandlersMixin {
      * menuworld fix
      */
     @Inject(method = "lambda$registerBirchColorHandler$4", at = @At("HEAD"), remap = false, cancellable = true)
-    private static void vivecraft$birchColor(BlockState blockState, BlockAndTintGetter blockAndTintGetter, BlockPos blockPos, int tintIndex, CallbackInfoReturnable<Integer> cir) {
+    private static void vivecraft$birchColor(
+        BlockState blockState, BlockAndTintGetter blockAndTintGetter, BlockPos blockPos, int tintIndex,
+        CallbackInfoReturnable<Integer> cir)
+    {
         if (Minecraft.getInstance().level == null) {
             cir.setReturnValue(FoliageColor.getBirchColor());
         }

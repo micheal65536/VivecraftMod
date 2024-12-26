@@ -56,8 +56,7 @@ public class InventoryMixin {
             }
         }
         // client side
-        else if (this.player.isLocalPlayer() && VRState.VR_RUNNING && ClientNetworking.SERVER_ALLOWS_DUAL_WIELDING)
-        {
+        else if (this.player.isLocalPlayer() && VRState.VR_RUNNING && ClientNetworking.SERVER_ALLOWS_DUAL_WIELDING) {
             limb = ClientNetworking.LAST_SENT_LIMB;
         }
 

@@ -23,15 +23,15 @@ import org.lwjgl.glfw.GLFW;
 import org.vivecraft.client.VivecraftVRMod;
 import org.vivecraft.client.Xplat;
 import org.vivecraft.client.network.ClientNetworking;
-import org.vivecraft.client_vr.MethodHolder;
-import org.vivecraft.common.utils.MathUtils;
 import org.vivecraft.client_vr.ClientDataHolderVR;
+import org.vivecraft.client_vr.MethodHolder;
 import org.vivecraft.client_vr.VRData;
 import org.vivecraft.client_vr.provider.ControllerType;
 import org.vivecraft.client_vr.render.RenderPass;
 import org.vivecraft.client_vr.render.VRFirstPersonArmSwing;
 import org.vivecraft.client_vr.settings.VRHotkeys;
 import org.vivecraft.client_vr.settings.VRSettings;
+import org.vivecraft.common.utils.MathUtils;
 
 import java.util.HashSet;
 
@@ -141,7 +141,8 @@ public class InteractTracker extends Tracker {
 
         for (int c = 0; c < 2; c++) {
             if ((this.inCamera[c] || this.inHandheldCamera[c] || this.inBow[c]) &&
-                VivecraftVRMod.INSTANCE.keyVRInteract.isDown(ControllerType.values()[c])) {
+                VivecraftVRMod.INSTANCE.keyVRInteract.isDown(ControllerType.values()[c]))
+            {
                 // don't reevaluate, if the interact is still active
                 continue;
             }
@@ -167,9 +168,11 @@ public class InteractTracker extends Tracker {
             ItemStack handItem = player.getItemInHand(c == 0 ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
 
             // third person camera movement
-            if (!this.active[c] &&
-                (this.dh.vrSettings.displayMirrorMode == VRSettings.MirrorMode.MIXED_REALITY || this.dh.vrSettings.displayMirrorMode == VRSettings.MirrorMode.THIRD_PERSON) &&
-                this.dh.vrSettings.mixedRealityRenderCameraModel) {
+            if (!this.active[c] && this.dh.vrSettings.mixedRealityRenderCameraModel &&
+                (this.dh.vrSettings.displayMirrorMode == VRSettings.MirrorMode.MIXED_REALITY ||
+                    this.dh.vrSettings.displayMirrorMode == VRSettings.MirrorMode.THIRD_PERSON
+                ))
+            {
 
                 VRData.VRDevicePose camData = this.dh.vrPlayer.vrdata_world_pre.getEye(RenderPass.THIRD);
                 Vec3 camPos = camData.getPosition();
@@ -192,7 +195,8 @@ public class InteractTracker extends Tracker {
                 VRData.VRDevicePose camData = this.dh.vrPlayer.vrdata_world_pre.getEye(RenderPass.CAMERA);
                 Vec3 camPos = camData.getPosition();
 
-                Vector3f offset = camData.getCustomVector(MathUtils.BACK).mul(0.08F * this.dh.vrPlayer.vrdata_world_pre.worldScale);
+                Vector3f offset = camData.getCustomVector(MathUtils.BACK)
+                    .mul(0.08F * this.dh.vrPlayer.vrdata_world_pre.worldScale);
 
                 camPos = camPos.subtract(offset.x, offset.y, offset.z);
 
@@ -210,9 +214,9 @@ public class InteractTracker extends Tracker {
                     handPos.z + handDirection.z * -0.1F);
 
                 AABB weaponBB = new AABB(handPos, extWeapon);
-                this.inEntityHit[c] = ProjectileUtil.getEntityHitResult(this.mc.getCameraEntity(), hmdPos, handPos, weaponBB, (e) -> {
-                    return !e.isSpectator() && e.isPickable() && e != this.mc.getCameraEntity().getVehicle();
-                }, 0.0D);
+                this.inEntityHit[c] = ProjectileUtil.getEntityHitResult(this.mc.getCameraEntity(), hmdPos, handPos,
+                    weaponBB, (e) -> !e.isSpectator() && e.isPickable() && e != this.mc.getCameraEntity().getVehicle(),
+                    0.0D);
 
                 if (this.inEntityHit[c] != null) {
                     Entity entity = this.inEntityHit[c].getEntity();
@@ -230,7 +234,9 @@ public class InteractTracker extends Tracker {
                 this.inBlockPos[c] = blockpos;
                 this.inBlockHit[c] = hit;
 
-                this.active[c] = hit != null && (this.rightClickable.contains(blockstate.getBlock().getClass()) || this.rightClickable.contains(blockstate.getBlock().getClass().getSuperclass()));
+                this.active[c] = hit != null && (this.rightClickable.contains(blockstate.getBlock().getClass()) ||
+                    this.rightClickable.contains(blockstate.getBlock().getClass().getSuperclass())
+                );
                 this.bukkit[c] = false;
 
                 // bucket liquid pickup
@@ -246,7 +252,8 @@ public class InteractTracker extends Tracker {
                 this.dh.vr.triggerHapticPulse(c, 250);
             }
 
-            this.dh.vr.getInputAction(VivecraftVRMod.INSTANCE.keyVRInteract).setEnabled(ControllerType.values()[c], this.active[c]);
+            this.dh.vr.getInputAction(VivecraftVRMod.INSTANCE.keyVRInteract)
+                .setEnabled(ControllerType.values()[c], this.active[c]);
             this.wasactive[c] = this.active[c];
         }
     }
@@ -259,7 +266,8 @@ public class InteractTracker extends Tracker {
                 BlockPos.class,
                 net.minecraft.world.entity.player.Player.class,
                 InteractionHand.class,
-                BlockHitResult.class).getDeclaringClass() == oclass) {
+                BlockHitResult.class).getDeclaringClass() == oclass)
+            {
                 this.rightClickable.add(oclass);
             }
         } catch (NoSuchMethodException ignored) {
@@ -280,15 +288,21 @@ public class InteractTracker extends Tracker {
 
     public void processBindings() {
         for (int c = 0; c < 2; c++) {
-            if (MethodHolder.isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL) || VivecraftVRMod.INSTANCE.keyVRInteract.consumeClick(ControllerType.values()[c]) && this.active[c]) {
+            if (MethodHolder.isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL) ||
+                VivecraftVRMod.INSTANCE.keyVRInteract.consumeClick(ControllerType.values()[c]) && this.active[c])
+            {
                 InteractionHand hand = InteractionHand.values()[c];
                 boolean success = false;
 
-                if (this.hotbar >= 0 && this.hotbar < 9 && this.mc.player.getInventory().selected != this.hotbar && hand == InteractionHand.MAIN_HAND) {
+                if (this.hotbar >= 0 && this.hotbar < 9 && this.mc.player.getInventory().selected != this.hotbar &&
+                    hand == InteractionHand.MAIN_HAND)
+                {
                     this.mc.player.getInventory().selected = this.hotbar;
                     success = true;
                 } else if (this.hotbar == 9 && hand == InteractionHand.MAIN_HAND) {
-                    this.mc.player.connection.send(new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.SWAP_ITEM_WITH_OFFHAND, BlockPos.ZERO, Direction.DOWN));
+                    this.mc.player.connection.send(
+                        new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.SWAP_ITEM_WITH_OFFHAND,
+                            BlockPos.ZERO, Direction.DOWN));
                     success = true;
                 } else if (this.inCamera[c]) {
                     VRHotkeys.startMovingThirdPersonCam(c, VRHotkeys.Triggerer.INTERACTION);
@@ -297,7 +311,8 @@ public class InteractTracker extends Tracker {
                     this.dh.cameraTracker.startMoving(c);
                     success = true;
                 } else if (this.inEntityHit[c] != null) {
-                    success = this.mc.gameMode.interactAt(this.mc.player, this.inEntity[c], this.inEntityHit[c], hand).consumesAction() ||
+                    success = this.mc.gameMode.interactAt(this.mc.player, this.inEntity[c], this.inEntityHit[c], hand)
+                        .consumesAction() ||
                         this.mc.gameMode.interact(this.mc.player, this.inEntity[c], hand).consumesAction();
                 } else if (this.inBlockHit[c] != null) {
                     success = this.mc.gameMode.useItemOn(this.mc.player, hand, this.inBlockHit[c]).consumesAction();

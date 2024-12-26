@@ -5,6 +5,7 @@ import org.vivecraft.common.network.packet.PayloadIdentifier;
 
 /**
  * holds weather the client is in VR or NONVR mode
+ *
  * @param vr if the client is actively in VR
  */
 public record VRActivePayloadC2S(boolean vr) implements VivecraftPayloadC2S {

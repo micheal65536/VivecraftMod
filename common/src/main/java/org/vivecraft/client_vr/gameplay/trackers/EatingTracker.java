@@ -7,9 +7,9 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import org.joml.Vector3f;
-import org.vivecraft.common.utils.MathUtils;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.VRData;
+import org.vivecraft.common.utils.MathUtils;
 
 public class EatingTracker extends Tracker {
     private static final float MOUTH_TO_EYE_DISTANCE = 0.0F;
@@ -65,11 +65,12 @@ public class EatingTracker extends Tracker {
     public void doProcess(LocalPlayer player) {
         VRData room_pre = this.dh.vrPlayer.vrdata_room_pre;
         Vector3f hmdPos = room_pre.hmd.getPositionF();
-        Vector3f mouthPos = room_pre.getController(0).getCustomVector(new Vector3f(0.0F, -MOUTH_TO_EYE_DISTANCE, 0.0F)).add(hmdPos);
+        Vector3f mouthPos = room_pre.getController(0).getCustomVector(new Vector3f(0.0F, -MOUTH_TO_EYE_DISTANCE, 0.0F))
+            .add(hmdPos);
 
         for (int c = 0; c < 2; c++) {
             Vector3f controllerPos = this.dh.vr.controllerHistory[c].averagePosition(0.333D)
-                           .add(room_pre.getController(c).getDirection().mul(0.2F));
+                .add(room_pre.getController(c).getDirection().mul(0.2F));
 
             if (mouthPos.distance(controllerPos) < THRESHOLD) {
                 ItemStack itemstack = c == 0 ? player.getMainHandItem() : player.getOffhandItem();
@@ -94,8 +95,11 @@ public class EatingTracker extends Tracker {
                 if (!this.eating[c]) {
                     //Minecraft.getInstance().physicalGuiManager.preClickAction();
 
-                    if (this.mc.gameMode.useItem(player, c == 0 ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND).consumesAction()) {
-                        this.mc.gameRenderer.itemInHandRenderer.itemUsed(c == 0 ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
+                    if (this.mc.gameMode.useItem(player, c == 0 ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND)
+                        .consumesAction())
+                    {
+                        this.mc.gameRenderer.itemInHandRenderer.itemUsed(
+                            c == 0 ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
                         this.eating[c] = true;
                         this.eatStart = Util.getMillis();
                     }

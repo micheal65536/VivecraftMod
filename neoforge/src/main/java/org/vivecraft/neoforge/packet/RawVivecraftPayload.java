@@ -7,6 +7,7 @@ import org.vivecraft.common.network.packet.VivecraftPayload;
 
 /**
  * this is a packet that just holds the raw data, is only here to have one parent packet for client and server flow
+ *
  * @param rawData raw data of the packet
  */
 public record RawVivecraftPayload(byte[] rawData) implements VivecraftPayload {

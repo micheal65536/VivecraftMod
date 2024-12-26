@@ -26,6 +26,7 @@ public class TextUtils {
 
     /**
      * removes invalid path characters from a filename
+     *
      * @param fileName name to sanitize
      * @return sanitized filename
      */
@@ -47,8 +48,9 @@ public class TextUtils {
     /**
      * splits the given {@code in} String into multiple lines, splits so that a line doesn't exceed {@code length} characters, and at new lines. The output is added to the provided list {@code wrapped}
      * With thanks to http://ramblingsrobert.wordpress.com/2011/04/13/java-word-wrap-algorithm/
-     * @param in String to wrap
-     * @param length max line length
+     *
+     * @param in      String to wrap
+     * @param length  max line length
      * @param wrapped List to add split lines to
      */
     public static void wordWrap(String in, int length, ArrayList<String> wrapped) {
@@ -95,9 +97,10 @@ public class TextUtils {
 
     /**
      * same as {@link ComponentRenderUtils#wrapComponents}, but with a custom line Prefix
-     * @param text text to wrap
-     * @param width max width of the text
-     * @param font fon to use for splitting/sizing
+     *
+     * @param text       text to wrap
+     * @param width      max width of the text
+     * @param font       fon to use for splitting/sizing
      * @param linePrefix prefix on wrapped lines
      * @return list of wrapped lines
      */
@@ -119,6 +122,7 @@ public class TextUtils {
 
     /**
      * extracts all ChatFormatting of the given Style
+     *
      * @param style Style to parse
      * @return list of all ChatFormatting in the provided Style
      */
@@ -158,6 +162,7 @@ public class TextUtils {
 
     /**
      * builds a String of all formatting codes provided in {@code formats}
+     *
      * @param formats list of ChatFormatting elements
      * @return format string of all ChatFormatting in the provided list
      */
@@ -173,6 +178,7 @@ public class TextUtils {
 
     /**
      * converts a Style to a format string
+     *
      * @param style style to get the formatting from
      * @return format string of the Style
      */
@@ -182,6 +188,7 @@ public class TextUtils {
 
     /**
      * creates a chained component of the given Throwable. each stack element is a new line
+     *
      * @param throwable Throwable to convert
      * @return Component of the Throwable message and stack trace
      */

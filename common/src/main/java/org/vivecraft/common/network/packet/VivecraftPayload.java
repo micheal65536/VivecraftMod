@@ -9,6 +9,7 @@ public interface VivecraftPayload extends CustomPacketPayload {
 
     /**
      * writes this data packet to the given buffer
+     *
      * @param buffer Buffer to write to
      */
     default void write(FriendlyByteBuf buffer) {

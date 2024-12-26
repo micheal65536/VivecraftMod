@@ -5,30 +5,31 @@ import net.minecraft.network.FriendlyByteBuf;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.vivecraft.client.network.ClientNetworking;
-import org.vivecraft.client_vr.provider.MCVR;
-import org.vivecraft.common.utils.MathUtils;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.gameplay.VRPlayer;
+import org.vivecraft.client_vr.provider.MCVR;
 import org.vivecraft.client_vr.render.RenderPass;
+import org.vivecraft.common.utils.MathUtils;
 
 import javax.annotation.Nullable;
 
 /**
  * holds all data from a player
- * @param seated if the player is in seated mode
- * @param hmd device Pose of the headset
- * @param leftHanded if true, {@code mainHand} is the left hand, else {@code offHand} is
- * @param mainHand device Pose of the main hand
+ *
+ * @param seated              if the player is in seated mode
+ * @param hmd                 device Pose of the headset
+ * @param leftHanded          if true, {@code mainHand} is the left hand, else {@code offHand} is
+ * @param mainHand            device Pose of the main hand
  * @param reverseHands1legacy same as {@code leftHanded}, just here for legacy compatibility
- * @param offHand device Pose of the offhand
- * @param fbtMode determines what additional trackers are in the player state
- * @param waist waist tracker pos, can be {@code null}
- * @param rightFoot right foot tracker pos, can be {@code null}
- * @param leftFoot left foot tracker pos, can be {@code null}
- * @param rightKnee right knee tracker pos, can be {@code null}
- * @param leftKnee left knee tracker pos, can be {@code null}
- * @param rightElbow right elbow tracker pos, can be {@code null}
- * @param leftElbow left elbow tracker pos, can be {@code null}
+ * @param offHand             device Pose of the offhand
+ * @param fbtMode             determines what additional trackers are in the player state
+ * @param waist               waist tracker pos, can be {@code null}
+ * @param rightFoot           right foot tracker pos, can be {@code null}
+ * @param leftFoot            left foot tracker pos, can be {@code null}
+ * @param rightKnee           right knee tracker pos, can be {@code null}
+ * @param leftKnee            left knee tracker pos, can be {@code null}
+ * @param rightElbow          right elbow tracker pos, can be {@code null}
+ * @param leftElbow           left elbow tracker pos, can be {@code null}
  */
 public record VrPlayerState(boolean seated, Pose hmd, boolean leftHanded, Pose mainHand,
                             boolean reverseHands1legacy, Pose offHand,
@@ -40,7 +41,8 @@ public record VrPlayerState(boolean seated, Pose hmd, boolean leftHanded, Pose m
 
     /**
      * strips the VrPlayerState down to only contain legacy data
-     * @param other VrPlayerState to strip down
+     *
+     * @param other   VrPlayerState to strip down
      * @param version version to strip the packet down to
      */
     public VrPlayerState(VrPlayerState other, int version) {
@@ -92,6 +94,7 @@ public record VrPlayerState(boolean seated, Pose hmd, boolean leftHanded, Pose m
 
     /**
      * creates the headset Pose object from the client vr data
+     *
      * @param vrPlayer object holding the client data
      * @return Pose object of the current headset state
      */
@@ -106,8 +109,9 @@ public record VrPlayerState(boolean seated, Pose hmd, boolean leftHanded, Pose m
 
     /**
      * creates the device Pose object for the specified device, from the client vr data
+     *
      * @param vrPlayer object holding the client data
-     * @param device index of the device to get the Pose for
+     * @param device   index of the device to get the Pose for
      * @return Pose object of the current device state
      */
     private static Pose devicePose(VRPlayer vrPlayer, int device) {
@@ -122,8 +126,9 @@ public record VrPlayerState(boolean seated, Pose hmd, boolean leftHanded, Pose m
 
     /**
      * creates the controller Pose object for the specified controller, from the client vr data
+     *
      * @param vrPlayer object holding the client data
-     * @param tracker index of the tracker to get the Pose for
+     * @param tracker  index of the tracker to get the Pose for
      * @return TrackerPose object of the current tracker state
      */
     private static TrackerPose trackerPose(VRPlayer vrPlayer, int tracker) {
@@ -134,7 +139,7 @@ public record VrPlayerState(boolean seated, Pose hmd, boolean leftHanded, Pose m
     }
 
     /**
-     * @param buffer buffer to read from
+     * @param buffer     buffer to read from
      * @param bytesAfter specifies how many bytes in the buffer are meant to be left unread
      * @return a VrPlayerState read from the given {@code buffer}
      */
@@ -183,6 +188,7 @@ public record VrPlayerState(boolean seated, Pose hmd, boolean leftHanded, Pose m
 
     /**
      * writes this VrPlayerState to the given {@code buffer}
+     *
      * @param buffer buffer to write to
      */
     public void serialize(FriendlyByteBuf buffer) {

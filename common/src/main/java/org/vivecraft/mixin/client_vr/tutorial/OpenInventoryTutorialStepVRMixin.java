@@ -19,7 +19,9 @@ public class OpenInventoryTutorialStepVRMixin {
             return description;
         }
         if (MCVR.get().getInputAction(Minecraft.getInstance().options.keyInventory).isActive()) {
-            return Component.translatable("tutorial.open_inventory.description", Component.literal(MCVR.get().getOriginName(MCVR.get().getInputAction(Minecraft.getInstance().options.keyInventory).getLastOrigin())).withStyle(ChatFormatting.BOLD));
+            return Component.translatable("tutorial.open_inventory.description", Component.literal(MCVR.get()
+                    .getOriginName(MCVR.get().getInputAction(Minecraft.getInstance().options.keyInventory).getLastOrigin()))
+                .withStyle(ChatFormatting.BOLD));
         }
         return description;
     }

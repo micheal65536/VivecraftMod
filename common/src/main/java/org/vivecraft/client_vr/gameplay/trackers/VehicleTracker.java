@@ -10,11 +10,11 @@ import net.minecraft.world.entity.vehicle.Minecart;
 import net.minecraft.world.item.FoodOnAStickItem;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
-import org.vivecraft.common.utils.MathUtils;
 import org.vivecraft.client_vr.ClientDataHolderVR;
-import org.vivecraft.data.ItemTags;
 import org.vivecraft.client_vr.VRData;
 import org.vivecraft.client_vr.settings.VRSettings;
+import org.vivecraft.common.utils.MathUtils;
+import org.vivecraft.data.ItemTags;
 
 public class VehicleTracker extends Tracker {
     private float PreMount_World_Rotation;
@@ -149,7 +149,8 @@ public class VehicleTracker extends Tracker {
                     }
                 }
 
-                float difference = this.dh.vrPlayer.rotDiff_Degrees((float) this.rotationTarget, this.vehicleInitialRotation);
+                float difference = this.dh.vrPlayer.rotDiff_Degrees((float) this.rotationTarget,
+                    this.vehicleInitialRotation);
 
                 if (smooth) {
                     if (difference > smoothIncrement) {
@@ -181,7 +182,7 @@ public class VehicleTracker extends Tracker {
             // passanger movement is done in LocalPlayerVRMixin#vivecraft$wrapSetPos
             if (this.isRiding && this.mc.getCameraEntity() != null && this.mc.getCameraEntity() != this.mc.player) {
                 // try to make the eye height match
-                Vec3 ridingPos = this.mc.getCameraEntity().getEyePosition().subtract(0, this.mc.player.eyeHeight,0);
+                Vec3 ridingPos = this.mc.getCameraEntity().getEyePosition().subtract(0, this.mc.player.eyeHeight, 0);
 
                 updateRiderPos(ridingPos.x, ridingPos.y, ridingPos.z, this.mc.getCameraEntity());
             }
@@ -207,7 +208,9 @@ public class VehicleTracker extends Tracker {
             }
 
             float difference = this.dh.vrPlayer.rotDiff_Degrees(start, end);
-            this.dh.vrSettings.worldRotation = (float) (Math.toDegrees(this.dh.vrPlayer.vrdata_world_pre.rotation_radians) + (double) difference);
+            this.dh.vrSettings.worldRotation = (float) (
+                Math.toDegrees(this.dh.vrPlayer.vrdata_world_pre.rotation_radians) + (double) difference
+            );
             this.dh.vrSettings.worldRotation %= 360.0F;
             this.dh.vr.seatedRot = this.dh.vrSettings.worldRotation;
         }

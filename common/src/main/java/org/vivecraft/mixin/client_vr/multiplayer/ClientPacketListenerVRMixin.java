@@ -32,7 +32,9 @@ public abstract class ClientPacketListenerVRMixin extends ClientCommonPacketList
     @Unique
     private String vivecraft$lastMsg = null;
 
-    protected ClientPacketListenerVRMixin(Minecraft minecraft, Connection connection, CommonListenerCookie commonListenerCookie) {
+    protected ClientPacketListenerVRMixin(
+        Minecraft minecraft, Connection connection, CommonListenerCookie commonListenerCookie)
+    {
         super(minecraft, connection, commonListenerCookie);
     }
 
@@ -136,7 +138,8 @@ public abstract class ClientPacketListenerVRMixin extends ClientCommonPacketList
                 Vec3 controllerPos = dataHolder.vrPlayer.vrdata_world_pre.getController(1).getPosition();
                 this.minecraft.level.playLocalSound(
                     controllerPos.x(), controllerPos.y(), controllerPos.z(),
-                    BuiltInRegistries.SOUND_EVENT.get(new ResourceLocation(dataHolder.vrSettings.chatNotificationSound)),
+                    BuiltInRegistries.SOUND_EVENT.get(
+                        new ResourceLocation(dataHolder.vrSettings.chatNotificationSound)),
                     SoundSource.NEUTRAL, 0.3F, 0.1F, false);
             }
         }
@@ -148,7 +151,9 @@ public abstract class ClientPacketListenerVRMixin extends ClientCommonPacketList
     }
 
     @Inject(method = "handleCustomPayload", at = @At("TAIL"), cancellable = true)
-    private void vivecraft$handleVivecraftPackets(CallbackInfo ci, @Local(argsOnly = true) CustomPacketPayload payload) {
+    private void vivecraft$handleVivecraftPackets(
+        CallbackInfo ci, @Local(argsOnly = true) CustomPacketPayload payload)
+    {
         if (payload instanceof VivecraftPayloadS2C S2CPayload) {
             this.minecraft.execute(() -> ClientNetworking.handlePacket(S2CPayload));
             ci.cancel();

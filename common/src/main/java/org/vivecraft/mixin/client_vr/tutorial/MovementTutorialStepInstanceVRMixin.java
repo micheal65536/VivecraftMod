@@ -35,28 +35,37 @@ public class MovementTutorialStepInstanceVRMixin {
         // find the currently used movement binding
         if (MCVR.get().getInputAction(VivecraftVRMod.INSTANCE.keyFreeMoveStrafe).isActive()) {
             // moveStrafe active
-            return Component.translatable("vivecraft.toasts.move1", Component.literal(MCVR.get().getOriginName(MCVR.get().getInputAction(VivecraftVRMod.INSTANCE.keyFreeMoveStrafe).getLastOrigin())).withStyle(ChatFormatting.BOLD));
+            return Component.translatable("vivecraft.toasts.move1", Component.literal(MCVR.get()
+                    .getOriginName(MCVR.get().getInputAction(VivecraftVRMod.INSTANCE.keyFreeMoveStrafe).getLastOrigin()))
+                .withStyle(ChatFormatting.BOLD));
         } else if (MCVR.get().getInputAction(VivecraftVRMod.INSTANCE.keyFreeMoveRotate).isActive()) {
             // moveRotate active
-            return Component.translatable("vivecraft.toasts.move1", Component.literal(MCVR.get().getOriginName(MCVR.get().getInputAction(VivecraftVRMod.INSTANCE.keyFreeMoveRotate).getLastOrigin())).withStyle(ChatFormatting.BOLD));
+            return Component.translatable("vivecraft.toasts.move1", Component.literal(MCVR.get()
+                    .getOriginName(MCVR.get().getInputAction(VivecraftVRMod.INSTANCE.keyFreeMoveRotate).getLastOrigin()))
+                .withStyle(ChatFormatting.BOLD));
         } else if (MCVR.get().getInputAction(Minecraft.getInstance().options.keyUp).isActive() ||
             MCVR.get().getInputAction(Minecraft.getInstance().options.keyDown).isActive() ||
             MCVR.get().getInputAction(Minecraft.getInstance().options.keyLeft).isActive() ||
             MCVR.get().getInputAction(Minecraft.getInstance().options.keyRight).isActive()
-        ) {
+        )
+        {
             // individual movement bindings
             Set<String> buttons = new HashSet<>();
             if (MCVR.get().getInputAction(Minecraft.getInstance().options.keyUp).isActive()) {
-                buttons.add(MCVR.get().getOriginName(MCVR.get().getInputAction(Minecraft.getInstance().options.keyUp).getLastOrigin()));
+                buttons.add(MCVR.get()
+                    .getOriginName(MCVR.get().getInputAction(Minecraft.getInstance().options.keyUp).getLastOrigin()));
             }
             if (MCVR.get().getInputAction(Minecraft.getInstance().options.keyDown).isActive()) {
-                buttons.add(MCVR.get().getOriginName(MCVR.get().getInputAction(Minecraft.getInstance().options.keyDown).getLastOrigin()));
+                buttons.add(MCVR.get()
+                    .getOriginName(MCVR.get().getInputAction(Minecraft.getInstance().options.keyDown).getLastOrigin()));
             }
             if (MCVR.get().getInputAction(Minecraft.getInstance().options.keyLeft).isActive()) {
-                buttons.add(MCVR.get().getOriginName(MCVR.get().getInputAction(Minecraft.getInstance().options.keyLeft).getLastOrigin()));
+                buttons.add(MCVR.get()
+                    .getOriginName(MCVR.get().getInputAction(Minecraft.getInstance().options.keyLeft).getLastOrigin()));
             }
             if (MCVR.get().getInputAction(Minecraft.getInstance().options.keyRight).isActive()) {
-                buttons.add(MCVR.get().getOriginName(MCVR.get().getInputAction(Minecraft.getInstance().options.keyRight).getLastOrigin()));
+                buttons.add(MCVR.get().getOriginName(
+                    MCVR.get().getInputAction(Minecraft.getInstance().options.keyRight).getLastOrigin()));
             }
 
             String[] stringArray = buttons.toArray(new String[0]);
@@ -87,10 +96,14 @@ public class MovementTutorialStepInstanceVRMixin {
             };
         } else if (MCVR.get().getInputAction(VivecraftVRMod.INSTANCE.keyTeleportFallback).isActive()) {
             // teleport fallback
-            return Component.translatable("vivecraft.toasts.move1", Component.literal(MCVR.get().getOriginName(MCVR.get().getInputAction(VivecraftVRMod.INSTANCE.keyTeleportFallback).getLastOrigin())).withStyle(ChatFormatting.BOLD));
+            return Component.translatable("vivecraft.toasts.move1", Component.literal(MCVR.get()
+                    .getOriginName(MCVR.get().getInputAction(VivecraftVRMod.INSTANCE.keyTeleportFallback).getLastOrigin()))
+                .withStyle(ChatFormatting.BOLD));
         } else if (MCVR.get().getInputAction(VivecraftVRMod.INSTANCE.keyTeleport).isActive()) {
             // teleport
-            return Component.translatable("vivecraft.toasts.teleport", Component.literal(MCVR.get().getOriginName(MCVR.get().getInputAction(VivecraftVRMod.INSTANCE.keyTeleport).getLastOrigin())).withStyle(ChatFormatting.BOLD));
+            return Component.translatable("vivecraft.toasts.teleport", Component.literal(MCVR.get()
+                    .getOriginName(MCVR.get().getInputAction(VivecraftVRMod.INSTANCE.keyTeleport).getLastOrigin()))
+                .withStyle(ChatFormatting.BOLD));
         }
         return title;
     }
@@ -102,7 +115,9 @@ public class MovementTutorialStepInstanceVRMixin {
         }
 
         if (MCVR.get().getInputAction(Minecraft.getInstance().options.keyJump).isActive()) {
-            return Component.translatable("tutorial.move.description", Component.literal(MCVR.get().getOriginName(MCVR.get().getInputAction(Minecraft.getInstance().options.keyJump).getLastOrigin())).withStyle(ChatFormatting.BOLD));
+            return Component.translatable("tutorial.move.description", Component.literal(MCVR.get()
+                    .getOriginName(MCVR.get().getInputAction(Minecraft.getInstance().options.keyJump).getLastOrigin()))
+                .withStyle(ChatFormatting.BOLD));
         }
         return description;
     }
@@ -112,7 +127,9 @@ public class MovementTutorialStepInstanceVRMixin {
         if (!VRState.VR_RUNNING || ClientDataHolderVR.getInstance().vrSettings.seated) {
             return title;
         } else {
-            return Component.translatable("vivecraft.toasts.point_controller", Component.translatable(ClientDataHolderVR.getInstance().vrSettings.reverseHands ? "vivecraft.toasts.point_controller.left" : "vivecraft.toasts.point_controller.right").withStyle(ChatFormatting.BOLD));
+            return Component.translatable("vivecraft.toasts.point_controller", Component.translatable(
+                ClientDataHolderVR.getInstance().vrSettings.reverseHands ? "vivecraft.toasts.point_controller.left" :
+                    "vivecraft.toasts.point_controller.right").withStyle(ChatFormatting.BOLD));
         }
     }
 

@@ -16,12 +16,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.vivecraft.client.VivecraftVRMod;
-import org.vivecraft.common.utils.MathUtils;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.VRState;
 import org.vivecraft.client_vr.gameplay.screenhandlers.KeyboardHandler;
 import org.vivecraft.client_vr.provider.MCVR;
 import org.vivecraft.client_vr.provider.openvr_lwjgl.VRInputAction;
+import org.vivecraft.common.utils.MathUtils;
 
 @Mixin(KeyboardInput.class)
 public class KeyboardInputVRMixin extends Input {
@@ -85,8 +85,10 @@ public class KeyboardInputVRMixin extends Input {
             !KeyboardHandler.SHOWING)
         {
             // override everything
-            Vector2fc moveStrafe = dataHolder.vr.getInputAction(VivecraftVRMod.INSTANCE.keyFreeMoveStrafe).getAxis2DUseTracked();
-            Vector2fc moveRotate = dataHolder.vr.getInputAction(VivecraftVRMod.INSTANCE.keyFreeMoveRotate).getAxis2DUseTracked();
+            Vector2fc moveStrafe = dataHolder.vr.getInputAction(VivecraftVRMod.INSTANCE.keyFreeMoveStrafe)
+                .getAxis2DUseTracked();
+            Vector2fc moveRotate = dataHolder.vr.getInputAction(VivecraftVRMod.INSTANCE.keyFreeMoveRotate)
+                .getAxis2DUseTracked();
 
             if (moveStrafe.x() != 0.0F || moveStrafe.y() != 0.0F) {
                 setMovement = true;
@@ -175,5 +177,4 @@ public class KeyboardInputVRMixin extends Input {
             this.vivecraft$wasAutoSprint = false;
         }
     }
-
 }

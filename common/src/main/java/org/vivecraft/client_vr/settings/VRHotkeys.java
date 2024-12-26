@@ -10,13 +10,13 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.vivecraft.client.utils.LangHelper;
-import org.vivecraft.common.utils.MathUtils;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.MethodHolder;
 import org.vivecraft.client_vr.VRData;
 import org.vivecraft.client_vr.VRState;
 import org.vivecraft.client_vr.render.MirrorNotification;
-import org.vivecraft.common.utils.math.*;
+import org.vivecraft.common.utils.MathUtils;
+import org.vivecraft.common.utils.math.Axis;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -34,9 +34,10 @@ public class VRHotkeys {
 
     /**
      * process debug keys
-     * @param key GLFW key that got pressed
-     * @param scanCode GLFW scancode of the key
-     * @param action GLFW key action (pressed/released)
+     *
+     * @param key       GLFW key that got pressed
+     * @param scanCode  GLFW scancode of the key
+     * @param action    GLFW key action (pressed/released)
      * @param modifiers GLFW key modifier
      * @return if a key was processed
      */
@@ -135,6 +136,7 @@ public class VRHotkeys {
 
     /**
      * move third person camera with keys
+     *
      * @return if a key was processed
      */
     public static boolean handleMRKeys() {
@@ -242,7 +244,8 @@ public class VRHotkeys {
             dataHolder.vrSettings.saveOptions();
 
             if (dataHolder.vr.mrMovingCamActive) {
-                logPositionRotation(dataHolder.vrSettings.mrMovingCamOffset, dataHolder.vrSettings.mrMovingCamOffsetRotQuat);
+                logPositionRotation(dataHolder.vrSettings.mrMovingCamOffset,
+                    dataHolder.vrSettings.mrMovingCamOffsetRotQuat);
             } else {
                 logPositionRotation(dataHolder.vrSettings.vrFixedCampos, dataHolder.vrSettings.vrFixedCamrotQuat);
             }
@@ -267,6 +270,7 @@ public class VRHotkeys {
 
     /**
      * moves the camera position
+     *
      * @param offsetX offset to move the camera to along the X axis, local to the camera
      * @param offsetY offset to move the camera to along the Y axis, local to the camera
      * @param offsetZ offset to move the camera to along the Z axis, local to the camera
@@ -287,7 +291,8 @@ public class VRHotkeys {
 
     /**
      * rotate the camera
-     * @param axis camera local axis
+     *
+     * @param axis    camera local axis
      * @param degrees degree amount to rotate around {@code axis}
      */
     private static void adjustCamRot(Axis axis, float degrees) {
@@ -311,6 +316,7 @@ public class VRHotkeys {
 
     /**
      * snaps the camera to the given controller
+     *
      * @param controller index of the controller to snap to
      */
     public static void snapMRCam(int controller) {
@@ -346,8 +352,9 @@ public class VRHotkeys {
 
     /**
      * starts moving the third person camera, stores the initial position
+     *
      * @param controller which controller moves the camera
-     * @param triggerer what type of input caused the moving
+     * @param triggerer  what type of input caused the moving
      */
     public static void startMovingThirdPersonCam(int controller, Triggerer triggerer) {
         ClientDataHolderVR dataHolder = ClientDataHolderVR.getInstance();
@@ -398,7 +405,9 @@ public class VRHotkeys {
             float rx = 0.0F, ry = 0.0F, rz = 0.0F;
             float fov = 40.0F;
 
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
+            try (BufferedReader br = new BufferedReader(
+                new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)))
+            {
                 String line;
                 while ((line = br.readLine()) != null) {
                     String[] tokens = line.split("=", 2);

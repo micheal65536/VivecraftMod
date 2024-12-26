@@ -15,6 +15,7 @@ public class QuaternionfHistory {
 
     /**
      * adds a new entry with the given quaternion
+     *
      * @param in quaternion to add
      */
     public void add(Quaternionf in) {
@@ -48,6 +49,7 @@ public class QuaternionfHistory {
 
     /**
      * get the average rotation of the last {@code seconds}
+     *
      * @param seconds time to take the average over
      * @return average rotation
      */

@@ -5,6 +5,7 @@ import org.joml.Vector3fc;
 
 /**
  * holds a tracker device Pose
+ *
  * @param position position of the device in player local space
  */
 public record TrackerPose(Vector3fc position) {
@@ -19,6 +20,7 @@ public record TrackerPose(Vector3fc position) {
 
     /**
      * writes this Pose to the given {@code buffer}
+     *
      * @param buffer buffer to write to
      */
     public void serialize(FriendlyByteBuf buffer) {

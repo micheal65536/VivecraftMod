@@ -8,14 +8,15 @@ import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-import org.vivecraft.common.utils.MathUtils;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.VRData;
 import org.vivecraft.client_vr.render.RenderPass;
+import org.vivecraft.common.utils.MathUtils;
 
 public class CameraTracker extends Tracker {
     public static final ModelResourceLocation CAMERA_MODEL = new ModelResourceLocation("vivecraft", "camera", "");
-    public static final ModelResourceLocation CAMERA_DISPLAY_MODEL = new ModelResourceLocation("vivecraft", "camera_display", "");
+    public static final ModelResourceLocation CAMERA_DISPLAY_MODEL = new ModelResourceLocation("vivecraft",
+        "camera_display", "");
 
     private boolean visible = false;
     private Vec3 position = Vec3.ZERO;
@@ -45,7 +46,8 @@ public class CameraTracker extends Tracker {
     @Override
     public void doProcess(LocalPlayer player) {
         if (this.startControllerPose != null) {
-            VRData.VRDevicePose controllerPose = this.dh.vrPlayer.vrdata_world_render.getController(this.startController);
+            VRData.VRDevicePose controllerPose = this.dh.vrPlayer.vrdata_world_render.getController(
+                this.startController);
             Vec3 startPos = this.startControllerPose.getPosition();
             Vector3f deltaPos = MathUtils.subtractToVector3f(controllerPose.getPosition(), startPos);
 
@@ -66,7 +68,9 @@ public class CameraTracker extends Tracker {
         }
 
         // chunk renderer gets angry if we're really far away, force hide when >3/4 render distance
-        if (this.dh.vrPlayer.vrdata_world_render.getEye(RenderPass.CENTER).getPosition().distanceTo(this.position) > this.mc.options.getEffectiveRenderDistance() * 12) {
+        if (this.dh.vrPlayer.vrdata_world_render.getEye(RenderPass.CENTER).getPosition().distanceTo(this.position) >
+            this.mc.options.getEffectiveRenderDistance() * 12)
+        {
             this.visible = false;
         }
     }
@@ -100,6 +104,7 @@ public class CameraTracker extends Tracker {
 
     /**
      * calculates the room local position of the camera
+     *
      * @param roomOrigin room origin, if it is Vec3.ZERO it is ignored and the VRPlayers room origin is used instead
      * @return position relative to the room origin
      */

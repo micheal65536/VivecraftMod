@@ -37,7 +37,9 @@ public class GuiOtherHUDSettings extends GuiVROptionsBase {
         this.vrTitle = "vivecraft.options.screen.guiother";
         super.init(HUD_OPTIONS, true);
 
-        if (this.dataHolder.vrSettings.chatNotifications == VRSettings.ChatNotifications.SOUND || this.dataHolder.vrSettings.chatNotifications == VRSettings.ChatNotifications.BOTH) {
+        if (this.dataHolder.vrSettings.chatNotifications == VRSettings.ChatNotifications.SOUND ||
+            this.dataHolder.vrSettings.chatNotifications == VRSettings.ChatNotifications.BOTH)
+        {
             super.init(CHAT, false);
         } else {
             super.init(new VRSettings.VrOptions[]{VRSettings.VrOptions.DUMMY}, false);

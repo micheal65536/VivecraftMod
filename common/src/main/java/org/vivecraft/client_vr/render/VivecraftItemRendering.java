@@ -17,24 +17,27 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 import org.vivecraft.client.network.ClientNetworking;
-import org.vivecraft.common.utils.MathUtils;
 import org.vivecraft.client_vr.ClientDataHolderVR;
-import org.vivecraft.data.ItemTags;
 import org.vivecraft.client_vr.gameplay.trackers.ClimbTracker;
 import org.vivecraft.client_vr.gameplay.trackers.SwingTracker;
 import org.vivecraft.client_vr.gameplay.trackers.TelescopeTracker;
+import org.vivecraft.common.utils.MathUtils;
+import org.vivecraft.data.ItemTags;
 
 public class VivecraftItemRendering {
     private static final ClientDataHolderVR DH = ClientDataHolderVR.getInstance();
 
     /**
      * determines how the given ItemStack should be rendered
-     * @param itemStack ItemStack to identify
-     * @param player Player holding the ItemStack
+     *
+     * @param itemStack    ItemStack to identify
+     * @param player       Player holding the ItemStack
      * @param itemRenderer ItemRenderer to query the item model from
      * @return ItemTransformType that specifies how the item should be rendered
      */
-    public static VivecraftItemTransformType getTransformType(ItemStack itemStack, AbstractClientPlayer player, ItemRenderer itemRenderer) {
+    public static VivecraftItemTransformType getTransformType(
+        ItemStack itemStack, AbstractClientPlayer player, ItemRenderer itemRenderer)
+    {
         VivecraftItemTransformType itemTransformType = VivecraftItemTransformType.Item;
         Item item = itemStack.getItem();
 
@@ -81,7 +84,9 @@ public class VivecraftItemRendering {
         } else if (SwingTracker.isTool(item)) {
             itemTransformType = VivecraftItemTransformType.Tool;
 
-            if (item instanceof FoodOnAStickItem || item instanceof FishingRodItem || itemStack.is(ItemTags.VIVECRAFT_FISHING_RODS)) {
+            if (item instanceof FoodOnAStickItem || item instanceof FishingRodItem ||
+                itemStack.is(ItemTags.VIVECRAFT_FISHING_RODS))
+            {
                 itemTransformType = VivecraftItemTransformType.Tool_Rod;
             }
         } else if (TelescopeTracker.isTelescope(itemStack)) {
@@ -92,16 +97,21 @@ public class VivecraftItemRendering {
 
     /**
      * modifies the given poseStack, so that a third person item transform is positioned in the hand
-     * @param poseStack PoseStack to modify
+     *
+     * @param poseStack         PoseStack to modify
      * @param itemTransformType itemTransformType of the item
-     * @param mainHand if the item is in the main hand or not
-     * @param player Player holding the item
-     * @param equippedProgress equip progress of the item
-     * @param partialTick current partial tick
-     * @param itemStack ItemStack the player is holding
-     * @param hand which hand the item is held in
+     * @param mainHand          if the item is in the main hand or not
+     * @param player            Player holding the item
+     * @param equippedProgress  equip progress of the item
+     * @param partialTick       current partial tick
+     * @param itemStack         ItemStack the player is holding
+     * @param hand              which hand the item is held in
      */
-    public static void applyThirdPersonItemTransforms(PoseStack poseStack, VivecraftItemTransformType itemTransformType, boolean mainHand, AbstractClientPlayer player, float equippedProgress, float partialTick, ItemStack itemStack, InteractionHand hand) {
+    public static void applyThirdPersonItemTransforms(
+        PoseStack poseStack, VivecraftItemTransformType itemTransformType, boolean mainHand,
+        AbstractClientPlayer player, float equippedProgress, float partialTick, ItemStack itemStack,
+        InteractionHand hand)
+    {
         // TODO make this work with stuff by default
         int k = mainHand ? 1 : -1;
         // scale so the item is slightly bigger than the hand
@@ -124,16 +134,21 @@ public class VivecraftItemRendering {
 
     /**
      * modifies the given poseStack, so that a first person item transform is positioned in the hand
-     * @param poseStack PoseStack to modify
+     *
+     * @param poseStack         PoseStack to modify
      * @param itemTransformType itemTransformType of the item
-     * @param mainHand if the item is in the main hand or not
-     * @param player Player holding the item
-     * @param equippedProgress equip progress of the item
-     * @param partialTick current partial tick
-     * @param itemStack ItemStack the player is holding
-     * @param hand which hand the item is held in
+     * @param mainHand          if the item is in the main hand or not
+     * @param player            Player holding the item
+     * @param equippedProgress  equip progress of the item
+     * @param partialTick       current partial tick
+     * @param itemStack         ItemStack the player is holding
+     * @param hand              which hand the item is held in
      */
-    public static void applyFirstPersonItemTransforms(PoseStack poseStack, VivecraftItemTransformType itemTransformType, boolean mainHand, AbstractClientPlayer player, float equippedProgress, float partialTick, ItemStack itemStack, InteractionHand hand) {
+    public static void applyFirstPersonItemTransforms(
+        PoseStack poseStack, VivecraftItemTransformType itemTransformType, boolean mainHand,
+        AbstractClientPlayer player, float equippedProgress, float partialTick, ItemStack itemStack,
+        InteractionHand hand)
+    {
 
         float gunAngle = DH.vr.getGunAngle();
 
@@ -346,7 +361,8 @@ public class VivecraftItemRendering {
                     riptideLevel = EnchantmentHelper.getRiptide(itemStack);
 
                     if (riptideLevel <= 0 || player.isInWaterOrRain()) {
-                        progress = itemStack.getUseDuration() - (player.getUseItemRemainingTicks() - partialTick + 1.0F);
+                        progress =
+                            itemStack.getUseDuration() - (player.getUseItemRemainingTicks() - partialTick + 1.0F);
 
                         if (progress > TridentItem.THROW_THRESHOLD_TIME) {
                             float rotationProgress = progress - TridentItem.THROW_THRESHOLD_TIME;

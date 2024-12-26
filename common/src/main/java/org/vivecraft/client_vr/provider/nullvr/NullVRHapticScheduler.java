@@ -7,5 +7,7 @@ import org.vivecraft.client_vr.provider.HapticScheduler;
 public class NullVRHapticScheduler extends HapticScheduler {
 
     @Override
-    public void queueHapticPulse(ControllerType controller, float durationSeconds, float frequency, float amplitude, float delaySeconds) {}
+    public void queueHapticPulse(
+        ControllerType controller, float durationSeconds, float frequency, float amplitude, float delaySeconds)
+    {}
 }

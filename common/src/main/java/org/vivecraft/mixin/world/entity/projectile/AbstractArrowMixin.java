@@ -100,6 +100,7 @@ public abstract class AbstractArrowMixin extends Entity {
 
     /**
      * checks if the hit was a headshot, and returns the hit position, if it was, null otherwise
+     *
      * @param hit hit result of the original hit
      * @return hit position on the head hit box, if there is one, {@code null} otherwise
      */

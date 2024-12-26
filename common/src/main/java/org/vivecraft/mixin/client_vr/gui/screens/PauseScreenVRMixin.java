@@ -101,7 +101,7 @@ public abstract class PauseScreenVRMixin extends Screen {
             {
                 rowHelper.addChild(new Button.Builder(
                     Component.translatable("vivecraft.options.screen.fbtcalibration.button"),
-                        (p) -> this.minecraft.setScreen(new FBTCalibrationScreen(this)))
+                    (p) -> this.minecraft.setScreen(new FBTCalibrationScreen(this)))
                     .width(98).build());
             } else {
                 rowHelper.addChild(new Button.Builder(Component.translatable("vivecraft.gui.calibrateheight"),

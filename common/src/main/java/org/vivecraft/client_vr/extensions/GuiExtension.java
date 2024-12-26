@@ -9,6 +9,7 @@ public interface GuiExtension {
 
     /**
      * set if the player list should be always shown
+     *
      * @param showPlayerList if the player list should be shown
      */
     void vivecraft$setShowPlayerList(boolean showPlayerList);

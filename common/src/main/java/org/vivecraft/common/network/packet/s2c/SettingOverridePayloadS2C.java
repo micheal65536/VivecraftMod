@@ -8,6 +8,7 @@ import java.util.Map;
 
 /**
  * holds a map of settings the server has overridden
+ *
  * @param overrides map with the key as the setting, and the value as the override
  */
 public record SettingOverridePayloadS2C(Map<String, String> overrides) implements VivecraftPayloadS2C {
@@ -20,7 +21,7 @@ public record SettingOverridePayloadS2C(Map<String, String> overrides) implement
     @Override
     public void write(FriendlyByteBuf buffer) {
         buffer.writeByte(payloadId().ordinal());
-        for(Map.Entry<String, String> entry : this.overrides.entrySet()) {
+        for (Map.Entry<String, String> entry : this.overrides.entrySet()) {
             buffer.writeUtf(entry.getKey());
             buffer.writeUtf(entry.getValue());
         }
@@ -35,6 +36,4 @@ public record SettingOverridePayloadS2C(Map<String, String> overrides) implement
 
         return new SettingOverridePayloadS2C(overrides);
     }
-
-
 }

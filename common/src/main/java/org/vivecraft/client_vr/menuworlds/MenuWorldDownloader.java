@@ -49,16 +49,21 @@ public class MenuWorldDownloader {
 
         try {
             List<MenuWorldItem> worldList = new ArrayList<>();
-            if (settings.menuWorldSelection == VRSettings.MenuWorld.BOTH || settings.menuWorldSelection == VRSettings.MenuWorld.CUSTOM) {
+            if (settings.menuWorldSelection == VRSettings.MenuWorld.BOTH ||
+                settings.menuWorldSelection == VRSettings.MenuWorld.CUSTOM)
+            {
                 worldList.addAll(getCustomWorlds());
             }
-            if (settings.menuWorldSelection == VRSettings.MenuWorld.BOTH || settings.menuWorldSelection == VRSettings.MenuWorld.OFFICIAL || worldList.isEmpty()) {
+            if (settings.menuWorldSelection == VRSettings.MenuWorld.BOTH ||
+                settings.menuWorldSelection == VRSettings.MenuWorld.OFFICIAL || worldList.isEmpty())
+            {
                 worldList.addAll(getOfficialWorlds());
             }
 
             // don't load the same world twice in a row
             if (worldList.size() > 1) {
-                worldList.removeIf(world -> LAST_WORLD.equals(world.path) || (world.file != null && LAST_WORLD.equals(world.file.getPath())));
+                worldList.removeIf(world -> LAST_WORLD.equals(world.path) ||
+                    (world.file != null && LAST_WORLD.equals(world.file.getPath())));
             }
 
             if (worldList.isEmpty()) {
@@ -105,7 +110,8 @@ public class MenuWorldDownloader {
     private static List<MenuWorldItem> getOfficialWorlds() throws IOException, UncheckedIOException {
         List<MenuWorldItem> list = new ArrayList<>();
         List<String> resultList = FileUtils.httpReadAllLines(
-            BASE_URL + "menuworlds_list.php?minver=" + MenuWorldExporter.MIN_VERSION + "&maxver=" + MenuWorldExporter.VERSION + "&mcver=" + SharedConstants.VERSION_STRING);
+            BASE_URL + "menuworlds_list.php?minver=" + MenuWorldExporter.MIN_VERSION + "&maxver=" +
+                MenuWorldExporter.VERSION + "&mcver=" + SharedConstants.VERSION_STRING);
         for (String str : resultList) {
             list.add(new MenuWorldItem("menuworlds/" + str, null));
         }

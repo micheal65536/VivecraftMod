@@ -7,9 +7,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
-import org.vivecraft.common.utils.MathUtils;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.gameplay.VRPlayer;
+import org.vivecraft.common.utils.MathUtils;
 
 public class BackpackTracker extends Tracker {
     public boolean[] wasIn = new boolean[2];
@@ -64,7 +64,9 @@ public class BackpackTracker extends Tracker {
                 if (!this.wasIn[c]) {
                     if (c == 0) {
                         //mainhand
-                        if (!this.dh.climbTracker.isGrabbingLadder() || !ClimbTracker.isClaws(this.mc.player.getMainHandItem())) {
+                        if (!this.dh.climbTracker.isGrabbingLadder() ||
+                            !ClimbTracker.isClaws(this.mc.player.getMainHandItem()))
+                        {
                             if (player.getInventory().selected != 0) {
                                 this.previousSlot = player.getInventory().selected;
                                 player.getInventory().selected = 0;
@@ -75,11 +77,15 @@ public class BackpackTracker extends Tracker {
                         }
                     } else {
                         //offhand
-                        if (!this.dh.climbTracker.isGrabbingLadder() || !ClimbTracker.isClaws(this.mc.player.getOffhandItem())) {
+                        if (!this.dh.climbTracker.isGrabbingLadder() ||
+                            !ClimbTracker.isClaws(this.mc.player.getOffhandItem()))
+                        {
                             if (this.dh.vrSettings.physicalGuiEnabled) {
                                 //minecraft.physicalGuiManager.toggleInventoryBag();
                             } else {
-                                player.connection.send(new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.SWAP_ITEM_WITH_OFFHAND, BlockPos.ZERO, Direction.DOWN));
+                                player.connection.send(new ServerboundPlayerActionPacket(
+                                    ServerboundPlayerActionPacket.Action.SWAP_ITEM_WITH_OFFHAND, BlockPos.ZERO,
+                                    Direction.DOWN));
                             }
                         }
                     }

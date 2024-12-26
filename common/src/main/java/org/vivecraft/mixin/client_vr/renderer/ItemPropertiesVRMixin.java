@@ -13,7 +13,7 @@ import org.vivecraft.client_vr.VRState;
 @Mixin(ItemProperties.class)
 public class ItemPropertiesVRMixin {
 
-    @Inject(method = "method_43611", at = @At("HEAD"),cancellable = true)
+    @Inject(method = "method_43611", at = @At("HEAD"), cancellable = true)
     private static void vivecraft$noHornUseAnim(
         CallbackInfoReturnable<Float> cir, @Local(argsOnly = true) LivingEntity entity)
     {

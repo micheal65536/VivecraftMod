@@ -62,19 +62,23 @@ public class VRPlayerModel_WithArms<T extends LivingEntity> extends VRPlayerMode
         if (slim) {
             partDefinition.addOrReplaceChild("left_hand", CubeListBuilder.create()
                     .texOffs(32, 55 - lowerExtension)
-                    .addBox(-1.5F, -5.0F - lowerExtension, -2.0F, 3.0F, 5.0F +  lowerExtension, 4.0F, cubeDeformation.extend(lowerShrinkage)),
+                    .addBox(-1.5F, -5.0F - lowerExtension, -2.0F, 3.0F, 5.0F + lowerExtension, 4.0F,
+                        cubeDeformation.extend(lowerShrinkage)),
                 PartPose.offset(5.5F, 12.0F, 0.0F));
             partDefinition.addOrReplaceChild("left_hand_sleeve", CubeListBuilder.create()
                     .texOffs(48, 55 - lowerExtension)
-                    .addBox(-1.5F, -5.0F - lowerExtension, -2.0F, 3.0F, 5.0F +  lowerExtension, 4.0F, cubeDeformation.extend(0.25f + lowerShrinkage)),
+                    .addBox(-1.5F, -5.0F - lowerExtension, -2.0F, 3.0F, 5.0F + lowerExtension, 4.0F,
+                        cubeDeformation.extend(0.25f + lowerShrinkage)),
                 PartPose.offset(5.5F, 12.0F, 0.0F));
             partDefinition.addOrReplaceChild("right_hand", CubeListBuilder.create()
                     .texOffs(40, 23 - lowerExtension)
-                    .addBox(-1.5F, -5.0F - lowerExtension, -2.0F, 3.0F, 5.0F + lowerExtension, 4.0F, cubeDeformation.extend(lowerShrinkage)),
+                    .addBox(-1.5F, -5.0F - lowerExtension, -2.0F, 3.0F, 5.0F + lowerExtension, 4.0F,
+                        cubeDeformation.extend(lowerShrinkage)),
                 PartPose.offset(-5.5F, 12.0F, 0.0F));
             partDefinition.addOrReplaceChild("right_hand_sleeve", CubeListBuilder.create()
                     .texOffs(40, 39 - lowerExtension)
-                    .addBox(-1.5F, -5.0F - lowerExtension, -2.0F, 3.0F, 5.0F +  lowerExtension, 4.0F, cubeDeformation.extend(0.25f + lowerShrinkage)),
+                    .addBox(-1.5F, -5.0F - lowerExtension, -2.0F, 3.0F, 5.0F + lowerExtension, 4.0F,
+                        cubeDeformation.extend(0.25f + lowerShrinkage)),
                 PartPose.offset(-5.5F, 12.0F, 0.0F));
             partDefinition.addOrReplaceChild("left_arm", CubeListBuilder.create()
                     .texOffs(32, 48)
@@ -95,19 +99,23 @@ public class VRPlayerModel_WithArms<T extends LivingEntity> extends VRPlayerMode
         } else {
             partDefinition.addOrReplaceChild("left_hand", CubeListBuilder.create()
                     .texOffs(32, 55 - lowerExtension)
-                    .addBox(-2.0F, -5.0F - lowerExtension, -2.0F, 4.0F, 5.0F +  lowerExtension, 4.0F, cubeDeformation.extend(lowerShrinkage)),
+                    .addBox(-2.0F, -5.0F - lowerExtension, -2.0F, 4.0F, 5.0F + lowerExtension, 4.0F,
+                        cubeDeformation.extend(lowerShrinkage)),
                 PartPose.offset(5.0F, 2.5F, 0.0F));
             partDefinition.addOrReplaceChild("left_hand_sleeve", CubeListBuilder.create()
                     .texOffs(48, 55 - lowerExtension)
-                    .addBox(-2.0F, -5.0F - lowerExtension, -2.0F, 4.0F, 5.0F + lowerExtension, 4.0F, cubeDeformation.extend(0.25f + lowerShrinkage)),
+                    .addBox(-2.0F, -5.0F - lowerExtension, -2.0F, 4.0F, 5.0F + lowerExtension, 4.0F,
+                        cubeDeformation.extend(0.25f + lowerShrinkage)),
                 PartPose.offset(5.0F, 2.5F, 0.0F));
             partDefinition.addOrReplaceChild("right_hand", CubeListBuilder.create()
                     .texOffs(40, 23 - lowerExtension)
-                    .addBox(-2.0F, -5.0F - lowerExtension, -2.0F, 4.0F, 5.0F + lowerExtension, 4.0F, cubeDeformation.extend(lowerShrinkage)),
+                    .addBox(-2.0F, -5.0F - lowerExtension, -2.0F, 4.0F, 5.0F + lowerExtension, 4.0F,
+                        cubeDeformation.extend(lowerShrinkage)),
                 PartPose.offset(-5.0F, 2.5F, 0.0F));
             partDefinition.addOrReplaceChild("right_hand_sleeve", CubeListBuilder.create()
                     .texOffs(40, 39 - lowerExtension)
-                    .addBox(-2.0F, -5.0F - lowerExtension, -2.0F, 4.0F, 5.0F + lowerExtension, 4.0F, cubeDeformation.extend(0.25f + lowerShrinkage)),
+                    .addBox(-2.0F, -5.0F - lowerExtension, -2.0F, 4.0F, 5.0F + lowerExtension, 4.0F,
+                        cubeDeformation.extend(0.25f + lowerShrinkage)),
                 PartPose.offset(-5.0F, 2.5F, 0.0F));
             partDefinition.addOrReplaceChild("left_arm", CubeListBuilder.create()
                     .texOffs(32, 48)
@@ -239,14 +247,15 @@ public class VRPlayerModel_WithArms<T extends LivingEntity> extends VRPlayerMode
 
     /**
      * positions the hand/foot and applies its rotation. also rotates the shoulder/thigh to point at the elbow/knee
-     * @param upper upper body part (shoulder/thigh)
-     * @param lower lower body part (hand/foot)
-     * @param lowerPos player space position the lower body part should be at
-     * @param lowerRot direction the lower body part should face
+     *
+     * @param upper     upper body part (shoulder/thigh)
+     * @param lower     lower body part (hand/foot)
+     * @param lowerPos  player space position the lower body part should be at
+     * @param lowerRot  direction the lower body part should face
      * @param lowerXRot additional rotation around the X axis that should be applied to the {@code lower}
-     * @param jointPos elbow/knee position, if {@code null} a middle point will be estimated
+     * @param jointPos  elbow/knee position, if {@code null} a middle point will be estimated
      * @param jointDown if the estimated joint should prefer up/forward or down/back
-     * @param arm arm this is positioning, to check if the swing animation should be applied
+     * @param arm       arm this is positioning, to check if the swing animation should be applied
      */
     protected void positionSplitLimb(
         LivingEntity player, ModelPart upper, ModelPart lower, Vector3fc lowerPos, Quaternionfc lowerRot,
@@ -297,13 +306,14 @@ public class VRPlayerModel_WithArms<T extends LivingEntity> extends VRPlayerMode
 
     /**
      * positions the hand/foot and shoulder/thigh to point at the elbow/knee
-     * @param upper upper body part (shoulder/thigh)
-     * @param lower lower body part (hand/foot)
-     * @param lowerPos player space position the lower body part should be at
-     * @param lowerRot direction the lower body part should face
-     * @param jointPos elbow/knee position, if {@code null} a middle point will be estimated
+     *
+     * @param upper     upper body part (shoulder/thigh)
+     * @param lower     lower body part (hand/foot)
+     * @param lowerPos  player space position the lower body part should be at
+     * @param lowerRot  direction the lower body part should face
+     * @param jointPos  elbow/knee position, if {@code null} a middle point will be estimated
      * @param jointDown if the estimated joint should prefer up/forward or down/back
-     * @param arm arm this is positioning, to check if the swing animation should be applied
+     * @param arm       arm this is positioning, to check if the swing animation should be applied
      */
     protected void positionConnectedLimb(
         LivingEntity player, ModelPart upper, ModelPart lower, Vector3fc lowerPos, Quaternionfc lowerRot,

@@ -53,6 +53,7 @@ public class RenderHelper {
 
     /**
      * gets the rotation matrix for the given RenderPass
+     *
      * @param renderPass RenderPass to get the rotation matrix for
      */
     public static Matrix4f getVRModelView(RenderPass renderPass) {
@@ -66,8 +67,9 @@ public class RenderHelper {
 
     /**
      * Applies the rotation from the given RenderPass to the given PoseStack
+     *
      * @param renderPass RenderPass rotation to use
-     * @param poseStack PoseStack to apply the rotation to
+     * @param poseStack  PoseStack to apply the rotation to
      */
     public static void applyVRModelView(RenderPass renderPass, PoseStack poseStack) {
         Matrix4f modelView = getVRModelView(renderPass);
@@ -78,8 +80,9 @@ public class RenderHelper {
     /**
      * Gets the camera position of the given RenderPass.
      * If the RenderPass is CENTER the position is smoothed over time if that setting is on
+     *
      * @param renderPass pass to get the camera position for
-     * @param vrData vrData to get it from
+     * @param vrData     vrData to get it from
      * @return camera position
      */
     public static Vec3 getSmoothCameraPosition(RenderPass renderPass, VRData vrData) {
@@ -96,8 +99,9 @@ public class RenderHelper {
     /**
      * Applies the offset for the LEFT and RIGHT RenderPass from the headset position
      * Other RenderPasses do nothing
+     *
      * @param renderPass RenderPass to apply the offset for
-     * @param poseStack PoseStack to apply the offset to
+     * @param poseStack  PoseStack to apply the offset to
      */
     public static void applyStereo(RenderPass renderPass, PoseStack poseStack) {
         if (renderPass == RenderPass.LEFT || renderPass == RenderPass.RIGHT) {
@@ -112,6 +116,7 @@ public class RenderHelper {
      * Gets the position of the given controller/tracker in world space.
      * For controllers (0, 1), this positions the seated controllers.
      * Other stuff is just forwarded to the world_render vrData
+     *
      * @param c controller/tracker to get the position for
      * @return position of the given controller
      */
@@ -160,7 +165,8 @@ public class RenderHelper {
 
     /**
      * sets up the poseStack to render at the given controller/tracker
-     * @param c controller/tracker to render at
+     *
+     * @param c         controller/tracker to render at
      * @param poseStack PoseStack to apply the position to
      */
     public static void setupRenderingAtController(int c, PoseStack poseStack) {
@@ -184,7 +190,8 @@ public class RenderHelper {
                 -0.025F * sc,
                 0.0325F * sc);
         } else {
-            poseStack.mulPoseMatrix(DATA_HOLDER.vrPlayer.vrdata_world_render.getController(c).getMatrix().invert().transpose());
+            poseStack.mulPoseMatrix(
+                DATA_HOLDER.vrPlayer.vrdata_world_render.getController(c).getMatrix().invert().transpose());
         }
 
         poseStack.scale(sc, sc, sc);
@@ -193,6 +200,7 @@ public class RenderHelper {
     /**
      * stores the current render state and sets it up for polygon rendering
      * TODO: remove legacy stuff
+     *
      * @param enable if true: stores the old state and sets up polyrending.
      *               if false: restores the previously stored render state.
      */
@@ -245,9 +253,10 @@ public class RenderHelper {
 
     /**
      * renders the given screen to the current main target and generates mipmaps for it
+     *
      * @param guiGraphics GuiGraphics to render with, is not flushed after rendering
      * @param partialTick partial tick for the screen rendering
-     * @param screen the Screen to render
+     * @param screen      the Screen to render
      * @param maxGuiScale if set renders the screen at max gui scale
      */
     public static void drawScreen(GuiGraphics guiGraphics, float partialTick, Screen screen, boolean maxGuiScale) {
@@ -262,8 +271,8 @@ public class RenderHelper {
 
         Matrix4f guiProjection = (new Matrix4f()).setOrtho(
             0.0F, (float) (MC.getMainRenderTarget().width / guiScale),
-                (float) (MC.getMainRenderTarget().height / guiScale), 0.0F,
-                1000.0F, 21000.0F);
+            (float) (MC.getMainRenderTarget().height / guiScale), 0.0F,
+            1000.0F, 21000.0F);
         RenderSystem.setProjectionMatrix(guiProjection, VertexSorting.ORTHOGRAPHIC_Z);
 
         RenderSystem.blendFuncSeparate(
@@ -294,16 +303,19 @@ public class RenderHelper {
 
     /**
      * draws the crosshair at the specified location on the screen
+     *
      * @param guiGraphics GuiGraphics to render with, is not flushed after rendering
-     * @param mouseX x coordinate in screen pixel coordinates
-     * @param mouseY y coordinate in screen pixel coordinates
+     * @param mouseX      x coordinate in screen pixel coordinates
+     * @param mouseY      y coordinate in screen pixel coordinates
      */
     public static void drawMouseMenuQuad(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         RenderSystem.enableBlend();
         RenderSystem.disableDepthTest();
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ZERO, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ZERO,
+            GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
 
-        float size = 15.0F * Math.max(ClientDataHolderVR.getInstance().vrSettings.menuCrosshairScale, 1.0F / (float) MC.getWindow().getGuiScale());
+        float size = 15.0F * Math.max(ClientDataHolderVR.getInstance().vrSettings.menuCrosshairScale,
+            1.0F / (float) MC.getWindow().getGuiScale());
 
         guiGraphics.blitSprite(Gui.CROSSHAIR_SPRITE, (int) (mouseX - size * 0.5F + 1), (int) (mouseY - size * 0.5F + 1),
             (int) size, (int) size);
@@ -315,13 +327,16 @@ public class RenderHelper {
 
     /**
      * draws a quad with the PositionTex shader, to be used when <b>not</b> in a world
-     * @param displayWidth texture width
+     *
+     * @param displayWidth  texture width
      * @param displayHeight texture height
-     * @param size size of the quad
-     * @param color color of the quad, expects an array of length 4 for: r, g, b, a
-     * @param matrix matrix to position the screen with
+     * @param size          size of the quad
+     * @param color         color of the quad, expects an array of length 4 for: r, g, b, a
+     * @param matrix        matrix to position the screen with
      */
-    public static void drawSizedQuad(float displayWidth, float displayHeight, float size, float[] color, Matrix4f matrix) {
+    public static void drawSizedQuad(
+        float displayWidth, float displayHeight, float size, float[] color, Matrix4f matrix)
+    {
         float sizeX = size * 0.5F;
         float sizeY = sizeX * displayHeight / displayWidth;
 
@@ -352,55 +367,72 @@ public class RenderHelper {
 
     /**
      * draws a quad with the EntityCutout shader and no color modifier, to be used when <b>in</b> a world
-     * @param displayWidth texture width
+     *
+     * @param displayWidth  texture width
      * @param displayHeight texture height
-     * @param size size of the quad
-     * @param packedLight block and sky light packed into an int
-     * @param matrix matrix to use to
-     * @param flipY if the texture should be flipped vertically
+     * @param size          size of the quad
+     * @param packedLight   block and sky light packed into an int
+     * @param matrix        matrix to use to
+     * @param flipY         if the texture should be flipped vertically
      */
-    public static void drawSizedQuadWithLightmapCutout(float displayWidth, float displayHeight, float size, int packedLight, Matrix4f matrix, boolean flipY) {
-        drawSizedQuadWithLightmapCutout(displayWidth, displayHeight, size, packedLight, new float[]{1, 1, 1, 1}, matrix, flipY);
+    public static void drawSizedQuadWithLightmapCutout(
+        float displayWidth, float displayHeight, float size, int packedLight, Matrix4f matrix, boolean flipY)
+    {
+        drawSizedQuadWithLightmapCutout(displayWidth, displayHeight, size, packedLight, new float[]{1, 1, 1, 1}, matrix,
+            flipY);
     }
 
     /**
      * draws a quad with the EntityCutout shader, to be used when <b>in</b> a world
-     * @param displayWidth texture width
+     *
+     * @param displayWidth  texture width
      * @param displayHeight texture height
-     * @param size size of the quad
-     * @param packedLight block and sky light packed into an int
-     * @param color color of the quad, expects an array of length 4 for: r, g, b, a
-     * @param matrix matrix to use to
-     * @param flipY if the texture should be flipped vertically
+     * @param size          size of the quad
+     * @param packedLight   block and sky light packed into an int
+     * @param color         color of the quad, expects an array of length 4 for: r, g, b, a
+     * @param matrix        matrix to use to
+     * @param flipY         if the texture should be flipped vertically
      */
-    public static void drawSizedQuadWithLightmapCutout(float displayWidth, float displayHeight, float size, int packedLight, float[] color, Matrix4f matrix, boolean flipY) {
-        drawSizedQuadWithLightmap(displayWidth, displayHeight, size, packedLight, color, matrix, GameRenderer::getRendertypeEntityCutoutNoCullShader, flipY);
+    public static void drawSizedQuadWithLightmapCutout(
+        float displayWidth, float displayHeight, float size, int packedLight, float[] color, Matrix4f matrix,
+        boolean flipY)
+    {
+        drawSizedQuadWithLightmap(displayWidth, displayHeight, size, packedLight, color, matrix,
+            GameRenderer::getRendertypeEntityCutoutNoCullShader, flipY);
     }
 
     /**
      * draws a quad with the EntitySolid shader at full brightness, to be used when <b>in</b> a world
-     * @param displayWidth texture width
+     *
+     * @param displayWidth  texture width
      * @param displayHeight texture height
-     * @param size size of the quad
-     * @param color color of the quad, expects an array of length 4 for: r, g, b, a
-     * @param matrix matrix to use to
+     * @param size          size of the quad
+     * @param color         color of the quad, expects an array of length 4 for: r, g, b, a
+     * @param matrix        matrix to use to
      */
-    public static void drawSizedQuadFullbrightSolid(float displayWidth, float displayHeight, float size, float[] color, Matrix4f matrix) {
-        drawSizedQuadWithLightmap(displayWidth, displayHeight, size, LightTexture.pack(15, 15), color, matrix, GameRenderer::getRendertypeEntitySolidShader, false);
+    public static void drawSizedQuadFullbrightSolid(
+        float displayWidth, float displayHeight, float size, float[] color, Matrix4f matrix)
+    {
+        drawSizedQuadWithLightmap(displayWidth, displayHeight, size, LightTexture.pack(15, 15), color, matrix,
+            GameRenderer::getRendertypeEntitySolidShader, false);
     }
 
     /**
      * draws a quad with the EntityCutout shader, to be used when <b>in</b> a world
-     * @param displayWidth texture width
+     *
+     * @param displayWidth  texture width
      * @param displayHeight texture height
-     * @param size size of the quad
-     * @param packedLight block and sky light packed into an int
-     * @param color color of the quad, expects an array of length 4 for: r, g, b, a
-     * @param matrix matrix to use to for positioning
-     * @param shader a shader supplier dor what shader to use, needs to be one of the entity shaders
-     * @param flipY if the texture should be flipped vertically
+     * @param size          size of the quad
+     * @param packedLight   block and sky light packed into an int
+     * @param color         color of the quad, expects an array of length 4 for: r, g, b, a
+     * @param matrix        matrix to use to for positioning
+     * @param shader        a shader supplier dor what shader to use, needs to be one of the entity shaders
+     * @param flipY         if the texture should be flipped vertically
      */
-    public static void drawSizedQuadWithLightmap(float displayWidth, float displayHeight, float size, int packedLight, float[] color, Matrix4f matrix, Supplier<ShaderInstance> shader, boolean flipY) {
+    public static void drawSizedQuadWithLightmap(
+        float displayWidth, float displayHeight, float size, int packedLight, float[] color, Matrix4f matrix,
+        Supplier<ShaderInstance> shader, boolean flipY)
+    {
         float sizeX = size * 0.5F;
         float sizeY = sizeX * displayHeight / displayWidth;
 
@@ -454,18 +486,21 @@ public class RenderHelper {
     }
 
     /**
-     * draws a
-     * @param pos center position of the quad
-     * @param width width of the quad
-     * @param height height of the quad
-     * @param yaw y rotation of the quad
-     * @param r red 0-255
-     * @param g green 0-255
-     * @param b blue 0-255
-     * @param a alpha 0-255
+     * draws a colored quad
+     *
+     * @param pos       center position of the quad
+     * @param width     width of the quad
+     * @param height    height of the quad
+     * @param yaw       y rotation of the quad
+     * @param r         red 0-255
+     * @param g         green 0-255
+     * @param b         blue 0-255
+     * @param a         alpha 0-255
      * @param poseStack PoseStack to use for positioning
      */
-    public static void renderFlatQuad(Vec3 pos, float width, float height, float yaw, int r, int g, int b, int a, PoseStack poseStack) {
+    public static void renderFlatQuad(
+        Vec3 pos, float width, float height, float yaw, int r, int g, int b, int a, PoseStack poseStack)
+    {
         Tesselator tesselator = Tesselator.getInstance();
         tesselator.getBuilder().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_NORMAL);
 
@@ -487,35 +522,42 @@ public class RenderHelper {
 
     /**
      * adds a box to the given Tesselator
-     * @param consumer VertexConsumer to use
-     * @param start start of the box, combined with end gives the axis the box is on
-     * @param end end of the box, combined with start gives the axis the box is on
-     * @param xSize X size of the box
-     * @param ySize Y size of the box
-     * @param color color of the box 0-255 per component
-     * @param alpha transparency of the box 0-255
+     *
+     * @param consumer  VertexConsumer to use
+     * @param start     start of the box, combined with end gives the axis the box is on
+     * @param end       end of the box, combined with start gives the axis the box is on
+     * @param xSize     X size of the box
+     * @param ySize     Y size of the box
+     * @param color     color of the box 0-255 per component
+     * @param alpha     transparency of the box 0-255
      * @param poseStack PoseStack to use for positioning
      */
     public static void renderBox(
-        VertexConsumer consumer, Vec3 start, Vec3 end, float xSize, float ySize, Vec3i color, byte alpha, PoseStack poseStack)
+        VertexConsumer consumer, Vec3 start, Vec3 end, float xSize, float ySize, Vec3i color, byte alpha,
+        PoseStack poseStack)
     {
-        renderBox(consumer, start, end, -xSize * 0.5F, xSize * 0.5F, -ySize * 0.5F, ySize * 0.5F, color, alpha, poseStack);
+        renderBox(consumer, start, end, -xSize * 0.5F, xSize * 0.5F, -ySize * 0.5F, ySize * 0.5F, color, alpha,
+            poseStack);
     }
 
     /**
      * adds a box to the given Tesselator
-     * @param consumer VertexConsumer to use
-     * @param start start of the box, combined with end gives the axis the box is on
-     * @param end end of the box, combined with start gives the axis the box is on
-     * @param minX X- size of the box
-     * @param maxX X+ size of the box
-     * @param minY Y- size of the box
-     * @param maxY Y+ size of the box
-     * @param color color of the box 0-255 per component
-     * @param alpha transparency of the box 0-255
+     *
+     * @param consumer  VertexConsumer to use
+     * @param start     start of the box, combined with end gives the axis the box is on
+     * @param end       end of the box, combined with start gives the axis the box is on
+     * @param minX      X- size of the box
+     * @param maxX      X+ size of the box
+     * @param minY      Y- size of the box
+     * @param maxY      Y+ size of the box
+     * @param color     color of the box 0-255 per component
+     * @param alpha     transparency of the box 0-255
      * @param poseStack PoseStack to use for positioning
      */
-    public static void renderBox(VertexConsumer consumer, Vec3 start, Vec3 end, float minX, float maxX, float minY, float maxY, Vec3i color, byte alpha, PoseStack poseStack) {
+    public static void renderBox(
+        VertexConsumer consumer, Vec3 start, Vec3 end, float minX, float maxX, float minY, float maxY, Vec3i color,
+        byte alpha, PoseStack poseStack)
+    {
         Vec3 forward = start.subtract(end).normalize();
         Vec3 right = forward.cross(MathUtils.UP_D);
         if (right.lengthSqr() == 0) {
@@ -582,14 +624,17 @@ public class RenderHelper {
 
     /**
      * adds a Vertex with the DefaultVertexFormat.POSITION_COLOR_NORMAL format to the buffer builder
+     *
      * @param consumer BufferBuilder to add the vertex to
-     * @param matrix matrix to use for positioning the vertex
-     * @param pos position of the vertex
-     * @param color color of the vertex 0-255
-     * @param alpha transparency of the vertex 0-255
-     * @param normal normal of the vertex
+     * @param matrix   matrix to use for positioning the vertex
+     * @param pos      position of the vertex
+     * @param color    color of the vertex 0-255
+     * @param alpha    transparency of the vertex 0-255
+     * @param normal   normal of the vertex
      */
-    private static void addVertex(VertexConsumer consumer, Matrix4f matrix, Vec3 pos, Vec3i color, int alpha, Vec3 normal) {
+    private static void addVertex(
+        VertexConsumer consumer, Matrix4f matrix, Vec3 pos, Vec3i color, int alpha, Vec3 normal)
+    {
         consumer.vertex(matrix, (float) pos.x, (float) pos.y, (float) pos.z)
             .color(color.getX(), color.getY(), color.getZ(), alpha)
             .normal((float) normal.x, (float) normal.y, (float) normal.z)
@@ -598,6 +643,7 @@ public class RenderHelper {
 
     /**
      * checks if there were any opengl errors since this was last called
+     *
      * @param errorSection name of the section that is checked, this gets logged if there are any errors
      * @return error string if there was one
      */

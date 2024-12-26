@@ -6,11 +6,11 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.*;
 import org.vivecraft.client.ClientVRPlayers;
 import org.vivecraft.client.gui.screens.FBTCalibrationScreen;
-import org.vivecraft.common.network.FBTMode;
-import org.vivecraft.common.utils.MathUtils;
 import org.vivecraft.client_vr.provider.MCVR;
 import org.vivecraft.client_vr.render.RenderPass;
 import org.vivecraft.client_vr.settings.VRSettings;
+import org.vivecraft.common.network.FBTMode;
+import org.vivecraft.common.utils.MathUtils;
 
 import javax.annotation.Nullable;
 import java.lang.Math;
@@ -125,7 +125,8 @@ public class VRData {
         }
 
         // screenshot camera
-        Matrix4f camRot = new Matrix4f().rotationY(-rotation).mul(dataHolder.cameraTracker.getRotation().get(new Matrix4f()));
+        Matrix4f camRot = new Matrix4f().rotationY(-rotation)
+            .mul(dataHolder.cameraTracker.getRotation().get(new Matrix4f()));
         this.cam = new VRData.VRDevicePose(this,
             camRot,
             dataHolder.cameraTracker.getRoomPosition(origin)
@@ -190,7 +191,8 @@ public class VRData {
 
     /**
      * gets the smoothed rotation matrix of the specified controller
-     * @param c controller to get
+     *
+     * @param c      controller to get
      * @param lenSec time period in seconds
      * @return smoothed rotation
      */
@@ -228,16 +230,16 @@ public class VRData {
     @Nullable
     public VRDevicePose getDevice(int d) {
         return switch (d) {
-            case MCVR.OFFHAND_CONTROLLER ->  this.c1;
+            case MCVR.OFFHAND_CONTROLLER -> this.c1;
             case MCVR.CAMERA_TRACKER -> this.c2;
-            case MCVR.WAIST_TRACKER ->  this.waist;
-            case MCVR.LEFT_FOOT_TRACKER ->  this.foot_left;
-            case MCVR.RIGHT_FOOT_TRACKER ->  this.foot_right;
-            case MCVR.LEFT_KNEE_TRACKER ->  this.knee_left;
-            case MCVR.RIGHT_KNEE_TRACKER ->  this.knee_right;
-            case MCVR.LEFT_ELBOW_TRACKER ->  this.elbow_left;
-            case MCVR.RIGHT_ELBOW_TRACKER ->  this.elbow_right;
-            default ->  this.c0;
+            case MCVR.WAIST_TRACKER -> this.waist;
+            case MCVR.LEFT_FOOT_TRACKER -> this.foot_left;
+            case MCVR.RIGHT_FOOT_TRACKER -> this.foot_right;
+            case MCVR.LEFT_KNEE_TRACKER -> this.knee_left;
+            case MCVR.RIGHT_KNEE_TRACKER -> this.knee_right;
+            case MCVR.LEFT_ELBOW_TRACKER -> this.elbow_left;
+            case MCVR.RIGHT_ELBOW_TRACKER -> this.elbow_right;
+            default -> this.c0;
         };
     }
 
@@ -250,6 +252,7 @@ public class VRData {
 
     /**
      * IMPORTANT!!! when changing this, also change {@link ClientVRPlayers.RotInfo#getBodyYawRad()}
+     *
      * @return the yaw direction the player body is facing, in radians
      */
     public float getBodyYawRad() {
@@ -315,7 +318,8 @@ public class VRData {
 
     /**
      * calculates the head pivot estimation with the provided room origin and scale
-     * @param newOrigin new room origin to use instead of the one linked to this VRData
+     *
+     * @param newOrigin     new room origin to use instead of the one linked to this VRData
      * @param newWorldScale new world scale to use instead of the one linked to this VRData
      * @return estimated pivot point that the players head rotates around, in world space
      */
@@ -374,7 +378,7 @@ public class VRData {
                 this.c0,
                 this.c1,
                 this.c2
-                );
+            );
     }
 
     public class VRDevicePose {
@@ -399,12 +403,13 @@ public class VRData {
          */
         public Vec3 getPosition() {
             Vector3f localPos = this.pos.mul(VRData.this.worldScale, new Vector3f())
-               .rotateY(this.data.rotation_radians);
+                .rotateY(this.data.rotation_radians);
             return this.data.origin.add(localPos.x, localPos.y, localPos.z);
         }
 
         /**
          * returns the world position as a float Vector, is safe to use for VRData marked as {@code room}
+         *
          * @return position of this device in world space
          */
         public Vector3f getPositionF() {
@@ -416,6 +421,7 @@ public class VRData {
         /**
          * calculates the difference between the current worldScale and the given {@code newWorldScale}
          * the result of this call is newPos - oldPos
+         *
          * @param newWorldScale new world scale
          * @return returns the position offset from changed world scale
          */
@@ -436,6 +442,7 @@ public class VRData {
 
         /**
          * transforms the device local vector {@code axis} to world space
+         *
          * @param axis local vector to transform
          * @return {@code axis} transformed into world space
          */

@@ -50,6 +50,7 @@ public class HandedKeyBinding extends KeyMapping {
 
     /**
      * if the binding has priority, by default always true, some override it to have it based on a condition
+     *
      * @param type controller to check
      */
     public boolean isPriorityOnController(ControllerType type) {

@@ -43,7 +43,9 @@ public class HapticMusicPlayer {
             this.name = name;
         }
 
-        public Music addNote(@Nullable ControllerType controller, float durationSeconds, float frequency, float amplitude) {
+        public Music addNote(
+            @Nullable ControllerType controller, float durationSeconds, float frequency, float amplitude)
+        {
             this.data.add(new Note(controller, durationSeconds, frequency, amplitude));
             return this;
         }
@@ -63,10 +65,14 @@ public class HapticMusicPlayer {
             for (Object object : this.data) {
                 if (object instanceof Note note) {
                     if (note.controller != null) {
-                        MCOpenVR.get().triggerHapticPulse(note.controller, note.durationSeconds, note.frequency, note.amplitude, delayAccum);
+                        MCOpenVR.get()
+                            .triggerHapticPulse(note.controller, note.durationSeconds, note.frequency, note.amplitude,
+                                delayAccum);
                     } else {
-                        MCOpenVR.get().triggerHapticPulse(ControllerType.RIGHT, note.durationSeconds, note.frequency, note.amplitude, delayAccum);
-                        MCOpenVR.get().triggerHapticPulse(ControllerType.LEFT, note.durationSeconds, note.frequency, note.amplitude, delayAccum);
+                        MCOpenVR.get().triggerHapticPulse(ControllerType.RIGHT, note.durationSeconds, note.frequency,
+                            note.amplitude, delayAccum);
+                        MCOpenVR.get().triggerHapticPulse(ControllerType.LEFT, note.durationSeconds, note.frequency,
+                            note.amplitude, delayAccum);
                     }
                 } else if (object instanceof Delay delay) {
                     delayAccum += delay.durationSeconds;

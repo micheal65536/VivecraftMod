@@ -20,8 +20,8 @@ import org.vivecraft.client_vr.gameplay.trackers.BowTracker;
 import org.vivecraft.client_vr.gameplay.trackers.ClimbTracker;
 import org.vivecraft.client_vr.render.RenderPass;
 import org.vivecraft.client_vr.settings.VRSettings;
-import org.vivecraft.mod_compat_vr.shaders.ShadersHelper;
 import org.vivecraft.mod_compat_vr.optifine.OptifineHelper;
+import org.vivecraft.mod_compat_vr.shaders.ShadersHelper;
 
 public class VRArmHelper {
 
@@ -47,12 +47,13 @@ public class VRArmHelper {
 
     /**
      * renders the VR hands
-     * @param partialTick current partial tick
-     * @param renderMain if the main hand should be rendered
-     * @param renderOff if the offhand should be rendered
+     *
+     * @param partialTick  current partial tick
+     * @param renderMain   if the main hand should be rendered
+     * @param renderOff    if the offhand should be rendered
      * @param menuHandMain if the right hand should render as the menu hand
-     * @param menuHandOff if the left hand should render as the menu hand
-     * @param poseStack PoseStack to use for positioning
+     * @param menuHandOff  if the left hand should render as the menu hand
+     * @param poseStack    PoseStack to use for positioning
      */
     public static void renderVRHands(
         float partialTick, boolean renderMain, boolean renderOff, boolean menuHandMain, boolean menuHandOff,
@@ -93,9 +94,10 @@ public class VRArmHelper {
 
     /**
      * renders a main menu hand for the specified controller, which is a gray box
-     * @param c controller to render the hand for
+     *
+     * @param c           controller to render the hand for
      * @param depthAlways if depth testing should be disabled for rendering
-     * @param poseStack PoseStack for positioning
+     * @param poseStack   PoseStack for positioning
      */
     public static void renderMainMenuHand(int c, boolean depthAlways, PoseStack poseStack) {
         RenderSystem.enableDepthTest();
@@ -142,7 +144,8 @@ public class VRArmHelper {
         Tesselator tesselator = Tesselator.getInstance();
         tesselator.getBuilder().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_NORMAL);
 
-        RenderHelper.renderBox(tesselator.getBuilder(), start, end, -0.02F, 0.02F, -0.0125F, 0.0125F, color, alpha, poseStack);
+        RenderHelper.renderBox(tesselator.getBuilder(), start, end, -0.02F, 0.02F, -0.0125F, 0.0125F, color, alpha,
+            poseStack);
 
         BufferUploader.drawWithShader(tesselator.getBuilder().end());
 
@@ -153,7 +156,8 @@ public class VRArmHelper {
 
     /**
      * renders the main minecraft hand
-     * @param poseStack PoseStack for positioning
+     *
+     * @param poseStack   PoseStack for positioning
      * @param partialTick current partial tick
      */
     public static void renderVRHand_Main(PoseStack poseStack, float partialTick) {
@@ -209,8 +213,9 @@ public class VRArmHelper {
 
     /**
      * renders the offhand minecraft hand
-     * @param poseStack PoseStack for positioning
-     * @param partialTick current partial tick
+     *
+     * @param poseStack      PoseStack for positioning
+     * @param partialTick    current partial tick
      * @param renderTeleport if the teleport arc should be rendered
      */
     public static void renderVRHand_Offhand(PoseStack poseStack, float partialTick, boolean renderTeleport) {
@@ -285,7 +290,8 @@ public class VRArmHelper {
 
                 if (DATA_HOLDER.teleportTracker.isAiming()) {
                     size = 2.0F * (DATA_HOLDER.teleportTracker.getTeleportEnergy() -
-                        4.0F * (float) DATA_HOLDER.teleportTracker.movementTeleportDistance) / 100.0F * max;
+                        4.0F * (float) DATA_HOLDER.teleportTracker.movementTeleportDistance
+                    ) / 100.0F * max;
                 } else {
                     size = 2.0F * DATA_HOLDER.teleportTracker.getTeleportEnergy() / 100.0F * max;
                 }
@@ -324,14 +330,16 @@ public class VRArmHelper {
 
     /**
      * returns the hold item based on the roomscale bow state
-     * @param itemStack the original item in the hand
+     *
+     * @param itemStack       the original item in the hand
      * @param interactionHand hand that should be checked
      * @return the overridden item, based on bow state
      */
     private static ItemStack getBowOverride(ItemStack itemStack, InteractionHand interactionHand) {
         if (DATA_HOLDER.vrSettings.reverseShootingEye && ClientNetworking.supportsReversedBow()) {
             // reverse bow hands
-            interactionHand = interactionHand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
+            interactionHand =
+                interactionHand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
         }
 
         if (interactionHand == InteractionHand.MAIN_HAND) {
@@ -364,6 +372,7 @@ public class VRArmHelper {
 
     /**
      * renders the teleport arc
+     *
      * @param poseStack PoseStack for positioning
      */
     public static void renderTeleportArc(PoseStack poseStack) {
@@ -416,7 +425,8 @@ public class VRArmHelper {
 
             double segmentProgress = 1.0D / (double) segments;
 
-            Vec3 cameraPosition = RenderHelper.getSmoothCameraPosition(DATA_HOLDER.currentPass, DATA_HOLDER.vrPlayer.getVRDataWorld());
+            Vec3 cameraPosition = RenderHelper.getSmoothCameraPosition(DATA_HOLDER.currentPass,
+                DATA_HOLDER.vrPlayer.getVRDataWorld());
 
             // arc
             for (int i = 0; i < segments; i++) {
@@ -425,14 +435,15 @@ public class VRArmHelper {
                 progress -= progressBase;
 
                 Vec3 start = DATA_HOLDER.teleportTracker
-                    .getInterpolatedArcPosition((float) (progress - segmentProgress *  0.4D))
+                    .getInterpolatedArcPosition((float) (progress - segmentProgress * 0.4D))
                     .subtract(cameraPosition);
 
                 Vec3 end = DATA_HOLDER.teleportTracker.getInterpolatedArcPosition((float) progress)
                     .subtract(cameraPosition);
 
                 float shift = (float) progress * 2.0F;
-                RenderHelper.renderBox(tesselator.getBuilder(), start, end, -segmentHalfWidth, segmentHalfWidth, (-1.0F + shift) * segmentHalfWidth, (1.0F + shift) * segmentHalfWidth, color, alpha, poseStack);
+                RenderHelper.renderBox(tesselator.getBuilder(), start, end, -segmentHalfWidth, segmentHalfWidth,
+                    (-1.0F + shift) * segmentHalfWidth, (1.0F + shift) * segmentHalfWidth, color, alpha, poseStack);
             }
 
             tesselator.end();

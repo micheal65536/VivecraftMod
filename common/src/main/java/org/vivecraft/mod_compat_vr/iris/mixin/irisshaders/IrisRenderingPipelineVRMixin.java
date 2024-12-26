@@ -11,7 +11,10 @@ import net.irisshaders.iris.shaderpack.programs.ProgramSet;
 import net.irisshaders.iris.shadows.ShadowRenderTargets;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.*;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Group;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_xr.render_pass.RenderPassType;
@@ -96,7 +99,8 @@ public class IrisRenderingPipelineVRMixin {
     private Object vivecraft$rerouteShadowTarget(Object obj) {
         // make sure we only change ShadowRenderTargets, since this might also inject into other lambdas
         if (!IrisHelper.SLOW_MODE && !RenderPassType.isVanilla() && obj instanceof ShadowRenderTargets || obj == null) {
-            return Objects.requireNonNullElse(((PipelineManagerExtension) Iris.getPipelineManager()).vivecraft$getShadowRenderTargets(), obj);
+            return Objects.requireNonNullElse(
+                ((PipelineManagerExtension) Iris.getPipelineManager()).vivecraft$getShadowRenderTargets(), obj);
         } else {
             return obj;
         }

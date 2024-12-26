@@ -60,6 +60,7 @@ public class IrisHelper {
 
     /**
      * enabled or disables shaders
+     *
      * @param enabled if shaders should be on or off
      */
     public static void setShadersActive(boolean enabled) {
@@ -89,7 +90,9 @@ public class IrisHelper {
         if (init()) {
             try {
                 // Iris.getPipelineManager().getPipeline().map(WorldRenderingPipeline::shouldRenderUnderwaterOverlay).orElse(true);
-                return (boolean) ((Optional<?>) PipelineManager_getPipeline.invoke(Iris_getPipelineManager.invoke(null))).map(o -> {
+                return (boolean) ((Optional<?>) PipelineManager_getPipeline.invoke(
+                    Iris_getPipelineManager.invoke(null))
+                ).map(o -> {
                     try {
                         return WorldRenderingPipeline_shouldRenderUnderwaterOverlay.invoke(o);
                     } catch (IllegalAccessException | InvocationTargetException e) {
@@ -107,6 +110,7 @@ public class IrisHelper {
     /**
      * removes the DH overrides from the given {@code pipeline}
      * this is here, because iris doesn't do that on pipeline changes
+     *
      * @param pipeline Rendering pileple to uinregister the overrides for
      */
     public static void unregisterDHIfThere(Object pipeline) {
@@ -118,11 +122,14 @@ public class IrisHelper {
                     Object dhCompatInstance = DHCompatInternal_getInstance.invoke(dhCompat);
                     if (dhCompatInstance != null) {
                         // now disable the overrides
-                        OverrideInjector_unbind.invoke(dhOverrideInjector, IDhApiFramebuffer, DHCompatInternal_getShadowFBWrapper.invoke(dhCompatInstance));
-                        OverrideInjector_unbind.invoke(dhOverrideInjector, IDhApiFramebuffer, DHCompatInternal_getSolidFBWrapper.invoke(dhCompatInstance));
+                        OverrideInjector_unbind.invoke(dhOverrideInjector, IDhApiFramebuffer,
+                            DHCompatInternal_getShadowFBWrapper.invoke(dhCompatInstance));
+                        OverrideInjector_unbind.invoke(dhOverrideInjector, IDhApiFramebuffer,
+                            DHCompatInternal_getSolidFBWrapper.invoke(dhCompatInstance));
                         // generic override for DH 2.2+
                         if (DHCompatInternal_getGenericShader != null) {
-                            OverrideInjector_unbind.invoke(dhOverrideInjector, IDhApiGenericObjectShaderProgram, DHCompatInternal_getGenericShader.invoke(dhCompatInstance));
+                            OverrideInjector_unbind.invoke(dhOverrideInjector, IDhApiGenericObjectShaderProgram,
+                                DHCompatInternal_getGenericShader.invoke(dhCompatInstance));
                         }
                     }
                 }
@@ -134,6 +141,7 @@ public class IrisHelper {
 
     /**
      * needed, because some Iris versions return a Matrix4f and others a Matrix4fc, which causes a runtime exception
+     *
      * @param source CapturedRenderingState INSTANCE to call this on
      * @return Matrix4fc current projection matrix
      */
@@ -150,6 +158,7 @@ public class IrisHelper {
 
     /**
      * initializes all Reflections
+     *
      * @return if init was successful
      */
     private static boolean init() {
@@ -173,33 +182,42 @@ public class IrisHelper {
                 "net.coderbot.iris.pipeline.WorldRenderingPipeline",
                 "net.irisshaders.iris.pipeline.WorldRenderingPipeline");
 
-            WorldRenderingPipeline_shouldRenderUnderwaterOverlay = worldRenderingPipeline.getMethod("shouldRenderUnderwaterOverlay");
+            WorldRenderingPipeline_shouldRenderUnderwaterOverlay = worldRenderingPipeline.getMethod(
+                "shouldRenderUnderwaterOverlay");
 
             // distant horizon compat
             if (Xplat.isModLoaded("distanthorizons")) {
                 try {
-                    Class<?> OverrideInjector = Class.forName("com.seibel.distanthorizons.coreapi.DependencyInjection.OverrideInjector");
+                    Class<?> OverrideInjector = Class.forName(
+                        "com.seibel.distanthorizons.coreapi.DependencyInjection.OverrideInjector");
                     dhOverrideInjector = OverrideInjector.getDeclaredField("INSTANCE").get(null);
 
-                    OverrideInjector_unbind = OverrideInjector.getMethod("unbind", Class.class, Class.forName("com.seibel.distanthorizons.api.interfaces.override.IDhApiOverrideable"));
+                    OverrideInjector_unbind = OverrideInjector.getMethod("unbind", Class.class,
+                        Class.forName("com.seibel.distanthorizons.api.interfaces.override.IDhApiOverrideable"));
 
-                    IDhApiFramebuffer = Class.forName("com.seibel.distanthorizons.api.interfaces.override.rendering.IDhApiFramebuffer");
+                    IDhApiFramebuffer = Class.forName(
+                        "com.seibel.distanthorizons.api.interfaces.override.rendering.IDhApiFramebuffer");
 
-                    Pipeline_getDHCompat = Class.forName("net.irisshaders.iris.pipeline.WorldRenderingPipeline").getMethod("getDHCompat");
+                    Pipeline_getDHCompat = Class.forName("net.irisshaders.iris.pipeline.WorldRenderingPipeline")
+                        .getMethod("getDHCompat");
 
-                    DHCompatInternal_getInstance = Class.forName("net.irisshaders.iris.compat.dh.DHCompat").getMethod("getInstance");
+                    DHCompatInternal_getInstance = Class.forName("net.irisshaders.iris.compat.dh.DHCompat")
+                        .getMethod("getInstance");
                     Class<?> DHCompatInternal = Class.forName("net.irisshaders.iris.compat.dh.DHCompatInternal");
                     DHCompatInternal_getShadowFBWrapper = DHCompatInternal.getMethod("getShadowFBWrapper");
                     DHCompatInternal_getSolidFBWrapper = DHCompatInternal.getMethod("getSolidFBWrapper");
 
                     // DH 2.2+
                     try {
-                        IDhApiGenericObjectShaderProgram = Class.forName("com.seibel.distanthorizons.api.interfaces.override.rendering.IDhApiGenericObjectShaderProgram");
+                        IDhApiGenericObjectShaderProgram = Class.forName(
+                            "com.seibel.distanthorizons.api.interfaces.override.rendering.IDhApiGenericObjectShaderProgram");
                         DHCompatInternal_getGenericShader = DHCompatInternal.getMethod("getGenericShader");
                     } catch (ClassNotFoundException | NoSuchMethodException ignored) {}
 
-                    Class<?> CapturedRenderingState = Class.forName("net.irisshaders.iris.uniforms.CapturedRenderingState");
-                    CapturedRenderingState_getGbufferProjection = CapturedRenderingState.getMethod("getGbufferProjection");
+                    Class<?> CapturedRenderingState = Class.forName(
+                        "net.irisshaders.iris.uniforms.CapturedRenderingState");
+                    CapturedRenderingState_getGbufferProjection = CapturedRenderingState.getMethod(
+                        "getGbufferProjection");
                     DH_PRESENT = true;
                 } catch (ClassNotFoundException | NoSuchMethodException | NoSuchFieldException | IllegalAccessException e) {
                     VRSettings.LOGGER.error("Vivecraft: DH present but compat init failed:", e);
@@ -216,6 +234,7 @@ public class IrisHelper {
 
     /**
      * does a class Lookup with an alternative, for convenience, since iris changed packages
+     *
      * @param class1 first option
      * @param class2 alternative option
      * @return found class

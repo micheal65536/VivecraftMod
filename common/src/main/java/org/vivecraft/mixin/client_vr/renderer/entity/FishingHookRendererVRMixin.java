@@ -31,7 +31,9 @@ public abstract class FishingHookRendererVRMixin {
         float delta, float start, float end, Operation<Float> original, @Local Player player)
     {
         ClientVRPlayers.RotInfo info;
-        if (player != Minecraft.getInstance().player && ClientVRPlayers.getInstance().isVRPlayer(player) && (info = ClientVRPlayers.getInstance().getRotationsForPlayer(player.getUUID())).seated) {
+        if (player != Minecraft.getInstance().player && ClientVRPlayers.getInstance().isVRPlayer(player) &&
+            (info = ClientVRPlayers.getInstance().getRotationsForPlayer(player.getUUID())).seated)
+        {
             // other players in seated mode
             return Mth.RAD_TO_DEG * info.getBodyYawRad();
         } else {
@@ -51,12 +53,15 @@ public abstract class FishingHookRendererVRMixin {
             // own player
             int c = mainHandFishingRod ? 0 : 1;
             Vec3 aimSource = RenderHelper.getControllerRenderPos(c);
-            Vector3f aimDirection = ClientDataHolderVR.getInstance().vrPlayer.vrdata_world_render.getHand(c).getDirection();
+            Vector3f aimDirection = ClientDataHolderVR.getInstance().vrPlayer.vrdata_world_render.getHand(c)
+                .getDirection();
             aimDirection.mul(0.47F * ClientDataHolderVR.getInstance().vrPlayer.vrdata_world_render.worldScale);
 
             linePos.set(aimSource.add(aimDirection.x, aimDirection.y, aimDirection.z));
             return linePos.get().x;
-        } else if (ClientVRPlayers.getInstance().isVRPlayer(player) && !(info = ClientVRPlayers.getInstance().getRotationsForPlayer(player.getUUID())).seated) {
+        } else if (ClientVRPlayers.getInstance().isVRPlayer(player) &&
+            !(info = ClientVRPlayers.getInstance().getRotationsForPlayer(player.getUUID())).seated)
+        {
             // other players in standing mode
             Vector3fc aimSource = mainHandFishingRod ? info.mainHandPos : info.offHandPos;
             // just set it to the hand, everything else looks silly

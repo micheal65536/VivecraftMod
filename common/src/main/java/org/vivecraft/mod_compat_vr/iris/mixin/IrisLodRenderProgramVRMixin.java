@@ -44,7 +44,8 @@ public class IrisLodRenderProgramVRMixin {
     private Matrix4fc vivecraft$correctProjection(Matrix4fc dhProjection) {
         if (!RenderPassType.isVanilla()) {
             if (ClientDataHolderVR.getInstance().currentPass == RenderPass.LEFT ||
-                ClientDataHolderVR.getInstance().currentPass == RenderPass.RIGHT) {
+                ClientDataHolderVR.getInstance().currentPass == RenderPass.RIGHT)
+            {
                 // VR projections are not centered
 
                 Matrix4fc vrProjection = IrisHelper.getGbufferProjection(CapturedRenderingState.INSTANCE);

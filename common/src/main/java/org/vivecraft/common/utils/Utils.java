@@ -16,12 +16,14 @@ public class Utils {
 
     /**
      * estimate the head hitbox of an entity
-     * @param entity Entity to get the head hitbox for
+     *
+     * @param entity  Entity to get the head hitbox for
      * @param inflate by how much the hitbox should be enlarged
      * @return AABB describing the head hit box, or null the entity is unsupported
      */
     public static AABB getEntityHeadHitbox(Entity entity, double inflate) {
-        if ((entity instanceof Player player && !player.isSwimming()) || // swimming players hitbox is just a box around their butt
+        // swimming players hitbox is just a box around their butt
+        if ((entity instanceof Player player && !player.isSwimming()) ||
             entity instanceof Zombie ||
             entity instanceof AbstractPiglin ||
             entity instanceof AbstractSkeleton ||
@@ -33,7 +35,8 @@ public class Utils {
             entity instanceof AbstractVillager ||
             entity instanceof SnowGolem ||
             entity instanceof Vex ||
-            entity instanceof Strider) {
+            entity instanceof Strider)
+        {
 
             Vec3 headPos = entity.getEyePosition();
             double headsize = entity.getBbWidth() * 0.5;
@@ -46,7 +49,8 @@ public class Utils {
                 headPos.add(headsize, headsize + inflate, headsize))
                 .inflate(inflate);
         } else if (!(entity instanceof EnderDragon) && // no ender dragon, the code doesn't work for it
-            entity instanceof LivingEntity livingEntity) {
+            entity instanceof LivingEntity livingEntity)
+        {
 
             float yRot = -livingEntity.yBodyRot * Mth.DEG_TO_RAD;
             // offset head in entity rotation

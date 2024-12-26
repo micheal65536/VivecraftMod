@@ -5,6 +5,7 @@ import org.vivecraft.common.network.packet.PayloadIdentifier;
 
 /**
  * packet that holds the network protocol version the server will use to talk to the client
+ *
  * @param version network protocol version the server will use
  */
 public record NetworkVersionPayloadS2C(int version) implements VivecraftPayloadS2C {

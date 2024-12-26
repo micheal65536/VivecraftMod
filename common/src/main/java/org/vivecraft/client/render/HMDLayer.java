@@ -23,7 +23,10 @@ public class HMDLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Abst
     }
 
     @Override
-    public void render(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, AbstractClientPlayer player, float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void render(
+        PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, AbstractClientPlayer player,
+        float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch)
+    {
 
         // check that the model actually is a vrPlayer model, some mods override the model
         if (this.getParentModel().head.visible && this.getParentModel() instanceof VRPlayerModel<?> vrPlayerModel) {

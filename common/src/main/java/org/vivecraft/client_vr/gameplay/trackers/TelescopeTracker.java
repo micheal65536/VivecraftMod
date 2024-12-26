@@ -8,14 +8,15 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.joml.Vector3f;
-import org.vivecraft.common.utils.MathUtils;
 import org.vivecraft.client_vr.ClientDataHolderVR;
-import org.vivecraft.data.ItemTags;
 import org.vivecraft.client_vr.VRData;
 import org.vivecraft.client_vr.render.RenderPass;
+import org.vivecraft.common.utils.MathUtils;
+import org.vivecraft.data.ItemTags;
 
 public class TelescopeTracker extends Tracker {
-    public static final ModelResourceLocation SCOPE_MODEL = new ModelResourceLocation("vivecraft", "spyglass_in_hand", "inventory");
+    public static final ModelResourceLocation SCOPE_MODEL = new ModelResourceLocation("vivecraft", "spyglass_in_hand",
+        "inventory");
     private static final float LENS_DIST_MAX = 0.05F;
     private static final float LENS_DIST_MIN = 0.185F;
     private static final float LENS_DOT_MAX = 0.9F;

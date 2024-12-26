@@ -23,10 +23,8 @@ public enum RenderPass {
 
     public static boolean renderPlayer(RenderPass pass) {
         return pass == CAMERA ||
-            (isFirstPerson(pass) && ClientDataHolderVR.getInstance().vrSettings.shouldRenderSelf) ||
-            (pass == THIRD &&
+            (isFirstPerson(pass) && ClientDataHolderVR.getInstance().vrSettings.shouldRenderSelf) || (pass == THIRD &&
             ClientDataHolderVR.getInstance().vrSettings.displayMirrorMode == VRSettings.MirrorMode.THIRD_PERSON
         );
     }
-
 }

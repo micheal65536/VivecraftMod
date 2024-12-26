@@ -45,7 +45,8 @@ public class MixinConfig implements IMixinConfigPlugin {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("VivecraftMixin");
 
-    private static final String CLASS_DEPENDENT_MIXIN = "L" + ClassDependentMixin.class.getName().replace(".", "/") + ";";
+    private static final String CLASS_DEPENDENT_MIXIN =
+        "L" + ClassDependentMixin.class.getName().replace(".", "/") + ";";
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {

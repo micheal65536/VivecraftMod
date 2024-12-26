@@ -50,11 +50,11 @@ public class GuiRadial extends TwoHandedScreen {
             float distX = numButtons * 4 + buttonWidth * 0.5F;
 
             // position buttons on equal y spacing
-            float btnIndex = (i < numButtons / 2 ? i  : numButtons - i) / (float) (numButtons / 2);
+            float btnIndex = (i < numButtons / 2 ? i : numButtons - i) / (float) (numButtons / 2);
             int y = (int) (2.0F * dist * btnIndex - dist);
 
             // position x so the buttons produce an ellipse
-            int x = (int) (distX * (Math.sqrt(1.0F - (y*y) / (dist*dist))));
+            int x = (int) (distX * (Math.sqrt(1.0F - (y * y) / (dist * dist))));
 
             // move in between buttons closer to the middle
             if (Math.abs(y) > 20) {

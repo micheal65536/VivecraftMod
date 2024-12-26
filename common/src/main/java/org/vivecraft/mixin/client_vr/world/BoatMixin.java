@@ -49,7 +49,7 @@ public abstract class BoatMixin extends Entity {
             if (this.inputUp) {
                 //controller-based
                 float yaw = dataHolder.vrSettings.vrFreeMoveMode == VRSettings.FreeMove.HMD ?
-                    dataHolder.vrPlayer.vrdata_world_pre.hmd.getYaw():
+                    dataHolder.vrPlayer.vrdata_world_pre.hmd.getYaw() :
                     dataHolder.vrPlayer.vrdata_world_pre.getController(1).getYaw();
                 if (dataHolder.vrSettings.vehicleRotation) {
                     //tank controls

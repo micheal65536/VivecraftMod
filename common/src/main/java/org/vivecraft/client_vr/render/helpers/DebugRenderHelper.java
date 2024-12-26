@@ -34,14 +34,15 @@ public class DebugRenderHelper {
     private static final ClientDataHolderVR DATA_HOLDER = ClientDataHolderVR.getInstance();
     private static final Minecraft MC = Minecraft.getInstance();
 
-    private static final Vector3fc RED = new Vector3f(1F,0F,0F);
-    private static final Vector3fc GREEN = new Vector3f(0F,1F,0F);
-    private static final Vector3fc BLUE = new Vector3f(0F,0F,1F);
+    private static final Vector3fc RED = new Vector3f(1F, 0F, 0F);
+    private static final Vector3fc GREEN = new Vector3f(0F, 1F, 0F);
+    private static final Vector3fc BLUE = new Vector3f(0F, 0F, 1F);
     private static final Vector3fc DARK_GRAY = new Vector3f(0.25F);
 
     /**
      * renders debug stuff
-     * @param poseStack PoseStack to use for positioning
+     *
+     * @param poseStack   PoseStack to use for positioning
      * @param partialTick current partial tick
      */
     public static void renderDebug(PoseStack poseStack, float partialTick) {
@@ -64,7 +65,8 @@ public class DebugRenderHelper {
 
     /**
      * renders all available remote devices from all players
-     * @param poseStack PoseStack to use for positioning
+     *
+     * @param poseStack   PoseStack to use for positioning
      * @param partialTick current partial tick
      */
     public static void renderPlayerAxes(PoseStack poseStack, float partialTick) {
@@ -73,7 +75,7 @@ public class DebugRenderHelper {
             Vec3 camPos = RenderHelper
                 .getSmoothCameraPosition(DATA_HOLDER.currentPass, DATA_HOLDER.vrPlayer.getVRDataWorld());
 
-            for(Player p : MC.player.level().players()) {
+            for (Player p : MC.player.level().players()) {
                 if (ClientVRPlayers.getInstance().isVRPlayer(p)) {
                     ClientVRPlayers.RotInfo info = ClientVRPlayers.getInstance().getRotationsForPlayer(p.getUUID());
 
@@ -85,7 +87,8 @@ public class DebugRenderHelper {
 
                     Vector3f playerPos = p.getPosition(partialTick).subtract(camPos).toVector3f();
                     if (p == MC.player) {
-                        playerPos = ((GameRendererExtension) MC.gameRenderer).vivecraft$getRvePos(partialTick).subtract(camPos).toVector3f();
+                        playerPos = ((GameRendererExtension) MC.gameRenderer).vivecraft$getRvePos(partialTick)
+                            .subtract(camPos).toVector3f();
                     }
 
                     if (p != MC.player || DATA_HOLDER.currentPass == RenderPass.THIRD) {
@@ -108,7 +111,6 @@ public class DebugRenderHelper {
                         addAxes(poseStack, bufferbuilder, playerPos, info.rightKneePos, info.rightKneeQuat);
                         addAxes(poseStack, bufferbuilder, playerPos, info.leftKneePos, info.leftKneeQuat);
                     }
-
                 }
             }
             if (bufferbuilder != null) {
@@ -119,8 +121,9 @@ public class DebugRenderHelper {
 
     /**
      * renders all available device axes using the provided VRData
+     *
      * @param poseStack PoseStack to use for positioning
-     * @param data VRData to get the devices from
+     * @param data      VRData to get the devices from
      */
     public static void renderDeviceAxes(PoseStack poseStack, VRData data) {
         BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
@@ -140,16 +143,20 @@ public class DebugRenderHelper {
             list.add(data.cam);
         }
 
-        if (MC.player != null && TelescopeTracker.isTelescope(MC.player.getMainHandItem()) && TelescopeTracker.isViewing(0)) {
+        if (MC.player != null && TelescopeTracker.isTelescope(MC.player.getMainHandItem()) &&
+            TelescopeTracker.isViewing(0))
+        {
             list.add(data.t0);
         } else {
             list.add(MC.player != null && MC.player.isShiftKeyDown() ? data.h0 : data.c0);
         }
 
-        if (MC.player != null && TelescopeTracker.isTelescope(MC.player.getOffhandItem()) && TelescopeTracker.isViewing(0)) {
+        if (MC.player != null && TelescopeTracker.isTelescope(MC.player.getOffhandItem()) &&
+            TelescopeTracker.isViewing(0))
+        {
             list.add(data.t1);
         } else {
-            list.add(MC.player != null && MC.player.isShiftKeyDown() ? data.h1 :data.c1);
+            list.add(MC.player != null && MC.player.isShiftKeyDown() ? data.h1 : data.c1);
         }
 
         if (data.fbtMode != FBTMode.ARMS_ONLY) {
@@ -171,6 +178,7 @@ public class DebugRenderHelper {
 
     /**
      * renders cubes for all tracked devices the current VR runtime offers
+     *
      * @param poseStack PoseStack to use for positioning
      * @param showNames if device names should be shown
      */
@@ -219,6 +227,7 @@ public class DebugRenderHelper {
 
     /**
      * renders forward, up and right axes using the {@code poseStack} position and orientation
+     *
      * @param poseStack PoseStack to use for positioning
      */
     public static void renderLocalAxes(PoseStack poseStack) {
@@ -238,10 +247,11 @@ public class DebugRenderHelper {
 
     /**
      * adds device axes to the {@code bufferBuilder} for the given VRDevicePose
-     * @param poseStack PoseStack to use for positioning
+     *
+     * @param poseStack     PoseStack to use for positioning
      * @param bufferBuilder BufferBuilder to use, needs to be in DEBUG_LINE_STRIP and POSITION_COLOR mode
-     * @param data VRData to get camera position from
-     * @param pose VRDevicePose to ge the orientation and position from.
+     * @param data          VRData to get camera position from
+     * @param pose          VRDevicePose to ge the orientation and position from.
      */
     private static void addAxes(
         PoseStack poseStack, BufferBuilder bufferBuilder, VRData data, VRData.VRDevicePose pose)
@@ -262,11 +272,12 @@ public class DebugRenderHelper {
 
     /**
      * adds device axes to the {@code bufferBuilder} for the given VRDevicePose, without dedicated direction vector
-     * @param poseStack PoseStack to use for positioning
+     *
+     * @param poseStack     PoseStack to use for positioning
      * @param bufferBuilder BufferBuilder to use, needs to be in DEBUG_LINE_STRIP and POSITION_COLOR mode
-     * @param playerPos player position, relative to the camera
-     * @param devicePos device position, relative to the player
-     * @param rot device rotation
+     * @param playerPos     player position, relative to the camera
+     * @param devicePos     device position, relative to the player
+     * @param rot           device rotation
      */
     private static void addAxes(
         PoseStack poseStack, BufferBuilder bufferBuilder, Vector3fc playerPos, Vector3fc devicePos, Quaternionfc rot)
@@ -276,12 +287,13 @@ public class DebugRenderHelper {
 
     /**
      * adds device axes to the {@code bufferBuilder} for the given VRDevicePose
-     * @param poseStack PoseStack to use for positioning
+     *
+     * @param poseStack     PoseStack to use for positioning
      * @param bufferBuilder BufferBuilder to use, needs to be in DEBUG_LINE_STRIP and POSITION_COLOR mode
-     * @param playerPos player position, relative to the camera
-     * @param devicePos device position, relative to the player
-     * @param dir device forward direction
-     * @param rot device rotation
+     * @param playerPos     player position, relative to the camera
+     * @param devicePos     device position, relative to the player
+     * @param dir           device forward direction
+     * @param rot           device rotation
      */
     private static void addAxes(
         PoseStack poseStack, BufferBuilder bufferBuilder, Vector3fc playerPos, Vector3fc devicePos, Vector3fc dir,
@@ -302,11 +314,12 @@ public class DebugRenderHelper {
 
     /**
      * adds a line from {@code position} in direction {@code dir}, with the given {@code color}
-     * @param poseStack PoseStack to use for positioning
+     *
+     * @param poseStack     PoseStack to use for positioning
      * @param bufferBuilder BufferBuilder to use, needs to be in DEBUG_LINE_STRIP and POSITION_COLOR mode
-     * @param position line start position
-     * @param dir line end, relative to {@code position}
-     * @param color line color
+     * @param position      line start position
+     * @param dir           line end, relative to {@code position}
+     * @param color         line color
      */
     private static void addLine(
         PoseStack poseStack, BufferBuilder bufferBuilder, Vector3fc position, Vector3fc dir, Vector3fc color)
@@ -325,12 +338,13 @@ public class DebugRenderHelper {
 
     /**
      * Renders a cube with text lable above it
+     *
      * @param poseStack PoseStack to use for positioning
-     * @param cubePos position to render the cube at, camera relative
-     * @param rot rotation facing the camera, to align the text
-     * @param label label of the cube
-     * @param size cube size
-     * @param color cube color
+     * @param cubePos   position to render the cube at, camera relative
+     * @param rot       rotation facing the camera, to align the text
+     * @param label     label of the cube
+     * @param size      cube size
+     * @param color     cube color
      */
     private static void addNamedCube(
         PoseStack poseStack, Vector3fc cubePos, Quaternionf rot, Component label, float size, Vector3fc color)
@@ -344,9 +358,10 @@ public class DebugRenderHelper {
 
     /**
      * renders the given text above the given device, facing the camera
+     *
      * @param poseStack PoseStack to use for positioning
-     * @param device device index to render at
-     * @param text text to render
+     * @param device    device index to render at
+     * @param text      text to render
      */
     public static void renderTextAtDevice(PoseStack poseStack, int device, String text) {
         renderTextAtPosition(poseStack, DATA_HOLDER.vrPlayer.getVRDataWorld().getDevice(device).getPosition(), text);
@@ -354,9 +369,10 @@ public class DebugRenderHelper {
 
     /**
      * renders the given text at the given world space position, facing the camera
+     *
      * @param poseStack PoseStack to use for positioning
-     * @param position position to render at, in world space
-     * @param text text to render
+     * @param position  position to render at, in world space
+     * @param text      text to render
      */
     public static void renderTextAtPosition(PoseStack poseStack, Vec3 position, String text) {
         VRData data = DATA_HOLDER.vrPlayer.getVRDataWorld();
@@ -371,12 +387,13 @@ public class DebugRenderHelper {
 
     /**
      * renders the given text at the given camera relative position, with the given rotation
+     *
      * @param poseStack PoseStack to use for positioning
-     * @param x x position relative to the camera
-     * @param y y position relative to the camera
-     * @param z z position relative to the camera
-     * @param rot rotation the text should look at
-     * @param text text to render
+     * @param x         x position relative to the camera
+     * @param y         y position relative to the camera
+     * @param z         z position relative to the camera
+     * @param rot       rotation the text should look at
+     * @param text      text to render
      */
     public static void renderTextAtRelativePosition(
         PoseStack poseStack, float x, float y, float z, Quaternionf rot, String text)
@@ -386,12 +403,13 @@ public class DebugRenderHelper {
 
     /**
      * renders the given text at the given camera relative position, with the given rotation
+     *
      * @param poseStack PoseStack to use for positioning
-     * @param x x position relative to the camera
-     * @param y y position relative to the camera
-     * @param z z position relative to the camera
-     * @param rot rotation the text should look at
-     * @param text text to render
+     * @param x         x position relative to the camera
+     * @param y         y position relative to the camera
+     * @param z         z position relative to the camera
+     * @param rot       rotation the text should look at
+     * @param text      text to render
      */
     public static void renderTextAtRelativePosition(
         PoseStack poseStack, float x, float y, float z, Quaternionf rot, Component text)
@@ -409,10 +427,11 @@ public class DebugRenderHelper {
 
     /**
      * Renders a cube
+     *
      * @param poseStack PoseStack to use for positioning
-     * @param position position to render the cube at, camera relative
-     * @param size cube size
-     * @param color cube color
+     * @param position  position to render the cube at, camera relative
+     * @param size      cube size
+     * @param color     cube color
      */
     private static void addCube(PoseStack poseStack, Vector3fc position, float size, Vector3fc color) {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
@@ -423,7 +442,7 @@ public class DebugRenderHelper {
 
         Vec3i iColor = new Vec3i((int) (color.x() * 255), (int) (color.y() * 255), (int) (color.z() * 255));
         Vec3 start = new Vec3(position.x(), position.y(), position.z()).add(MathUtils.FORWARD_D.scale(size * 0.5F));
-        Vec3 end =  new Vec3(position.x(), position.y(), position.z()).add(MathUtils.BACK_D.scale(size * 0.5F));
+        Vec3 end = new Vec3(position.x(), position.y(), position.z()).add(MathUtils.BACK_D.scale(size * 0.5F));
         RenderHelper.renderBox(bufferbuilder, start, end, size, size, iColor, (byte) 255, poseStack);
 
         BufferUploader.drawWithShader(bufferbuilder.end());

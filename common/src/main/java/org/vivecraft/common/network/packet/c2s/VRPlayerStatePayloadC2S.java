@@ -6,6 +6,7 @@ import org.vivecraft.common.network.packet.PayloadIdentifier;
 
 /**
  * holds the clients complete vr state
+ *
  * @param playerState vr state of the player
  */
 public record VRPlayerStatePayloadC2S(VrPlayerState playerState) implements VivecraftPayloadC2S {

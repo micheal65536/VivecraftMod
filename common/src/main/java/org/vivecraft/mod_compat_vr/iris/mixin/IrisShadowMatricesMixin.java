@@ -7,7 +7,8 @@ import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.render.helpers.RenderHelper;
 import org.vivecraft.client_xr.render_pass.RenderPassType;
@@ -30,11 +31,14 @@ public class IrisShadowMatricesMixin {
         float xOffset, @Local(argsOnly = true) float shadowIntervalSize, @Share("curPos") LocalRef<Vec3> curPos)
     {
         if (!RenderPassType.isVanilla() && !IrisHelper.SLOW_MODE) {
-            curPos.set(RenderHelper.getSmoothCameraPosition(ClientDataHolderVR.getInstance().currentPass, ClientDataHolderVR.getInstance().vrPlayer.getVRDataWorld()));
+            curPos.set(RenderHelper.getSmoothCameraPosition(ClientDataHolderVR.getInstance().currentPass,
+                ClientDataHolderVR.getInstance().vrPlayer.getVRDataWorld()));
             if (ClientDataHolderVR.getInstance().isFirstPass) {
                 vivecraft$FIRST_PASS_POS = curPos.get();
             }
-            return (float) (vivecraft$FIRST_PASS_POS.x % shadowIntervalSize - (vivecraft$FIRST_PASS_POS.x - curPos.get().x));
+            return (float) (vivecraft$FIRST_PASS_POS.x % shadowIntervalSize -
+                (vivecraft$FIRST_PASS_POS.x - curPos.get().x)
+            );
         } else {
             return xOffset;
         }
@@ -45,7 +49,9 @@ public class IrisShadowMatricesMixin {
         float yOffset, @Local(argsOnly = true) float shadowIntervalSize, @Share("curPos") LocalRef<Vec3> curPos)
     {
         if (!RenderPassType.isVanilla() && !IrisHelper.SLOW_MODE) {
-            return (float) (vivecraft$FIRST_PASS_POS.y % shadowIntervalSize - (vivecraft$FIRST_PASS_POS.y - curPos.get().y));
+            return (float) (vivecraft$FIRST_PASS_POS.y % shadowIntervalSize -
+                (vivecraft$FIRST_PASS_POS.y - curPos.get().y)
+            );
         } else {
             return yOffset;
         }
@@ -56,7 +62,9 @@ public class IrisShadowMatricesMixin {
         float zOffset, @Local(argsOnly = true) float shadowIntervalSize, @Share("curPos") LocalRef<Vec3> curPos)
     {
         if (!RenderPassType.isVanilla() && !IrisHelper.SLOW_MODE) {
-            return (float) (vivecraft$FIRST_PASS_POS.z % shadowIntervalSize - (vivecraft$FIRST_PASS_POS.z - curPos.get().z));
+            return (float) (vivecraft$FIRST_PASS_POS.z % shadowIntervalSize -
+                (vivecraft$FIRST_PASS_POS.z - curPos.get().z)
+            );
         } else {
             return zOffset;
         }

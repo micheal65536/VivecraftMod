@@ -5,6 +5,7 @@ import org.vivecraft.common.network.packet.PayloadIdentifier;
 
 /**
  * holds the clients world scale
+ *
  * @param worldScale world scale set by the player
  */
 public record WorldScalePayloadC2S(float worldScale) implements VivecraftPayloadC2S {

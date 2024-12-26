@@ -241,7 +241,9 @@ public abstract class ServerPlayerMixin extends PlayerMixin {
             // actually send the message, if there is one set
             if (!message.isEmpty()) {
                 try {
-                    this.server.getPlayerList().broadcastSystemMessage(Component.literal(message.formatted(getName().getString(), entity)), false);
+                    this.server.getPlayerList()
+                        .broadcastSystemMessage(Component.literal(message.formatted(getName().getString(), entity)),
+                            false);
                 } catch (IllegalFormatException e) {
                     // catch errors users might put into the messages, to not crash other stuff
                     ServerNetworking.LOGGER.error("Vivecraft: Death message '{}' has errors:", message, e);

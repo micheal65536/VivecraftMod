@@ -8,8 +8,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
-import javax.annotation.Nullable;
-
 import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -18,6 +16,8 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.VRData;
 import org.vivecraft.client_vr.VRState;
+
+import javax.annotation.Nullable;
 
 @Mixin(FireworkRocketEntity.class)
 public class FireworkRocketEntityVRMixin {

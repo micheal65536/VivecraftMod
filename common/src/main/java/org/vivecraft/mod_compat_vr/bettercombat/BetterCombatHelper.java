@@ -13,7 +13,8 @@ public class BetterCombatHelper {
 
     /**
      * checks if the ItemStack has attributes, and returns the attackRange attribute
-     * @param rangeIn original range that gets returned when no attributes are present
+     *
+     * @param rangeIn   original range that gets returned when no attributes are present
      * @param itemStack ItemStack to check
      * @return attackRange of the ItemStack, or {@code rangeIn} when no attribute is present
      */

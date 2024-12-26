@@ -15,10 +15,6 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.joml.*;
 import org.lwjgl.glfw.GLFW;
 import org.vivecraft.client.VivecraftVRMod;
-import org.vivecraft.client_vr.settings.AutoCalibration;
-import org.vivecraft.client_vr.utils.osc_trackers.OSCTracker;
-import org.vivecraft.client_vr.utils.osc_trackers.OSCTrackerReceiver;
-import org.vivecraft.common.utils.MathUtils;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.QuaternionfHistory;
 import org.vivecraft.client_vr.VRData;
@@ -33,8 +29,12 @@ import org.vivecraft.client_vr.provider.openvr_lwjgl.VRInputAction;
 import org.vivecraft.client_vr.provider.openvr_lwjgl.control.VRInputActionSet;
 import org.vivecraft.client_vr.render.RenderConfigException;
 import org.vivecraft.client_vr.render.RenderPass;
+import org.vivecraft.client_vr.settings.AutoCalibration;
 import org.vivecraft.client_vr.settings.VRHotkeys;
 import org.vivecraft.client_vr.settings.VRSettings;
+import org.vivecraft.client_vr.utils.osc_trackers.OSCTracker;
+import org.vivecraft.client_vr.utils.osc_trackers.OSCTrackerReceiver;
+import org.vivecraft.common.utils.MathUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -130,7 +130,7 @@ public abstract class MCVR {
     protected Map<String, VRInputAction> inputActions = new HashMap<>();
     protected Map<String, VRInputAction> inputActionsByKeyBinding = new HashMap<>();
 
-    protected static final Vector3fc[] FBT_REFERENCE_POSITIONS = new Vector3fc[] {
+    protected static final Vector3fc[] FBT_REFERENCE_POSITIONS = new Vector3fc[]{
         new Vector3f(0F, 0.875F, 0F), // waist
         new Vector3f(0.125F, 0F, 0F), // right foot
         new Vector3f(-0.125F, 0F, 0F), // left foot
@@ -142,8 +142,9 @@ public abstract class MCVR {
 
     /**
      * creates the MCVR instance
-     * @param mc instance of Minecraft to use
-     * @param dh instance of ClientDataHolderVR to use
+     *
+     * @param mc    instance of Minecraft to use
+     * @param dh    instance of ClientDataHolderVR to use
      * @param vrMod instance of VivecraftVRMod to use
      */
     public MCVR(Minecraft mc, ClientDataHolderVR dh, VivecraftVRMod vrMod) {
@@ -173,6 +174,7 @@ public abstract class MCVR {
 
     /**
      * initializes the api connection, and sets everything up.
+     *
      * @return if init was successful
      * @throws RenderConfigException if there was a critical error
      */
@@ -187,10 +189,11 @@ public abstract class MCVR {
 
     /**
      * triggers a haptic pulse on the give controller, as soon as possible
-     * @param controller controller to trigger on
+     *
+     * @param controller      controller to trigger on
      * @param durationSeconds duration in seconds
-     * @param frequency frequency in Hz
-     * @param amplitude strength 0.0 - 1.0
+     * @param frequency       frequency in Hz
+     * @param amplitude       strength 0.0 - 1.0
      */
     public void triggerHapticPulse(ControllerType controller, float durationSeconds, float frequency, float amplitude) {
         this.triggerHapticPulse(controller, durationSeconds, frequency, amplitude, 0.0F);
@@ -198,13 +201,16 @@ public abstract class MCVR {
 
     /**
      * triggers a haptic pulse on the give controller, after the specified delay
-     * @param controller controller to trigger on
+     *
+     * @param controller      controller to trigger on
      * @param durationSeconds duration in seconds
-     * @param frequency frequency in Hz
-     * @param amplitude strength 0.0 - 1.0
-     * @param delaySeconds delay for when to trigger in seconds
+     * @param frequency       frequency in Hz
+     * @param amplitude       strength 0.0 - 1.0
+     * @param delaySeconds    delay for when to trigger in seconds
      */
-    public void triggerHapticPulse(ControllerType controller, float durationSeconds, float frequency, float amplitude, float delaySeconds) {
+    public void triggerHapticPulse(
+        ControllerType controller, float durationSeconds, float frequency, float amplitude, float delaySeconds)
+    {
         if (this.dh.vrSettings.seated) return;
         if (this.dh.vrSettings.reverseHands) {
             controller = controller == ControllerType.RIGHT ? ControllerType.LEFT : ControllerType.RIGHT;
@@ -216,8 +222,9 @@ public abstract class MCVR {
      * triggers a haptic pulse on the give controller
      * uses a fixed frequency and amplitude, just changes duration
      * legacy method for simplicity
+     *
      * @param controller controller to trigger on
-     * @param strength how long to trigger in microseconds
+     * @param strength   how long to trigger in microseconds
      */
     @Deprecated
     public void triggerHapticPulse(ControllerType controller, int strength) {
@@ -233,8 +240,9 @@ public abstract class MCVR {
      * triggers a haptic pulse on the give controller
      * uses a fixed frequency and amplitude, just changes duration
      * legacy method for simplicity
+     *
      * @param controller controller to trigger on
-     * @param strength how long to trigger in microseconds
+     * @param strength   how long to trigger in microseconds
      */
     @Deprecated
     public void triggerHapticPulse(int controller, int strength) {
@@ -246,8 +254,9 @@ public abstract class MCVR {
     /**
      * finds the controller that has the given KeyMapping bound, and triggers a haptic there
      * legacy method for simplicity
+     *
      * @param keyMapping the KeyMapping to trigger for
-     * @param strength how long to trigger in microseconds
+     * @param strength   how long to trigger in microseconds
      */
     @Deprecated
     protected void triggerBindingHapticPulse(KeyMapping keyMapping, int strength) {
@@ -321,7 +330,7 @@ public abstract class MCVR {
             case LEFT -> pose.mul(this.hmdPoseLeftEye);
             case RIGHT -> pose.mul(this.hmdPoseRightEye);
             default -> {}
-        };
+        }
 
         Vector3f pos = pose.getTranslation(new Vector3f());
 
@@ -378,6 +387,7 @@ public abstract class MCVR {
 
     /**
      * gets the VRInputAction by name, a VRInputAction name is built like "(action set)/in/(keyMapping name)"
+     *
      * @param name name of the VRInputAction to get
      * @return VRInputAction that is linked to the given action name
      */
@@ -442,6 +452,7 @@ public abstract class MCVR {
 
     /**
      * changes teh selected hotbar slot in the given direction.
+     *
      * @param dir direction to change to, negative is right, positive is left
      */
     protected void changeHotbar(int dir) {
@@ -543,6 +554,7 @@ public abstract class MCVR {
 
     /**
      * searches a KeyMapping by name
+     *
      * @param name name to search the KeyMapping for
      * @return found KeyMapping or null if none was found
      */
@@ -576,7 +588,9 @@ public abstract class MCVR {
         this.hmdYawTotal += MathUtils.angleDiff(yaw, this.hmdYawLast);
         this.hmdYawLast = yaw;
 
-        if (Math.abs(MathUtils.angleNormalize(this.hmdYawTotal) - this.hmdYawLast) > 1.0F || this.hmdYawTotal > 100000.0F) {
+        if (Math.abs(MathUtils.angleNormalize(this.hmdYawTotal) - this.hmdYawLast) > 1.0F ||
+            this.hmdYawTotal > 100000.0F)
+        {
             this.hmdYawTotal = this.hmdYawLast;
             VRSettings.LOGGER.info("Vivecraft: HMD yaw desync/overflow corrected");
         }
@@ -622,7 +636,8 @@ public abstract class MCVR {
         this.hmdPivotHistory.add(pivot);
 
         // conjugate, because camera matrices need to be transposed
-        this.hmdRotHistory.add(new Quaternionf().setFromNormalized(this.hmdRotation).conjugate().rotateY((float) -Math.toRadians(this.dh.vrSettings.worldRotation)));
+        this.hmdRotHistory.add(new Quaternionf().setFromNormalized(this.hmdRotation).conjugate()
+            .rotateY((float) -Math.toRadians(this.dh.vrSettings.worldRotation)));
 
 
         // controllers
@@ -727,7 +742,8 @@ public abstract class MCVR {
             }
 
             this.controllerForwardHistory[c].add(this.getAimVector(c));
-            this.controllerUpHistory[c].add(this.controllerRotation[c].transformDirection(MathUtils.UP, new Vector3f()));
+            this.controllerUpHistory[c].add(
+                this.controllerRotation[c].transformDirection(MathUtils.UP, new Vector3f()));
         }
 
 
@@ -889,11 +905,11 @@ public abstract class MCVR {
                 this.dh.vrSettings.worldRotation -= this.dh.vrSettings.worldRotationIncrement * Math.signum(ax);
                 this.dh.vrSettings.worldRotation %= 360.0F;
             }
-        } else if (MOD.keyRotateLeft.consumeClick()){
+        } else if (MOD.keyRotateLeft.consumeClick()) {
             // button snap turning
             this.dh.vrSettings.worldRotation += this.dh.vrSettings.worldRotationIncrement;
             this.dh.vrSettings.worldRotation %= 360.0F;
-        } else if (MOD.keyRotateRight.consumeClick()){
+        } else if (MOD.keyRotateRight.consumeClick()) {
             this.dh.vrSettings.worldRotation -= this.dh.vrSettings.worldRotationIncrement;
             this.dh.vrSettings.worldRotation %= 360.0F;
         }
@@ -945,12 +961,16 @@ public abstract class MCVR {
         }
 
         // if you start moving, close any UI
-        if (gui && !sleeping && this.mc.options.keyUp.isDown() && !(this.mc.screen instanceof WinScreen) && this.mc.player != null) {
+        if (gui && !sleeping && this.mc.options.keyUp.isDown() && !(this.mc.screen instanceof WinScreen) &&
+            this.mc.player != null)
+        {
             this.mc.player.closeContainer();
         }
 
         // containers only listens directly to the keyboard to close.
-        if (this.mc.screen instanceof AbstractContainerScreen && this.mc.options.keyInventory.consumeClick() && this.mc.player != null) {
+        if (this.mc.screen instanceof AbstractContainerScreen && this.mc.options.keyInventory.consumeClick() &&
+            this.mc.player != null)
+        {
             this.mc.player.closeContainer();
         }
 
@@ -970,7 +990,11 @@ public abstract class MCVR {
         }
 
         // start third person cam movement
-        if (MOD.keyMoveThirdPersonCam.consumeClick() && !ClientDataHolderVR.KIOSK && !this.dh.vrSettings.seated && (this.dh.vrSettings.displayMirrorMode == VRSettings.MirrorMode.MIXED_REALITY || this.dh.vrSettings.displayMirrorMode == VRSettings.MirrorMode.THIRD_PERSON)) {
+        if (MOD.keyMoveThirdPersonCam.consumeClick() && !ClientDataHolderVR.KIOSK && !this.dh.vrSettings.seated &&
+            (this.dh.vrSettings.displayMirrorMode == VRSettings.MirrorMode.MIXED_REALITY ||
+                this.dh.vrSettings.displayMirrorMode == VRSettings.MirrorMode.THIRD_PERSON
+            ))
+        {
             ControllerType controller = this.findActiveBindingControllerType(MOD.keyMoveThirdPersonCam);
             if (controller != null) {
                 VRHotkeys.startMovingThirdPersonCam(controller.ordinal(), VRHotkeys.Triggerer.BINDING);
@@ -1028,7 +1052,8 @@ public abstract class MCVR {
 
         // player list
         if (MOD.keyTogglePlayerList.consumeClick()) {
-            ((GuiExtension) this.mc.gui).vivecraft$setShowPlayerList(!((GuiExtension) this.mc.gui).vivecraft$getShowPlayerList());
+            ((GuiExtension) this.mc.gui).vivecraft$setShowPlayerList(
+                !((GuiExtension) this.mc.gui).vivecraft$getShowPlayerList());
         }
 
         // screenshot cam
@@ -1060,7 +1085,9 @@ public abstract class MCVR {
         }
 
         // stop quick cam
-        if (!MOD.keyQuickHandheldCam.isDown() && this.dh.cameraTracker.isMoving() && this.dh.cameraTracker.isQuickMode() && this.mc.player != null) {
+        if (!MOD.keyQuickHandheldCam.isDown() && this.dh.cameraTracker.isMoving() &&
+            this.dh.cameraTracker.isQuickMode() && this.mc.player != null)
+        {
             this.dh.cameraTracker.stopMoving();
             this.dh.grabScreenShot = true;
         }
@@ -1078,7 +1105,8 @@ public abstract class MCVR {
         Map<String, ActionParams> actionParams = this.getSpecialActionParams();
 
         // iterate over all minecraft keys, and our hidden keys
-        for (KeyMapping keyMapping : Stream.concat(Arrays.stream(this.mc.options.keyMappings), MOD.getHiddenKeyBindings().stream()).toList()) {
+        for (KeyMapping keyMapping : Stream.concat(Arrays.stream(this.mc.options.keyMappings),
+            MOD.getHiddenKeyBindings().stream()).toList()) {
             ActionParams params = actionParams.getOrDefault(keyMapping.getName(), ActionParams.DEFAULT);
             VRInputAction action = new VRInputAction(keyMapping, params.requirement(), params.type(),
                 params.actionSetOverride());
@@ -1097,6 +1125,7 @@ public abstract class MCVR {
     /**
      * This is for bindings with specific requirement/type params, anything not listed will default to optional and boolean <br>
      * See OpenVR docs for valid values: <a href="https://github.com/ValveSoftware/openvr/wiki/Action-manifest#actions">Action-manifest#actions</a>
+     *
      * @return map of Keymappings with non default ActionParameters
      */
 
@@ -1160,7 +1189,8 @@ public abstract class MCVR {
                     if (keyMapping == null) {
                         VRSettings.LOGGER.warn("Vivecraft: Unknown key binding: {}", tokens[0]);
                     } else if (MOD.getAllKeyBindings().contains(keyMapping)) {
-                        VRSettings.LOGGER.warn("Vivecraft: NO! Don't touch Vivecraft bindings!: {}", keyMapping.getName());
+                        VRSettings.LOGGER.warn("Vivecraft: NO! Don't touch Vivecraft bindings!: {}",
+                            keyMapping.getName());
                     } else {
                         VRInputActionSet actionSet = switch (tokens[1].toLowerCase()) {
                             case "ingame" -> VRInputActionSet.INGAME;
@@ -1186,22 +1216,27 @@ public abstract class MCVR {
 
     /**
      * convenience method to create an ActionParam and add to the map
-     * @param map Map to add the ActionParam to
-     * @param keyMapping KeyMapping the ActionParam belongs to
-     * @param requirement requirement of the action. See {@link ActionParams#requirement()}
-     * @param type input type of the action. See {@link ActionParams#type()}
+     *
+     * @param map               Map to add the ActionParam to
+     * @param keyMapping        KeyMapping the ActionParam belongs to
+     * @param requirement       requirement of the action. See {@link ActionParams#requirement()}
+     * @param type              input type of the action. See {@link ActionParams#type()}
      * @param actionSetOverride actionset this should be in. See {@link ActionParams#actionSetOverride()}
      */
-    private void addActionParams(Map<String, ActionParams> map, KeyMapping keyMapping, String requirement, String type, VRInputActionSet actionSetOverride) {
+    private void addActionParams(
+        Map<String, ActionParams> map, KeyMapping keyMapping, String requirement, String type,
+        VRInputActionSet actionSetOverride)
+    {
         ActionParams actionparams = new ActionParams(requirement, type, actionSetOverride);
         map.put(keyMapping.getName(), actionparams);
     }
 
     /**
      * handles any keyboard inputs that are specific to this MCVR implementation
-     * @param key GLFW key that is handled
-     * @param scanCode scanCode of the handled key
-     * @param action if the key was pressed, released or repeated
+     *
+     * @param key       GLFW key that is handled
+     * @param scanCode  scanCode of the handled key
+     * @param action    if the key was pressed, released or repeated
      * @param modifiers key modifiers that are active
      * @return true if a key was handled
      */
@@ -1281,8 +1316,8 @@ public abstract class MCVR {
         for (int t = 3; t < (hasExtendedFBT() ? TRACKABLE_DEVICE_COUNT : 6); t++) {
             Vector3f offset = FBT_REFERENCE_POSITIONS[t - 3].mul(scale, new Vector3f()).sub(
                 this.controllerPose[t].getTranslation(tempV)
-                .sub(posAvg.x, 0F, posAvg.z) // center around headset
-                .rotateY(headsetYaw)); // remove body rotation
+                    .sub(posAvg.x, 0F, posAvg.z) // center around headset
+                    .rotateY(headsetYaw)); // remove body rotation
             this.dh.vrSettings.fbtOffsets[t - 3].set(offset);
         }
 
@@ -1298,7 +1333,7 @@ public abstract class MCVR {
      * resets what trackers are used for the fbt trackers
      */
     public void resetFBT() {
-        for(int i = 3; i < TRACKABLE_DEVICE_COUNT; i++) {
+        for (int i = 3; i < TRACKABLE_DEVICE_COUNT; i++) {
             this.deviceSource[i].reset();
         }
     }
@@ -1308,7 +1343,7 @@ public abstract class MCVR {
      */
     public List<Triple<DeviceSource, Integer, Matrix4fc>> getTrackers() {
         List<Triple<DeviceSource, Integer, Matrix4fc>> poses = new ArrayList<>();
-        for(int i = 3; i < TRACKABLE_DEVICE_COUNT; i++) {
+        for (int i = 3; i < TRACKABLE_DEVICE_COUNT; i++) {
             if (this.deviceSource[i].isValid()) {
                 poses.add(Triple.of(this.deviceSource[i], i, this.controllerPose[i]));
             }
@@ -1347,6 +1382,7 @@ public abstract class MCVR {
 
     /**
      * polls VR events, and fetches new device poses and inputs
+     *
      * @param frameIndex index of the current VR frame. Some VR runtimes need that
      */
     public abstract void poll(long frameIndex);
@@ -1358,7 +1394,7 @@ public abstract class MCVR {
 
     /**
      * @param controllerIndex index of the controller to get the transform for
-     * @param componentName name of the transform. `tip` or `handgrip`
+     * @param componentName   name of the transform. `tip` or `handgrip`
      * @return the controller transform with the given name, that was fetched during {@link MCVR#poll}
      */
     public abstract Matrix4fc getControllerComponentTransform(int controllerIndex, String componentName);
@@ -1414,6 +1450,7 @@ public abstract class MCVR {
     /**
      * determines if the vanilla framecap should still be applied,
      * by default this returns false, since the VR runtime should handle any frame caps
+     *
      * @return if the game should still apply the vanilla framecap
      */
     public boolean capFPS() {

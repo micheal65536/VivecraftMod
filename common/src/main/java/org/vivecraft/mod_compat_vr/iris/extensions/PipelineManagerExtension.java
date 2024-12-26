@@ -11,6 +11,7 @@ public interface PipelineManagerExtension {
 
     /**
      * sets the actually used ShadowRenderTarget
+     *
      * @param targets ShadowRenderTarget to set
      */
     void vivecraft$setShadowRenderTargets(Object targets);

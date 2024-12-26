@@ -19,6 +19,7 @@ public class WorldRenderPass implements AutoCloseable {
 
     /**
      * creates a WorldRenderPass that writes to {@code target}
+     *
      * @param target RenderTarget for this pass
      * @throws IOException when an error occurs during shader loading
      */
@@ -44,7 +45,8 @@ public class WorldRenderPass implements AutoCloseable {
 
     /**
      * resizes the RenderTarget of this pass to the given size
-     * @param width new width
+     *
+     * @param width  new width
      * @param height new height
      */
     public void resize(int width, int height) {

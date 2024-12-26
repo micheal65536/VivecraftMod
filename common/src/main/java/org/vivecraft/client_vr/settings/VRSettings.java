@@ -643,7 +643,8 @@ public class VRSettings {
                         Stream.of('W', 'X', 'Y', 'Z')
                             .forEach(suffix -> this.fieldConfigMap.put(config + suffix, configEntry));
                     } else if (ann.separate() && Vector3f.class.isAssignableFrom(field.getType())) {
-                        Stream.of('X', 'Y', 'Z').forEach(suffix -> this.fieldConfigMap.put(config + suffix, configEntry));
+                        Stream.of('X', 'Y', 'Z')
+                            .forEach(suffix -> this.fieldConfigMap.put(config + suffix, configEntry));
                     } else {
                         this.fieldConfigMap.put(config, configEntry);
                     }
@@ -656,12 +657,13 @@ public class VRSettings {
 
     /**
      * parses {@code value} into an Object of type {@code type}
-     * @param name name of the stored setting, used to correctly parse multi component settings
-     * @param value value as a String to parse
+     *
+     * @param name         name of the stored setting, used to correctly parse multi component settings
+     * @param value        value as a String to parse
      * @param currentValue for multi component settings this holds the object to update
-     * @param option option for custom handling
-     * @param type target type of the setting
-     * @param separate if multi component types are stored in individual strings, or a comma separated string
+     * @param option       option for custom handling
+     * @param type         target type of the setting
+     * @param separate     if multi component types are stored in individual strings, or a comma separated string
      * @return parsed setting
      * @throws ReflectiveOperationException if an error happens parsing the value of an Enum type option
      */
@@ -738,10 +740,11 @@ public class VRSettings {
 
     /**
      * saves the value of {@code obj} to a string
-     * @param name name of the setting to store, is used to identify the component when {@code separate}is true
-     * @param obj settings value to store
-     * @param option option to check for a custom storage string
-     * @param type type of {@code obj}
+     *
+     * @param name     name of the setting to store, is used to identify the component when {@code separate}is true
+     * @param obj      settings value to store
+     * @param option   option to check for a custom storage string
+     * @param type     type of {@code obj}
      * @param separate if multi component settings should be separated by component or one comma separated string
      * @return String to save the value as
      */
@@ -795,11 +798,12 @@ public class VRSettings {
 
     /**
      * loads the default value of the setting with the given {@code name}
-     * @param name name of the setting to load
-     * @param value value to load/parse, if null it gets retrieved from the {@code settingsMap}
-     * @param option option to check for a custom default value
-     * @param type object type of the setting
-     * @param separate if multi component types are stored in individual strings, or a comma separated string
+     *
+     * @param name        name of the setting to load
+     * @param value       value to load/parse, if null it gets retrieved from the {@code settingsMap}
+     * @param option      option to check for a custom default value
+     * @param type        object type of the setting
+     * @param separate    if multi component types are stored in individual strings, or a comma separated string
      * @param settingsMap map of settings to get the default from
      * @return default value of the setting with the given {@code name}
      * @throws ReflectiveOperationException if an error happens reading the default of an Enum type option
@@ -883,6 +887,7 @@ public class VRSettings {
 
     /**
      * resets the given setting to its default value
+     *
      * @param option setting to reset
      */
     public void loadDefault(VrOptions option) {
@@ -901,7 +906,8 @@ public class VRSettings {
                 if (mapping.separate) {
                     for (int i = 0; i < len; i++) {
                         Object obj = Objects.requireNonNull(
-                            loadDefault(name + "_" + i, null, option, type.getComponentType(), false, this.defaultsMap));
+                            loadDefault(name + "_" + i, null, option, type.getComponentType(), false,
+                                this.defaultsMap));
                         Array.set(arr, i, obj);
                     }
                 } else {
@@ -925,6 +931,7 @@ public class VRSettings {
 
     /**
      * reads the config json and stores its contents in a map
+     *
      * @return map containing stored contents
      */
     private Map<String, String> loadSettingsFile() {
@@ -1042,7 +1049,8 @@ public class VRSettings {
         JsonObject jsonStorage = new JsonObject();
         data.forEach((key, value) -> jsonStorage.add(key, new JsonPrimitive(value)));
         try {
-            OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(this.vrCfgFile), StandardCharsets.UTF_8);
+            OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(this.vrCfgFile),
+                StandardCharsets.UTF_8);
             writer.write(GSON.toJson(jsonStorage));
             writer.flush();
             writer.close();
@@ -1425,8 +1433,10 @@ public class VRSettings {
         KEYBOARD_PRESS_BINDS(false, true), // Keyboard Presses Bindings
         GUI_APPEAR_OVER_BLOCK(false, true), // Appear Over Block
         SHADER_GUI_RENDER(false, false), // Shaders GUI
-        SHADER_SHADOW_MODEL_LIMB_SCALE(false, false), // Shaders if player shadows should use full size limbs or first person size
-        SHADER_SLOW(false, true, "options.off", "vivecraft.options.disableshaderoptimization.auto"), // disables shader optimizations
+        SHADER_SHADOW_MODEL_LIMB_SCALE(false,
+            false), // Shaders if player shadows should use full size limbs or first person size
+        SHADER_SLOW(false, true, "options.off",
+            "vivecraft.options.disableshaderoptimization.auto"), // disables shader optimizations
         SHADER_PATCHING(false, true), // automatic shader patching for known incompatibilites
         DOUBLE_GUI_RESOLUTION(false, true), // 1440p GUI
         GUI_SCALE(true, true, 0, 6, 1, 0) { // GUI Scale
@@ -1936,6 +1946,7 @@ public class VRSettings {
         PLAYER_MODEL_LEGS_SCALE(true, false, 0.1f, 1f, 0.05f, -1), // scales the width of the first person legs
         PLAYER_MODEL_TYPE(false, true), // determines how VR player are rendered
         PLAYER_LIMBS_CONNECTED(false, true) { // extends the model arms to connect
+
             @Override
             public void onOptionChange() {
                 VRPlayerRenderer.createLayers();
@@ -1947,6 +1958,7 @@ public class VRSettings {
         PLAYER_WALK_ANIM(false, true), // if the walk animation should show on top of fbt
         PLAYER_ARM_ANIM(false, true), // if the player arm should swing with attacks, item using
         OSC_TRACKER_PORT(true, true, 0, 65535, 1, 0) { // port to receive ocs data
+
             @Override
             public void onOptionChange() {
                 if (VRState.VR_INITIALIZED) {
@@ -2039,7 +2051,7 @@ public class VRSettings {
         private final Pair<String, String> booleanLangKeys;
 
         /**
-         * @param isFloat if true, creates a float setting with range 0 or 1 state
+         * @param isFloat   if true, creates a float setting with range 0 or 1 state
          * @param isBoolean if true creates an ON/OFF setting
          */
         VrOptions(boolean isFloat, boolean isBoolean) {
@@ -2047,21 +2059,21 @@ public class VRSettings {
         }
 
         /**
-         * @param isFloat if true, creates a float setting with range 0 or 1 state
-         * @param isBoolean if true creates a boolean setting with the given lang states
-         * @param trueLangKey lang key for when the setting is ON
-         * @param falseLangKey  lang key for when the setting is OFF
+         * @param isFloat      if true, creates a float setting with range 0 or 1 state
+         * @param isBoolean    if true creates a boolean setting with the given lang states
+         * @param trueLangKey  lang key for when the setting is ON
+         * @param falseLangKey lang key for when the setting is OFF
          */
         VrOptions(boolean isFloat, boolean isBoolean, String trueLangKey, String falseLangKey) {
             this(isFloat, isBoolean, 0.0F, 1.0F, 0.0F, 0, trueLangKey, falseLangKey);
         }
 
         /**
-         * @param isFloat if true, creates a float setting with the specified parameters
-         * @param isBoolean if true creates an ON/OFF setting
-         * @param min minimum value of the float setting
-         * @param max maximum value of the float setting
-         * @param step step size between individual setting states
+         * @param isFloat       if true, creates a float setting with the specified parameters
+         * @param isBoolean     if true creates an ON/OFF setting
+         * @param min           minimum value of the float setting
+         * @param max           maximum value of the float setting
+         * @param step          step size between individual setting states
          * @param decimalPlaces number of decimal places for float value, negative to display as percentage
          */
         VrOptions(boolean isFloat, boolean isBoolean, float min, float max, float step, int decimalPlaces) {

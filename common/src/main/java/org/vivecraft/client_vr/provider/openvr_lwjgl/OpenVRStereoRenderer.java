@@ -45,7 +45,8 @@ public class OpenVRStereoRenderer extends VRRenderer {
                 VRSystem_GetRecommendedRenderTargetSize(renderSizeX, renderSizeY);
 
                 this.resolution = new Tuple<>(renderSizeX.get(0), renderSizeY.get(0));
-                VRSettings.LOGGER.info("Vivecraft: OpenVR Render Res {}x{}", this.resolution.getA(), this.resolution.getB());
+                VRSettings.LOGGER.info("Vivecraft: OpenVR Render Res {}x{}", this.resolution.getA(),
+                    this.resolution.getB());
 
                 this.ss = this.openvr.getSuperSampling();
                 VRSettings.LOGGER.info("Vivecraft: OpenVR Supersampling: {}", this.ss);
@@ -80,9 +81,11 @@ public class OpenVRStereoRenderer extends VRRenderer {
     protected Matrix4f getProjectionMatrix(int eyeType, float nearClip, float farClip) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             if (eyeType == VR.EVREye_Eye_Left) {
-                return OpenVRUtil.Matrix4fFromOpenVR(VRSystem_GetProjectionMatrix(VR.EVREye_Eye_Left, nearClip, farClip, HmdMatrix44.calloc(stack)));
+                return OpenVRUtil.Matrix4fFromOpenVR(
+                    VRSystem_GetProjectionMatrix(VR.EVREye_Eye_Left, nearClip, farClip, HmdMatrix44.calloc(stack)));
             } else {
-                return OpenVRUtil.Matrix4fFromOpenVR(VRSystem_GetProjectionMatrix(VR.EVREye_Eye_Right, nearClip, farClip, HmdMatrix44.calloc(stack)));
+                return OpenVRUtil.Matrix4fFromOpenVR(
+                    VRSystem_GetProjectionMatrix(VR.EVREye_Eye_Right, nearClip, farClip, HmdMatrix44.calloc(stack)));
             }
         }
     }
@@ -95,7 +98,8 @@ public class OpenVRStereoRenderer extends VRRenderer {
         RenderSystem.bindTexture(this.LeftEyeTextureId);
         RenderSystem.texParameter(GL11C.GL_TEXTURE_2D, GL11C.GL_TEXTURE_MIN_FILTER, GL11C.GL_LINEAR);
         RenderSystem.texParameter(GL11C.GL_TEXTURE_2D, GL11C.GL_TEXTURE_MAG_FILTER, GL11C.GL_LINEAR);
-        GlStateManager._texImage2D(GL11C.GL_TEXTURE_2D, 0, GL11C.GL_RGBA8, width, height, 0, GL11C.GL_RGBA, GL11C.GL_INT, null);
+        GlStateManager._texImage2D(GL11C.GL_TEXTURE_2D, 0, GL11C.GL_RGBA8, width, height, 0, GL11C.GL_RGBA,
+            GL11C.GL_INT, null);
         this.openvr.texType0.handle(this.LeftEyeTextureId);
         this.openvr.texType0.eColorSpace(VR.EColorSpace_ColorSpace_Gamma);
         this.openvr.texType0.eType(VR.ETextureType_TextureType_OpenGL);
@@ -105,7 +109,8 @@ public class OpenVRStereoRenderer extends VRRenderer {
         RenderSystem.bindTexture(this.RightEyeTextureId);
         RenderSystem.texParameter(GL11C.GL_TEXTURE_2D, GL11C.GL_TEXTURE_MIN_FILTER, GL11C.GL_LINEAR);
         RenderSystem.texParameter(GL11C.GL_TEXTURE_2D, GL11C.GL_TEXTURE_MAG_FILTER, GL11C.GL_LINEAR);
-        GlStateManager._texImage2D(GL11C.GL_TEXTURE_2D, 0, GL11C.GL_RGBA8, width, height, 0, GL11C.GL_RGBA, GL11C.GL_INT, null);
+        GlStateManager._texImage2D(GL11C.GL_TEXTURE_2D, 0, GL11C.GL_RGBA8, width, height, 0, GL11C.GL_RGBA,
+            GL11C.GL_INT, null);
         this.openvr.texType1.handle(this.RightEyeTextureId);
         this.openvr.texType1.eColorSpace(VR.EColorSpace_ColorSpace_Gamma);
         this.openvr.texType1.eType(VR.ETextureType_TextureType_OpenGL);
@@ -116,15 +121,17 @@ public class OpenVRStereoRenderer extends VRRenderer {
 
     @Override
     public void endFrame() throws RenderConfigException {
-        int leftError = VRCompositor_Submit(VR.EVREye_Eye_Left, this.openvr.texType0, null, VR.EVRSubmitFlags_Submit_Default);
-        int rightError = VRCompositor_Submit(VR.EVREye_Eye_Right, this.openvr.texType1, null, VR.EVRSubmitFlags_Submit_Default);
+        int leftError = VRCompositor_Submit(VR.EVREye_Eye_Left, this.openvr.texType0, null,
+            VR.EVRSubmitFlags_Submit_Default);
+        int rightError = VRCompositor_Submit(VR.EVREye_Eye_Right, this.openvr.texType1, null,
+            VR.EVRSubmitFlags_Submit_Default);
 
         VRCompositor_PostPresentHandoff();
 
         if (leftError + rightError > VR.EVRCompositorError_VRCompositorError_None) {
             throw new RenderConfigException(Component.literal("Compositor Error"),
                 Component.literal("Texture submission error: Left/Right " +
-                    getCompositorError(leftError) + "/" +getCompositorError(rightError)));
+                    getCompositorError(leftError) + "/" + getCompositorError(rightError)));
         }
 
         // flush, recommended by the openvr docs

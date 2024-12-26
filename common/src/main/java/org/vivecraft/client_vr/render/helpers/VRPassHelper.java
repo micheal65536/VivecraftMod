@@ -31,9 +31,10 @@ public class VRPassHelper {
 
     /**
      * renders a single RenderPass view
-     * @param eye RenderPass to render
+     *
+     * @param eye         RenderPass to render
      * @param partialTick current partial tick for this frame
-     * @param nanoTime time of this frame in nanoseconds
+     * @param nanoTime    time of this frame in nanoseconds
      * @param renderLevel if the level should be rendered, or just the screen
      */
     public static void renderSingleView(RenderPass eye, float partialTick, long nanoTime, boolean renderLevel) {
@@ -95,7 +96,8 @@ public class VRPassHelper {
             RenderSystem.activeTexture(GL13C.GL_TEXTURE0);
             RenderSystem.bindTexture(DATA_HOLDER.vrRenderer.framebufferMR.getDepthTextureId());
             RenderHelper.checkGLError("pre copy depth");
-            GlStateManager._glCopyTexSubImage2D(GL13C.GL_TEXTURE_2D, 0, 0, 0, 0, 0, DATA_HOLDER.vrRenderer.framebufferMR.width, DATA_HOLDER.vrRenderer.framebufferMR.height);
+            GlStateManager._glCopyTexSubImage2D(GL13C.GL_TEXTURE_2D, 0, 0, 0, 0, 0,
+                DATA_HOLDER.vrRenderer.framebufferMR.width, DATA_HOLDER.vrRenderer.framebufferMR.height);
             RenderHelper.checkGLError("post copy depth");
             // rebind the original buffer
             DATA_HOLDER.vrRenderer.framebufferMR.bindWrite(false);
@@ -132,9 +134,13 @@ public class VRPassHelper {
             RenderSystem.setProjectionMatrix(guiProjection, VertexSorting.ORTHOGRAPHIC_Z);
 
             int x = (int) (
-                MC.mouseHandler.xpos() * (double) MC.getWindow().getGuiScaledWidth() / (double) MC.getWindow().getScreenWidth());
+                MC.mouseHandler.xpos() * (double) MC.getWindow().getGuiScaledWidth() /
+                    (double) MC.getWindow().getScreenWidth()
+            );
             int y = (int) (
-                MC.mouseHandler.ypos() * (double) MC.getWindow().getGuiScaledHeight() / (double) MC.getWindow().getScreenHeight());
+                MC.mouseHandler.ypos() * (double) MC.getWindow().getGuiScaledHeight() /
+                    (double) MC.getWindow().getScreenHeight()
+            );
             RenderHelper.drawMouseMenuQuad(guiGraphics, x, y);
 
             guiGraphics.flush();
@@ -189,7 +195,9 @@ public class VRPassHelper {
             if (DATA_HOLDER.vrSettings.displayMirrorUseScreenshotCamera && DATA_HOLDER.cameraTracker.isVisible()) {
                 if (renderpass == RenderPass.CENTER) {
                     continue;
-                } else if (renderpass == RenderPass.THIRD && DATA_HOLDER.vrSettings.displayMirrorMode != VRSettings.MirrorMode.MIXED_REALITY) {
+                } else if (renderpass == RenderPass.THIRD &&
+                    DATA_HOLDER.vrSettings.displayMirrorMode != VRSettings.MirrorMode.MIXED_REALITY)
+                {
                     continue;
                 }
             }
@@ -219,8 +227,8 @@ public class VRPassHelper {
                     flag = renderpass == RenderPass.CENTER;
                 } else {
                     flag = DATA_HOLDER.vrSettings.displayMirrorLeftEye ?
-                           renderpass == RenderPass.LEFT :
-                           renderpass == RenderPass.RIGHT;
+                        renderpass == RenderPass.LEFT :
+                        renderpass == RenderPass.RIGHT;
                 }
 
                 if (flag) {

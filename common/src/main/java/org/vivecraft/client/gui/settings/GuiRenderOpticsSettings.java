@@ -44,10 +44,10 @@ public class GuiRenderOpticsSettings extends GuiVROptionsBase {
     })};
     private final VROptionEntry[] postAndShader = new VROptionEntry[]{
         new VROptionEntry(
-        "vivecraft.options.screen.posteffects.button", (button, mousePos) -> {
-        Minecraft.getInstance().setScreen(new GuiPostEffectsSettings(this));
-        return true;
-    }),
+            "vivecraft.options.screen.posteffects.button", (button, mousePos) -> {
+            Minecraft.getInstance().setScreen(new GuiPostEffectsSettings(this));
+            return true;
+        }),
         new VROptionEntry(
             "vivecraft.options.screen.shadercompat.button", (button, mousePos) -> {
             Minecraft.getInstance().setScreen(new GuiShaderCompatSettings(this));
@@ -84,7 +84,7 @@ public class GuiRenderOpticsSettings extends GuiVROptionsBase {
 
         super.init(this.postAndShader, false);
 
-        switch(this.dataHolder.vrSettings.displayMirrorMode) {
+        switch (this.dataHolder.vrSettings.displayMirrorMode) {
             case MIXED_REALITY -> super.init(this.MROptions, false);
             case FIRST_PERSON -> super.init(UNDISTORTED_OPTIONS, false);
             case THIRD_PERSON -> super.init(THIRD_OPTIONS, false);
@@ -116,9 +116,14 @@ public class GuiRenderOpticsSettings extends GuiVROptionsBase {
     @Override
     protected void actionPerformed(AbstractWidget widget) {
         if (widget instanceof GuiVROption guivroption) {
-            if (guivroption.getId() == VRSettings.VrOptions.MIRROR_DISPLAY.ordinal() || guivroption.getId() == VRSettings.VrOptions.FSAA.ordinal() || guivroption.getId() == VRSettings.VrOptions.STENCIL_ON.ordinal()) {
+            if (guivroption.getId() == VRSettings.VrOptions.MIRROR_DISPLAY.ordinal() ||
+                guivroption.getId() == VRSettings.VrOptions.FSAA.ordinal() ||
+                guivroption.getId() == VRSettings.VrOptions.STENCIL_ON.ordinal())
+            {
                 if (VRState.VR_INITIALIZED) {
-                    if (guivroption.getId() == VRSettings.VrOptions.MIRROR_DISPLAY.ordinal() && ShadersHelper.isShaderActive()) {
+                    if (guivroption.getId() == VRSettings.VrOptions.MIRROR_DISPLAY.ordinal() &&
+                        ShadersHelper.isShaderActive())
+                    {
                         this.dataHolder.vrRenderer.resizeFrameBuffers("Render Setting Changed");
                     } else {
                         this.dataHolder.vrRenderer.reinitFrameBuffers("Render Setting Changed");
@@ -135,11 +140,15 @@ public class GuiRenderOpticsSettings extends GuiVROptionsBase {
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         // Hacky way of making the render scale slider only reinit on mouse release
-        if (this.vrSettings.renderScaleFactor != this.prevRenderScaleFactor || this.vrSettings.handCameraResScale != this.prevHandCameraResScale) {
+        if (this.vrSettings.renderScaleFactor != this.prevRenderScaleFactor ||
+            this.vrSettings.handCameraResScale != this.prevHandCameraResScale)
+        {
             this.prevRenderScaleFactor = this.vrSettings.renderScaleFactor;
             this.prevHandCameraResScale = this.vrSettings.handCameraResScale;
             if (VRState.VR_INITIALIZED) {
-                this.dataHolder.vrRenderer.resizeFrameBuffers("Render Scale Changed: VR scale: %.1fx, Camera scale: %.1fx".formatted(this.vrSettings.renderScaleFactor, this.vrSettings.handCameraResScale));
+                this.dataHolder.vrRenderer.resizeFrameBuffers(
+                    "Render Scale Changed: VR scale: %.1fx, Camera scale: %.1fx".formatted(
+                        this.vrSettings.renderScaleFactor, this.vrSettings.handCameraResScale));
             }
         }
 

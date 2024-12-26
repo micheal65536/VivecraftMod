@@ -25,8 +25,8 @@ import org.vivecraft.client_vr.VRState;
 import org.vivecraft.client_vr.gameplay.trackers.ClimbTracker;
 import org.vivecraft.client_vr.render.RenderPass;
 import org.vivecraft.client_vr.settings.VRSettings;
-import org.vivecraft.mod_compat_vr.shaders.ShadersHelper;
 import org.vivecraft.mod_compat_vr.immersiveportals.ImmersivePortalsHelper;
+import org.vivecraft.mod_compat_vr.shaders.ShadersHelper;
 
 @Mixin(ItemInHandLayer.class)
 public abstract class ItemInHandLayerMixin extends RenderLayer {
@@ -46,7 +46,10 @@ public abstract class ItemInHandLayerMixin extends RenderLayer {
     }
 
     @Inject(method = "renderArmWithItem", at = @At("HEAD"), cancellable = true)
-    private void vivecraft$noItemsInFirstPerson(CallbackInfo ci, @Local(argsOnly = true) LivingEntity entity, @Local(argsOnly = true) HumanoidArm arm, @Local(argsOnly = true) ItemStack itemStack) {
+    private void vivecraft$noItemsInFirstPerson(
+        CallbackInfo ci, @Local(argsOnly = true) LivingEntity entity, @Local(argsOnly = true) HumanoidArm arm,
+        @Local(argsOnly = true) ItemStack itemStack)
+    {
         if (entity == Minecraft.getInstance().player && VRState.VR_RUNNING &&
             ClientDataHolderVR.getInstance().vrSettings.shouldRenderSelf &&
             RenderPass.isFirstPerson(ClientDataHolderVR.getInstance().currentPass) &&
@@ -90,7 +93,9 @@ public abstract class ItemInHandLayerMixin extends RenderLayer {
     }
 
     @Inject(method = "renderArmWithItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/ArmedModel;translateToHand(Lnet/minecraft/world/entity/HumanoidArm;Lcom/mojang/blaze3d/vertex/PoseStack;)V", shift = At.Shift.AFTER))
-    private void vivecraft$firstPersonItemScale(CallbackInfo ci, @Local(argsOnly = true) LivingEntity entity, @Local(argsOnly = true) PoseStack poseStack) {
+    private void vivecraft$firstPersonItemScale(
+        CallbackInfo ci, @Local(argsOnly = true) LivingEntity entity, @Local(argsOnly = true) PoseStack poseStack)
+    {
         if (entity == Minecraft.getInstance().player && VRState.VR_RUNNING &&
             ClientDataHolderVR.getInstance().vrSettings.shouldRenderSelf &&
             RenderPass.isFirstPerson(ClientDataHolderVR.getInstance().currentPass) &&
@@ -99,10 +104,8 @@ public abstract class ItemInHandLayerMixin extends RenderLayer {
         {
             // make the item scale equal in all directions
             poseStack.translate(0.0F, 0.65F, 0.0F);
-            poseStack.scale(1F, ClientDataHolderVR.getInstance().vrSettings.playerModelArmsScale,  1f);
+            poseStack.scale(1F, ClientDataHolderVR.getInstance().vrSettings.playerModelArmsScale, 1f);
             poseStack.translate(0.0F, -0.65F, 0.0F);
         }
-
-
     }
 }

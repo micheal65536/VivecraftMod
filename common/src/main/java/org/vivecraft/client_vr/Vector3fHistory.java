@@ -13,6 +13,7 @@ public class Vector3fHistory {
 
     /**
      * adds a new entry with the given Vec3
+     *
      * @param in Vector3fc to add
      */
     public void add(Vector3fc in) {
@@ -47,6 +48,7 @@ public class Vector3fHistory {
     /**
      * Get the total integrated device translation for the specified time period.
      * this is the sum of the distance of all points to the oldest point in the timeframe
+     *
      * @param seconds time period
      * @return distance in meters
      */
@@ -75,6 +77,7 @@ public class Vector3fHistory {
 
     /**
      * Get the vector representing the difference in position from now to {@code seconds} ago.
+     *
      * @param seconds time period
      * @return vector with the position difference
      */
@@ -103,6 +106,7 @@ public class Vector3fHistory {
 
     /**
      * Get the average speed of the device over the specified time period.
+     *
      * @param seconds time period
      * @return speed in m/s.
      */
@@ -135,6 +139,7 @@ public class Vector3fHistory {
 
     /**
      * Get the average position for the last {@code seconds}.
+     *
      * @param seconds time period
      * @return average position
      */

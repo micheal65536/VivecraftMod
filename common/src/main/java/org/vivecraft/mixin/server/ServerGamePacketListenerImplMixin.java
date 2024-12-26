@@ -45,7 +45,7 @@ public abstract class ServerGamePacketListenerImplMixin extends ServerCommonPack
             if (this.player.hasDisconnected()) {
                 // if they did disconnect remove them
                 ServerVRPlayers.getPlayersWithVivecraft(this.player.server).remove(this.player.getUUID());
-            } else if (vivePlayer.isVR() && vivePlayer.vrPlayerState != null){
+            } else if (vivePlayer.isVR() && vivePlayer.vrPlayerState != null) {
                 ServerNetworking.sendVrPlayerStateToClients(vivePlayer);
                 if (ServerConfig.DEBUG_PARTICLES.get()) {
                     ServerUtil.debugParticleAxes(vivePlayer);
@@ -60,7 +60,7 @@ public abstract class ServerGamePacketListenerImplMixin extends ServerCommonPack
             String message = ServerConfig.MESSAGES_LEAVE_MESSAGE.get();
             if (!message.isEmpty()) {
                 this.server.getPlayerList().broadcastSystemMessage(
-                    Component.literal(message.formatted(this.player.getScoreboardName())),false);
+                    Component.literal(message.formatted(this.player.getScoreboardName())), false);
             }
         }
         // remove player from viveplayer list, when they leave

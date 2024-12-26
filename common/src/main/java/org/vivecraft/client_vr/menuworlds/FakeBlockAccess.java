@@ -54,7 +54,11 @@ public class FakeBlockAccess implements LevelReader {
     private final BiomeManager biomeManager;
     private final DimensionSpecialEffects dimensionInfo;
 
-    public FakeBlockAccess(int version, long seed, BlockState[] blocks, byte[] skylightmap, byte[] blocklightmap, Biome[] biomemap, short[][] heightmap, int xSize, int ySize, int zSize, int ground, DimensionType dimensionType, boolean isFlat, float rotation, boolean rain, boolean thunder) {
+    public FakeBlockAccess(
+        int version, long seed, BlockState[] blocks, byte[] skylightmap, byte[] blocklightmap, Biome[] biomemap,
+        short[][] heightmap, int xSize, int ySize, int zSize, int ground, DimensionType dimensionType, boolean isFlat,
+        float rotation, boolean rain, boolean thunder)
+    {
         this.version = version;
         this.seed = seed;
         this.blocks = blocks;
@@ -88,7 +92,8 @@ public class FakeBlockAccess implements LevelReader {
     }
 
     private int encodeCoords(int x, int y, int z) {
-        return ((y + (int) this.effectiveGround) * this.zSize + (z + this.zSize / 2)) * this.xSize + (x + this.xSize / 2);
+        return ((y + (int) this.effectiveGround) * this.zSize + (z + this.zSize / 2)) * this.xSize +
+            (x + this.xSize / 2);
     }
 
     private int encodeCoords(BlockPos pos) {
@@ -96,7 +101,8 @@ public class FakeBlockAccess implements LevelReader {
     }
 
     private boolean checkCoords(int x, int y, int z) {
-        return x >= -this.xSize / 2 && y >= -(int) this.effectiveGround && z >= -this.zSize / 2 && x < this.xSize / 2 && y < this.ySize - (int) this.effectiveGround && z < this.zSize / 2;
+        return x >= -this.xSize / 2 && y >= -(int) this.effectiveGround && z >= -this.zSize / 2 && x < this.xSize / 2 &&
+            y < this.ySize - (int) this.effectiveGround && z < this.zSize / 2;
     }
 
     private boolean checkCoords(BlockPos pos) {
@@ -187,10 +193,12 @@ public class FakeBlockAccess implements LevelReader {
             int k = 0;
             int l = 0;
             int i1 = 0;
-            Cursor3D cursor3D = new Cursor3D(blockPosIn.getX() - i, blockPosIn.getY(), blockPosIn.getZ() - i, blockPosIn.getX() + i, blockPosIn.getY(), blockPosIn.getZ() + i);
+            Cursor3D cursor3D = new Cursor3D(blockPosIn.getX() - i, blockPosIn.getY(), blockPosIn.getZ() - i,
+                blockPosIn.getX() + i, blockPosIn.getY(), blockPosIn.getZ() + i);
             int j1;
 
-            for (BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos(); cursor3D.advance(); i1 += j1 & 255) {
+            for (BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos(); cursor3D.advance(); i1 += j1 & 255)
+            {
                 blockPos.set(cursor3D.nextX(), cursor3D.nextY(), cursor3D.nextZ());
                 j1 = colorResolverIn.getColor(this.getBiome(blockPos).value(), blockPos.getX(), blockPos.getZ());
                 k += (j1 & 16711680) >> 16;

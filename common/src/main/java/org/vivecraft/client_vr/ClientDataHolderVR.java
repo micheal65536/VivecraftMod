@@ -19,8 +19,10 @@ import java.util.function.BiFunction;
 
 public class ClientDataHolderVR {
 
-    public static final ModelResourceLocation THIRD_PERSON_CAMERA_MODEL = new ModelResourceLocation("vivecraft", "camcorder", "");
-    public static final ModelResourceLocation THIRD_PERSON_CAMERA_DISPLAY_MODEL = new ModelResourceLocation("vivecraft", "camcorder_display", "");
+    public static final ModelResourceLocation THIRD_PERSON_CAMERA_MODEL = new ModelResourceLocation("vivecraft",
+        "camcorder", "");
+    public static final ModelResourceLocation THIRD_PERSON_CAMERA_DISPLAY_MODEL = new ModelResourceLocation("vivecraft",
+        "camcorder_display", "");
 
     public static boolean KAT_VR;
     public static boolean INFINADECK;
@@ -93,6 +95,7 @@ public class ClientDataHolderVR {
 
     /**
      * checks if the given arm side is currently a menu hand
+     *
      * @param arm LEFT/RIGHT arm to check
      * @return if the arm is a menu hnd
      */
@@ -106,9 +109,10 @@ public class ClientDataHolderVR {
 
     /**
      * Creates a tracker instance, adds it to the registered list and returns it
+     *
      * @param constructor Constructor to use to create the tracker instance
+     * @param <T>         Class of the tracker
      * @return created tracker instance
-     * @param <T> Class of the tracker
      */
     public <T extends Tracker> T createTracker(BiFunction<Minecraft, ClientDataHolderVR, T> constructor) {
         T tracker = constructor.apply(Minecraft.getInstance(), this);
@@ -118,10 +122,11 @@ public class ClientDataHolderVR {
 
     /**
      * registers a tracker
+     *
      * @param tracker tracker to register
      * @throws IllegalArgumentException if the tracker is already registered
      */
-    public void registerTracker(Tracker tracker) throws IllegalArgumentException{
+    public void registerTracker(Tracker tracker) throws IllegalArgumentException {
         if (this.trackers.contains(tracker)) {
             throw new IllegalArgumentException("Tracker is already added and should not be added again!");
         }

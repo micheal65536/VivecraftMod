@@ -10,7 +10,6 @@ import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.InBedChatScreen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import javax.annotation.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -21,6 +20,8 @@ import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.VRState;
 import org.vivecraft.client_vr.gameplay.screenhandlers.KeyboardHandler;
 import org.vivecraft.client_vr.settings.VRSettings;
+
+import javax.annotation.Nullable;
 
 @Mixin(EditBox.class)
 public abstract class EditBoxVRMixin extends AbstractWidget {
@@ -48,7 +49,9 @@ public abstract class EditBoxVRMixin extends AbstractWidget {
         GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci,
         @Local String content, @Local(ordinal = 4) int xPos, @Local(ordinal = 5) int yPos)
     {
-        if (VRState.VR_RUNNING && content.isEmpty() && !ClientDataHolderVR.getInstance().vrSettings.seated && !KeyboardHandler.SHOWING) {
+        if (VRState.VR_RUNNING && content.isEmpty() && !ClientDataHolderVR.getInstance().vrSettings.seated &&
+            !KeyboardHandler.SHOWING)
+        {
             if (this.hint == null || this.isFocused()) {
                 // limit text to field size
                 String fullString = I18n.get("vivecraft.message.openKeyboard");

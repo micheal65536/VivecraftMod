@@ -5,6 +5,7 @@ import org.vivecraft.common.network.packet.PayloadIdentifier;
 
 /**
  * holds the clients current bow draw percent
+ *
  * @param draw how far the player has pulled the bow
  */
 public record DrawPayloadC2S(float draw) implements VivecraftPayloadC2S {

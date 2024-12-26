@@ -21,7 +21,8 @@ public class NullVRStereoRenderer extends VRRenderer {
     public Tuple<Integer, Integer> getRenderTextureSizes() {
         if (this.resolution == null) {
             this.resolution = new Tuple<>(2048, 2048);
-            VRSettings.LOGGER.info("Vivecraft: NullVR Render Res {}x{}", this.resolution.getA(), this.resolution.getB());
+            VRSettings.LOGGER.info("Vivecraft: NullVR Render Res {}x{}", this.resolution.getA(),
+                this.resolution.getB());
             this.ss = -1.0F;
             VRSettings.LOGGER.info("Vivecraft: NullVR Supersampling: {}", this.ss);
         }
@@ -40,7 +41,8 @@ public class NullVRStereoRenderer extends VRRenderer {
         RenderSystem.bindTexture(this.LeftEyeTextureId);
         RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
         RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-        GlStateManager._texImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, lwidth, lheight, 0, GL11.GL_RGBA, GL11.GL_INT, null);
+        GlStateManager._texImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, lwidth, lheight, 0, GL11.GL_RGBA, GL11.GL_INT,
+            null);
 
         RenderSystem.bindTexture(i);
         this.RightEyeTextureId = GlStateManager._genTexture();
@@ -48,7 +50,8 @@ public class NullVRStereoRenderer extends VRRenderer {
         RenderSystem.bindTexture(this.RightEyeTextureId);
         RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
         RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-        GlStateManager._texImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, lwidth, lheight, 0, GL11.GL_RGBA, GL11.GL_INT, null);
+        GlStateManager._texImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, lwidth, lheight, 0, GL11.GL_RGBA, GL11.GL_INT,
+            null);
         RenderSystem.bindTexture(i);
         this.lastError = RenderHelper.checkGLError("create VR textures");
     }

@@ -67,7 +67,8 @@ public class GuiListValueEditScreen extends GuiListScreen {
         }
         int i = 0;
         for (String item : this.elements) {
-            EditBox box = new EditBox(Minecraft.getInstance().font, 0, 0, ListValueEntry.VALUE_BUTTON_WIDTH - 1, 20, Component.literal(item));
+            EditBox box = new EditBox(Minecraft.getInstance().font, 0, 0, ListValueEntry.VALUE_BUTTON_WIDTH - 1, 20,
+                Component.literal(item));
             box.setMaxLength(1000);
             box.setValue(item);
             int index = i++;
@@ -76,11 +77,12 @@ public class GuiListValueEditScreen extends GuiListScreen {
                 this.reinit = true;
             }));
         }
-        entries.add(new SettingsList.WidgetEntry(Component.translatable("vivecraft.options.addnew"), Button.builder(Component.literal("+"), button -> {
-            this.elements = getCurrentValues();
-            this.elements.add("");
-            this.reinit = true;
-        }).size(20, 20).build()));
+        entries.add(new SettingsList.WidgetEntry(Component.translatable("vivecraft.options.addnew"),
+            Button.builder(Component.literal("+"), button -> {
+                this.elements = getCurrentValues();
+                this.elements.add("");
+                this.reinit = true;
+            }).size(20, 20).build()));
         return entries;
     }
 
@@ -99,7 +101,10 @@ public class GuiListValueEditScreen extends GuiListScreen {
         }
 
         @Override
-        public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
+        public void render(
+            GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY,
+            boolean hovering, float partialTick)
+        {
             this.valueWidget.setX(left - 50);
             this.valueWidget.setY(top);
             this.valueWidget.render(guiGraphics, mouseX, mouseY, partialTick);

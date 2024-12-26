@@ -32,7 +32,7 @@ public class OSCTrackerReceiver {
 
     public OSCTrackerReceiver(MCVR mcvr) {
         this.mcvr = mcvr;
-        for(int i = 0; i < this.trackers.length; i++) {
+        for (int i = 0; i < this.trackers.length; i++) {
             this.trackers[i] = new OSCTracker();
         }
         changePort(ClientDataHolderVR.getInstance().vrSettings.oscTrackerPort);
@@ -138,5 +138,4 @@ public class OSCTrackerReceiver {
         }
         return Integer.parseInt(String.valueOf(tracker));
     }
-
 }

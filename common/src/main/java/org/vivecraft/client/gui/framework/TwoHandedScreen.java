@@ -83,7 +83,8 @@ public abstract class TwoHandedScreen extends Screen {
     }
 
     public boolean processCursor(Vector3f Pos_room, Matrix4f Rotation_room, boolean mainCursor) {
-        Vector2f tex = GuiHandler.getTexCoordsForCursor(Pos_room, Rotation_room, GuiHandler.GUI_SCALE, this.dh.vrPlayer.vrdata_room_pre.getController(mainCursor ? 1 : 0));
+        Vector2f tex = GuiHandler.getTexCoordsForCursor(Pos_room, Rotation_room, GuiHandler.GUI_SCALE,
+            this.dh.vrPlayer.vrdata_room_pre.getController(mainCursor ? 1 : 0));
 
         // main hand
         float u = tex.x;
@@ -122,5 +123,4 @@ public abstract class TwoHandedScreen extends Screen {
 
         return onScreen;
     }
-
 }

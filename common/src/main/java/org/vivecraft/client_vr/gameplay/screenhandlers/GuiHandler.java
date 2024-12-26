@@ -13,14 +13,15 @@ import net.minecraft.client.gui.screens.inventory.BookEditScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.vehicle.ContainerEntity;
-import net.minecraft.world.phys.*;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector2fc;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
-import org.vivecraft.client_vr.settings.AutoCalibration;
-import org.vivecraft.common.utils.MathUtils;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.MethodHolder;
 import org.vivecraft.client_vr.VRData;
@@ -33,7 +34,9 @@ import org.vivecraft.client_vr.provider.InputSimulator;
 import org.vivecraft.client_vr.provider.MCVR;
 import org.vivecraft.client_vr.render.RenderPass;
 import org.vivecraft.client_vr.render.helpers.RenderHelper;
+import org.vivecraft.client_vr.settings.AutoCalibration;
 import org.vivecraft.client_vr.settings.VRSettings;
+import org.vivecraft.common.utils.MathUtils;
 
 public class GuiHandler {
     public static final Minecraft MC = Minecraft.getInstance();
@@ -51,16 +54,27 @@ public class GuiHandler {
     private static boolean LAST_PRESSED_CRTL;
     private static boolean LAST_PRESSED_ALT;
 
-    public static final KeyMapping KEY_LEFT_CLICK = new KeyMapping("vivecraft.key.guiLeftClick", -1, "vivecraft.key.category.gui");
-    public static final KeyMapping KEY_RIGHT_CLICK = new KeyMapping("vivecraft.key.guiRightClick", -1, "vivecraft.key.category.gui");
-    public static final KeyMapping KEY_MIDDLE_CLICK = new KeyMapping("vivecraft.key.guiMiddleClick", -1, "vivecraft.key.category.gui");
-    public static final KeyMapping KEY_SHIFT = new KeyMapping("vivecraft.key.guiShift", -1, "vivecraft.key.category.gui");
-    public static final KeyMapping KEY_CTRL = new KeyMapping("vivecraft.key.guiCtrl", -1, "vivecraft.key.category.gui");
-    public static final KeyMapping KEY_ALT = new KeyMapping("vivecraft.key.guiAlt", -1, "vivecraft.key.category.gui");
-    public static final KeyMapping KEY_SCROLL_UP = new KeyMapping("vivecraft.key.guiScrollUp", -1, "vivecraft.key.category.gui");
-    public static final KeyMapping KEY_SCROLL_DOWN = new KeyMapping("vivecraft.key.guiScrollDown", -1, "vivecraft.key.category.gui");
-    public static final KeyMapping KEY_SCROLL_AXIS = new KeyMapping("vivecraft.key.guiScrollAxis", -1, "vivecraft.key.category.gui");
-    public static final HandedKeyBinding KEY_KEYBOARD_CLICK = new HandedKeyBinding("vivecraft.key.keyboardClick", -1, "vivecraft.key.category.keyboard") {
+    public static final KeyMapping KEY_LEFT_CLICK = new KeyMapping("vivecraft.key.guiLeftClick", -1,
+        "vivecraft.key.category.gui");
+    public static final KeyMapping KEY_RIGHT_CLICK = new KeyMapping("vivecraft.key.guiRightClick", -1,
+        "vivecraft.key.category.gui");
+    public static final KeyMapping KEY_MIDDLE_CLICK = new KeyMapping("vivecraft.key.guiMiddleClick", -1,
+        "vivecraft.key.category.gui");
+    public static final KeyMapping KEY_SHIFT = new KeyMapping("vivecraft.key.guiShift", -1,
+        "vivecraft.key.category.gui");
+    public static final KeyMapping KEY_CTRL = new KeyMapping("vivecraft.key.guiCtrl", -1,
+        "vivecraft.key.category.gui");
+    public static final KeyMapping KEY_ALT = new KeyMapping("vivecraft.key.guiAlt", -1,
+        "vivecraft.key.category.gui");
+    public static final KeyMapping KEY_SCROLL_UP = new KeyMapping("vivecraft.key.guiScrollUp", -1,
+        "vivecraft.key.category.gui");
+    public static final KeyMapping KEY_SCROLL_DOWN = new KeyMapping("vivecraft.key.guiScrollDown", -1,
+        "vivecraft.key.category.gui");
+    public static final KeyMapping KEY_SCROLL_AXIS = new KeyMapping("vivecraft.key.guiScrollAxis", -1,
+        "vivecraft.key.category.gui");
+    public static final HandedKeyBinding KEY_KEYBOARD_CLICK = new HandedKeyBinding("vivecraft.key.keyboardClick", -1,
+        "vivecraft.key.category.keyboard")
+    {
         @Override
         public boolean isPriorityOnController(ControllerType type) {
             if (KeyboardHandler.SHOWING && !GuiHandler.DH.vrSettings.physicalKeyboard) {
@@ -70,7 +84,9 @@ public class GuiHandler {
             }
         }
     };
-    public static final HandedKeyBinding KEY_KEYBOARD_SHIFT = new HandedKeyBinding("vivecraft.key.keyboardShift", -1, "vivecraft.key.category.keyboard") {
+    public static final HandedKeyBinding KEY_KEYBOARD_SHIFT = new HandedKeyBinding("vivecraft.key.keyboardShift", -1,
+        "vivecraft.key.category.keyboard")
+    {
         @Override
         public boolean isPriorityOnController(ControllerType type) {
             if (KeyboardHandler.SHOWING) {
@@ -147,6 +163,7 @@ public class GuiHandler {
 
     /**
      * updates the gui resolution, and scales the cursor position
+     *
      * @return if the gui scale/size changed
      */
     public static boolean updateResolution() {
@@ -167,8 +184,10 @@ public class GuiHandler {
         if (oldWidth != GUI_WIDTH) {
             // move cursor to right position
             InputSimulator.setMousePos(
-                MC.mouseHandler.xpos() * ((WindowExtension) (Object) MC.getWindow()).vivecraft$getActualScreenWidth() / oldWidth,
-                MC.mouseHandler.ypos() * ((WindowExtension) (Object) MC.getWindow()).vivecraft$getActualScreenHeight() / oldHeight);
+                MC.mouseHandler.xpos() * ((WindowExtension) (Object) MC.getWindow()).vivecraft$getActualScreenWidth() /
+                    oldWidth,
+                MC.mouseHandler.ypos() * ((WindowExtension) (Object) MC.getWindow()).vivecraft$getActualScreenHeight() /
+                    oldHeight);
             CONTROLLER_MOUSE_X *= (double) GUI_WIDTH / oldWidth;
             CONTROLLER_MOUSE_Y *= (double) GUI_HEIGHT / oldHeight;
             return true;
@@ -187,7 +206,8 @@ public class GuiHandler {
         // some mods ungrab the mouse when there is no screen
         if (MC.screen == null && MC.mouseHandler.isMouseGrabbed()) return;
 
-        Vector2f tex = getTexCoordsForCursor(GUI_POS_ROOM, GUI_ROTATION_ROOM, GUI_SCALE, DH.vrPlayer.vrdata_room_pre.getController(0));
+        Vector2f tex = getTexCoordsForCursor(GUI_POS_ROOM, GUI_ROTATION_ROOM, GUI_SCALE,
+            DH.vrPlayer.vrdata_room_pre.getController(0));
         float u = tex.x;
         float v = tex.y;
 
@@ -212,21 +232,28 @@ public class GuiHandler {
         if (CONTROLLER_MOUSE_VALID) {
             // mouse on screen
             InputSimulator.setMousePos(
-                CONTROLLER_MOUSE_X * (((WindowExtension) (Object) MC.getWindow()).vivecraft$getActualScreenWidth() / (double) MC.getWindow().getScreenWidth()),
-                CONTROLLER_MOUSE_Y * (((WindowExtension) (Object) MC.getWindow()).vivecraft$getActualScreenHeight() / (double) MC.getWindow().getScreenHeight()));
+                CONTROLLER_MOUSE_X * (((WindowExtension) (Object) MC.getWindow()).vivecraft$getActualScreenWidth() /
+                    (double) MC.getWindow().getScreenWidth()
+                ),
+                CONTROLLER_MOUSE_Y * (((WindowExtension) (Object) MC.getWindow()).vivecraft$getActualScreenHeight() /
+                    (double) MC.getWindow().getScreenHeight()
+                ));
         }
     }
 
     /**
      * calculates the relative cursor position on the gui
-     * @param guiPos_room position of the gui
+     *
+     * @param guiPos_room      position of the gui
      * @param guiRotation_room orientation of the gui
-     * @param guiScale size of the gui layer
-     * @param controller device pose to get the cursor for, should be a room based one
+     * @param guiScale         size of the gui layer
+     * @param controller       device pose to get the cursor for, should be a room based one
      * @return relative position on the gui, anchored top left.<br>
-     *  If offscreen returns Vec2(-1,-1)
+     * If offscreen returns Vec2(-1,-1)
      */
-    public static Vector2f getTexCoordsForCursor(Vector3f guiPos_room, Matrix4f guiRotation_room, float guiScale, VRData.VRDevicePose controller) {
+    public static Vector2f getTexCoordsForCursor(
+        Vector3f guiPos_room, Matrix4f guiRotation_room, float guiScale, VRData.VRDevicePose controller)
+    {
         Vector3f controllerPos = controller.getPositionF();
         Vector3f controllerDir = controller.getDirection();
 
@@ -347,7 +374,9 @@ public class GuiHandler {
         onScreenChanged(previousGuiScreen, newScreen, unpressKeys, false);
     }
 
-    public static void onScreenChanged(Screen previousGuiScreen, Screen newScreen, boolean unpressKeys, boolean infrontOfHand) {
+    public static void onScreenChanged(
+        Screen previousGuiScreen, Screen newScreen, boolean unpressKeys, boolean infrontOfHand)
+    {
         if (!VRState.VR_RUNNING) {
             return;
         }
@@ -409,7 +438,8 @@ public class GuiHandler {
                 MC.hitResult instanceof EntityHitResult &&
                 ((EntityHitResult) MC.hitResult).getEntity() instanceof ContainerEntity;
 
-            VRData.VRDevicePose facingDevice = infrontOfHand ? DH.vrPlayer.vrdata_room_pre.getController(0) : DH.vrPlayer.vrdata_room_pre.hmd;
+            VRData.VRDevicePose facingDevice =
+                infrontOfHand ? DH.vrPlayer.vrdata_room_pre.getController(0) : DH.vrPlayer.vrdata_room_pre.hmd;
 
             if (GUI_APPEAR_OVER_BLOCK_ACTIVE && (isBlockScreen || isEntityScreen) && DH.vrSettings.guiAppearOverBlock) {
                 // appear over block / entity
@@ -468,8 +498,9 @@ public class GuiHandler {
 
     /**
      * sets up the {@code poseStack} to render the gui, and returns the world position of the gui
+     *
      * @param currentPass renderpass to position the gui for
-     * @param poseStack PoseStack to alter
+     * @param poseStack   PoseStack to alter
      * @return gui position in world space
      */
     public static Vec3 applyGUIModelView(RenderPass currentPass, PoseStack poseStack) {
@@ -521,9 +552,12 @@ public class GuiHandler {
                     }
 
                     guipos = new Vec3(
-                        position.x + direction.x * DH.vrPlayer.vrdata_world_render.worldScale * DH.vrSettings.hudDistance,
-                        position.y + direction.y * DH.vrPlayer.vrdata_world_render.worldScale * DH.vrSettings.hudDistance,
-                        position.z + direction.z * DH.vrPlayer.vrdata_world_render.worldScale * DH.vrSettings.hudDistance);
+                        position.x +
+                            direction.x * DH.vrPlayer.vrdata_world_render.worldScale * DH.vrSettings.hudDistance,
+                        position.y +
+                            direction.y * DH.vrPlayer.vrdata_world_render.worldScale * DH.vrSettings.hudDistance,
+                        position.z +
+                            direction.z * DH.vrPlayer.vrdata_world_render.worldScale * DH.vrSettings.hudDistance);
 
                     scale = DH.vrSettings.hudScale;
                 } else {
@@ -585,7 +619,6 @@ public class GuiHandler {
                         guirot.rotateZ(Mth.HALF_PI * side);
                         guirot.rotateY(Mth.HALF_PI * side);
                     }
-
                 }
             }
         } else {
@@ -631,7 +664,8 @@ public class GuiHandler {
         }
 
         if (guipos == null) {
-            VRSettings.LOGGER.error("Vivecraft: guipos was null, how did that happen. vrRunning: {}: ", VRState.VR_RUNNING, new RuntimeException());
+            VRSettings.LOGGER.error("Vivecraft: guipos was null, how did that happen. vrRunning: {}: ",
+                VRState.VR_RUNNING, new RuntimeException());
             GUI_POS_ROOM = new Vector3f();
             guipos = VRPlayer.roomToWorldPos(GUI_POS_ROOM, DH.vrPlayer.vrdata_world_render);
             GUI_ROTATION_ROOM = new Matrix4f();

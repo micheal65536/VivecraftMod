@@ -22,9 +22,8 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import org.vivecraft.client.VivecraftVRMod;
 import org.vivecraft.client.gui.screens.FBTCalibrationScreen;
-import org.vivecraft.client.utils.FileUtils;
-import org.vivecraft.common.utils.MathUtils;
 import org.vivecraft.client.utils.ClientUtils;
+import org.vivecraft.client.utils.FileUtils;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.VRState;
 import org.vivecraft.client_vr.gameplay.screenhandlers.GuiHandler;
@@ -37,6 +36,7 @@ import org.vivecraft.client_vr.render.RenderConfigException;
 import org.vivecraft.client_vr.settings.VRSettings;
 import org.vivecraft.client_vr.utils.external.jinfinadeck;
 import org.vivecraft.client_vr.utils.external.jkatvr;
+import org.vivecraft.common.utils.MathUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -175,6 +175,7 @@ public class MCOpenVR extends MCVR {
 
     /**
      * creates the MCOpenVR instance
+     *
      * @param mc instance of Minecraft to use
      * @param dh instance of ClientDataHolderVR to use
      * @throws RenderConfigException if the wrong lwjgl version is loaded
@@ -188,12 +189,16 @@ public class MCOpenVR extends MCVR {
         if (!Version.getVersion().startsWith(lwjglVersion)) {
             String suppliedJar = "";
             try {
-                suppliedJar = new File(Version.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getName();
+                suppliedJar = new File(
+                    Version.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getName();
             } catch (Exception e) {
                 VRSettings.LOGGER.error("Vivecraft: couldn't check lwjgl source:", e);
             }
 
-            throw new RenderConfigException(Component.translatable("vivecraft.messages.vriniterror"), Component.translatable("vivecraft.messages.rendersetupfailed", I18n.get("vivecraft.messages.invalidlwjgl", Version.getVersion(), lwjglVersion, suppliedJar), "OpenVR_LWJGL"));
+            throw new RenderConfigException(Component.translatable("vivecraft.messages.vriniterror"),
+                Component.translatable("vivecraft.messages.rendersetupfailed",
+                    I18n.get("vivecraft.messages.invalidlwjgl", Version.getVersion(), lwjglVersion, suppliedJar),
+                    "OpenVR_LWJGL"));
         }
 
         this.hapticScheduler = new OpenVRHapticScheduler();
@@ -312,7 +317,7 @@ public class MCOpenVR extends MCVR {
     }
 
     @Override
-    public boolean init() throws RenderConfigException{
+    public boolean init() throws RenderConfigException {
         if (this.initialized) {
             return true;
         } else if (this.triedToInit) {
@@ -387,9 +392,10 @@ public class MCOpenVR extends MCVR {
 
     /**
      * initializes LWJGL OpenVR
+     *
      * @throws RuntimeException when an error happens during LWJGL init, or some critical OpenVR components are missing
      */
-    private void initializeOpenVR() throws RuntimeException{
+    private void initializeOpenVR() throws RuntimeException {
         int token = VR_InitInternal(this.errorBuffer, EVRApplicationType_VRApplication_Scene);
 
         if (!this.isError()) {
@@ -488,11 +494,13 @@ public class MCOpenVR extends MCVR {
 
     /**
      * prints information about the given device
+     *
      * @param deviceIndex index of the device to ge t info from
      */
     private void debugOut(int deviceIndex) {
         if (this.fullDebugInfo) {
-            VRSettings.LOGGER.info("Vivecraft: ******************* VR DEVICE: {} *************************", deviceIndex);
+            VRSettings.LOGGER.info("Vivecraft: ******************* VR DEVICE: {} *************************",
+                deviceIndex);
             // print all device properties
             for (Field field : VR.class.getDeclaredFields()) {
                 try {
@@ -507,16 +515,11 @@ public class MCOpenVR extends MCVR {
                     int prop = field.getInt(null);
 
                     property += switch (type) {
-                        case "Float" ->
-                            VRSystem_GetFloatTrackedDeviceProperty(deviceIndex, prop, this.errorBuffer);
-                        case "String" ->
-                            VRSystem_GetStringTrackedDeviceProperty(deviceIndex, prop, this.errorBuffer);
-                        case "Bool" ->
-                            VRSystem_GetBoolTrackedDeviceProperty(deviceIndex, prop, this.errorBuffer);
-                        case "Int32" ->
-                            VRSystem_GetInt32TrackedDeviceProperty(deviceIndex, prop, this.errorBuffer);
-                        case "Uint64" ->
-                            VRSystem_GetUint64TrackedDeviceProperty(deviceIndex, prop, this.errorBuffer);
+                        case "Float" -> VRSystem_GetFloatTrackedDeviceProperty(deviceIndex, prop, this.errorBuffer);
+                        case "String" -> VRSystem_GetStringTrackedDeviceProperty(deviceIndex, prop, this.errorBuffer);
+                        case "Bool" -> VRSystem_GetBoolTrackedDeviceProperty(deviceIndex, prop, this.errorBuffer);
+                        case "Int32" -> VRSystem_GetInt32TrackedDeviceProperty(deviceIndex, prop, this.errorBuffer);
+                        case "Uint64" -> VRSystem_GetUint64TrackedDeviceProperty(deviceIndex, prop, this.errorBuffer);
                         default -> "(skipped)";
                     };
 
@@ -525,7 +528,8 @@ public class MCOpenVR extends MCVR {
                     VRSettings.LOGGER.error("Vivecraft: Error reading device property:", illegalaccessexception);
                 }
             }
-            VRSettings.LOGGER.info("Vivecraft: ******************* END VR DEVICE: {} *************************", deviceIndex);
+            VRSettings.LOGGER.info("Vivecraft: ******************* END VR DEVICE: {} *************************",
+                deviceIndex);
         } else {
             // print only manufacturer and model
             VRSettings.LOGGER.info("Vivecraft: VR DEVICE: {}, Manufacturer: {}, Model: {}", deviceIndex,
@@ -562,7 +566,8 @@ public class MCOpenVR extends MCVR {
                 usage = "hidden";
             }
 
-            actionSets.add(ImmutableMap.<String, Object>builder().put("name", actionSet.name).put("usage", usage).build());
+            actionSets.add(
+                ImmutableMap.<String, Object>builder().put("name", actionSet.name).put("usage", usage).build());
         }
         map.put("action_sets", actionSets);
 
@@ -574,7 +579,9 @@ public class MCOpenVR extends MCVR {
         List<Map<String, Object>> actions = new ArrayList<>();
 
         for (VRInputAction action : sortedActions) {
-            actions.add(ImmutableMap.<String, Object>builder().put("name", action.name).put("requirement", action.requirement).put("type", action.type).build());
+            actions.add(
+                ImmutableMap.<String, Object>builder().put("name", action.name).put("requirement", action.requirement)
+                    .put("type", action.type).build());
         }
 
         // controller poses
@@ -627,11 +634,15 @@ public class MCOpenVR extends MCVR {
 
         if (!gotRegistryValue && !this.mc.options.languageCode.startsWith("en_")) {
             // Try to find a Steam language matching the user's in-game language selection
-            String ucLanguageCode = this.mc.options.languageCode.substring(0, this.mc.options.languageCode.indexOf('_')) + this.mc.options.languageCode.substring(this.mc.options.languageCode.indexOf('_')).toUpperCase();
+            String ucLanguageCode =
+                this.mc.options.languageCode.substring(0, this.mc.options.languageCode.indexOf('_')) +
+                    this.mc.options.languageCode.substring(this.mc.options.languageCode.indexOf('_')).toUpperCase();
             if (STEAM_LANGUAGES.containsValue(ucLanguageCode)) {
                 languages.add(ucLanguageCode);
             } else {
-                Optional<String> langCode = STEAM_LANGUAGES.values().stream().filter(s -> ucLanguageCode.substring(0, ucLanguageCode.indexOf('_')).equals(s.substring(0, s.indexOf('_')))).findFirst();
+                Optional<String> langCode = STEAM_LANGUAGES.values().stream().filter(
+                    s -> ucLanguageCode.substring(0, ucLanguageCode.indexOf('_'))
+                        .equals(s.substring(0, s.indexOf('_')))).findFirst();
                 langCode.ifPresent(languages::add);
             }
         }
@@ -649,7 +660,8 @@ public class MCOpenVR extends MCVR {
             Language lang = ClientLanguage.loadFrom(this.mc.getResourceManager(), langs, false);
 
             for (VRInputAction action : sortedActions) {
-                localeMap.put(action.name, lang.getOrDefault(action.keyBinding.getCategory()) + " - " + lang.getOrDefault(action.keyBinding.getName()));
+                localeMap.put(action.name, lang.getOrDefault(action.keyBinding.getCategory()) + " - " +
+                    lang.getOrDefault(action.keyBinding.getName()));
             }
 
             for (VRInputActionSet actionSet : VRInputActionSet.values()) {
@@ -672,8 +684,8 @@ public class MCOpenVR extends MCVR {
         List<Map<String, Object>> defaults = new ArrayList<>();
         BiConsumer<String, String> defaultsAdder = (type, url) ->
             defaults.add(ImmutableMap.<String, Object>builder()
-            .put("controller_type", type)
-            .put("binding_url", url).build());
+                .put("controller_type", type)
+                .put("binding_url", url).build());
 
         defaultsAdder.accept("vive_controller", "vive_defaults.json");
         defaultsAdder.accept("oculus_touch", "oculus_defaults.json");
@@ -695,7 +707,9 @@ public class MCOpenVR extends MCVR {
         try {
             (new File("openvr/input")).mkdirs();
 
-            try (OutputStreamWriter outputstreamwriter = new OutputStreamWriter(new FileOutputStream("openvr/input/action_manifest.json"), StandardCharsets.UTF_8)) {
+            try (OutputStreamWriter outputstreamwriter = new OutputStreamWriter(
+                new FileOutputStream("openvr/input/action_manifest.json"), StandardCharsets.UTF_8))
+            {
                 this.GSON.toJson(map, outputstreamwriter);
             }
         } catch (Exception exception) {
@@ -726,7 +740,8 @@ public class MCOpenVR extends MCVR {
             int error = VRInput_GetActionHandle(name, longRef);
 
             if (error != EVRInputError_VRInputError_None) {
-                throw new RuntimeException("Error getting action handle for '" + name + "': " + getInputErrorName(error));
+                throw new RuntimeException(
+                    "Error getting action handle for '" + name + "': " + getInputErrorName(error));
             } else {
                 return longRef.get(0);
             }
@@ -735,6 +750,7 @@ public class MCOpenVR extends MCVR {
 
     /**
      * updates which ActionSets should be active at this moment
+     *
      * @return if any ActionSets are active
      */
     private boolean updateActiveActionSets() {
@@ -773,7 +789,8 @@ public class MCOpenVR extends MCVR {
         }
 
         for (int i = 0; i < activeSets.size(); i++) {
-            this.activeActionSetsBuffer.get(i).set(this.getActionSetHandle(activeSets.get(i)), k_ulInvalidInputValueHandle, 0, 0);
+            this.activeActionSetsBuffer.get(i)
+                .set(this.getActionSetHandle(activeSets.get(i)), k_ulInvalidInputValueHandle, 0, 0);
         }
 
         return !activeSets.isEmpty();
@@ -858,11 +875,13 @@ public class MCOpenVR extends MCVR {
                 try (MemoryStack stack = MemoryStack.stackPush()) {
                     var stringBuffer = stack.calloc(k_unMaxPropertyStringSize);
 
-                    VRSystem_GetStringTrackedDeviceProperty(this.deviceSource[c].deviceIndex, VR.ETrackedDeviceProperty_Prop_RenderModelName_String, stringBuffer, this.errorBuffer);
+                    VRSystem_GetStringTrackedDeviceProperty(this.deviceSource[c].deviceIndex,
+                        VR.ETrackedDeviceProperty_Prop_RenderModelName_String, stringBuffer, this.errorBuffer);
 
                     String renderModelName = memUTF8NullTerminated(stringBuffer);
 
-                    VRSystem_GetStringTrackedDeviceProperty(this.deviceSource[c].deviceIndex, VR.ETrackedDeviceProperty_Prop_InputProfilePath_String, stringBuffer, this.errorBuffer);
+                    VRSystem_GetStringTrackedDeviceProperty(this.deviceSource[c].deviceIndex,
+                        VR.ETrackedDeviceProperty_Prop_InputProfilePath_String, stringBuffer, this.errorBuffer);
 
                     String inputProfilePath = memUTF8NullTerminated(stringBuffer);
                     boolean isWMR = inputProfilePath.contains("holographic");
@@ -891,7 +910,8 @@ public class MCOpenVR extends MCVR {
                     }
 
                     var renderModelComponentState = RenderModelComponentState.calloc(stack);
-                    boolean valid = VRRenderModels_GetComponentStateForDevicePath(renderModelName, componentName, sourceHandle, RenderModelControllerModeState.calloc(stack), renderModelComponentState);
+                    boolean valid = VRRenderModels_GetComponentStateForDevicePath(renderModelName, componentName,
+                        sourceHandle, RenderModelControllerModeState.calloc(stack), renderModelComponentState);
 
                     if (!valid) {
                         failed = true;
@@ -904,14 +924,18 @@ public class MCOpenVR extends MCVR {
 
                     if (c == LEFT_CONTROLLER && isRifts && component.equals(k_pch_Controller_Component_HandGrip)) {
                         // I have no idea, Valve, none.
-                        this.controllerComponentTransforms.get(component)[LEFT_CONTROLLER] = this.controllerComponentTransforms.get(component)[RIGHT_CONTROLLER];
+                        this.controllerComponentTransforms.get(
+                            component)[LEFT_CONTROLLER] = this.controllerComponentTransforms.get(
+                            component)[RIGHT_CONTROLLER];
                     }
 
                     if (!failed && c == RIGHT_CONTROLLER) {
                         // calculate gun angle
                         try {
-                            Matrix4fc tip = this.getControllerComponentTransform(RIGHT_CONTROLLER, k_pch_Controller_Component_Tip);
-                            Matrix4fc hand = this.getControllerComponentTransform(RIGHT_CONTROLLER, k_pch_Controller_Component_HandGrip);
+                            Matrix4fc tip = this.getControllerComponentTransform(RIGHT_CONTROLLER,
+                                k_pch_Controller_Component_Tip);
+                            Matrix4fc hand = this.getControllerComponentTransform(RIGHT_CONTROLLER,
+                                k_pch_Controller_Component_HandGrip);
 
                             Vector3f tipVec = tip.transformDirection(MathUtils.BACK, new Vector3f());
                             Vector3f handVec = hand.transformDirection(MathUtils.BACK, new Vector3f());
@@ -937,6 +961,7 @@ public class MCOpenVR extends MCVR {
 
     /**
      * populates input actions, and tells OpenVR what app we are
+     *
      * @throws RenderConfigException in case minecraft runs in a path unsupported by SteamVR
      */
     private void initInputAndApplication() throws RenderConfigException {
@@ -957,7 +982,7 @@ public class MCOpenVR extends MCVR {
      */
     private void initOpenVRCompositor() {
         VRCompositor_SetTrackingSpace(ETrackingUniverseOrigin_TrackingUniverseStanding);
-        String actualTrackingSpace = switch(VRCompositor_GetTrackingSpace()) {
+        String actualTrackingSpace = switch (VRCompositor_GetTrackingSpace()) {
             case ETrackingUniverseOrigin_TrackingUniverseSeated -> "seated";
             case ETrackingUniverseOrigin_TrackingUniverseStanding -> "standing";
             case ETrackingUniverseOrigin_TrackingUniverseRawAndUncalibrated -> "raw uncalibrated";
@@ -968,7 +993,8 @@ public class MCOpenVR extends MCVR {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             ByteBuffer stringBuffer = stack.calloc(20);
 
-            VRSystem_GetStringTrackedDeviceProperty(k_unTrackedDeviceIndex_Hmd, ETrackedDeviceProperty_Prop_ManufacturerName_String, stringBuffer, this.errorBuffer);
+            VRSystem_GetStringTrackedDeviceProperty(k_unTrackedDeviceIndex_Hmd,
+                ETrackedDeviceProperty_Prop_ManufacturerName_String, stringBuffer, this.errorBuffer);
 
             String deviceName = memUTF8NullTerminated(stringBuffer);
             VRSettings.LOGGER.info("Vivecraft: Device manufacturer is: {}", deviceName);
@@ -995,8 +1021,9 @@ public class MCOpenVR extends MCVR {
 
     /**
      * checks if hte given path contains any non ASCII character, because steamvr refuses to support those
-     * @param path path to check
-     * @param knownError String of an error that should be shown to the user when this fails
+     *
+     * @param path        path to check
+     * @param knownError  String of an error that should be shown to the user when this fails
      * @param alwaysThrow if this should always throw the exception with the give n error, regardless of the result.
      * @throws RenderConfigException if there are non ASCII characters in the path or alwaysThrow is set
      */
@@ -1026,6 +1053,7 @@ public class MCOpenVR extends MCVR {
 
     /**
      * reads the app_key from the bundled application vrmanifest, registers the application and tells it that we are that application
+     *
      * @param force forces to resubmit the application manifest to OpenVR
      * @throws RenderConfigException if a path is invalid for OpenVR
      */
@@ -1060,7 +1088,9 @@ public class MCOpenVR extends MCVR {
             int error = VRApplications_AddApplicationManifest(manifestFile.getAbsolutePath(), true);
             if (error != EVRApplicationError_VRApplicationError_None) {
                 // application needs to be installed, so abort
-                checkPathValid(manifestFile.getAbsolutePath(), "Failed to install application manifest: " + VRApplications_GetApplicationsErrorNameFromEnum(error), true);
+                checkPathValid(manifestFile.getAbsolutePath(),
+                    "Failed to install application manifest: " + VRApplications_GetApplicationsErrorNameFromEnum(error),
+                    true);
             }
 
             VRSettings.LOGGER.info("Vivecraft: Application manifest installed successfully");
@@ -1081,7 +1111,8 @@ public class MCOpenVR extends MCVR {
 
         int error = VRApplications_IdentifyApplication(pid, appKey);
         if (error != EVRApplicationError_VRApplicationError_None) {
-            VRSettings.LOGGER.error("Vivecraft: Failed to identify application: {}", VRApplications_GetApplicationsErrorNameFromEnum(error));
+            VRSettings.LOGGER.error("Vivecraft: Failed to identify application: {}",
+                VRApplications_GetApplicationsErrorNameFromEnum(error));
         } else {
             VRSettings.LOGGER.info("Vivecraft: Application identified successfully");
         }
@@ -1089,6 +1120,7 @@ public class MCOpenVR extends MCVR {
 
     /**
      * queries the handles for controllers, haptics and trackers
+     *
      * @throws RuntimeException if OpenVR gives an error
      */
     private void loadActionHandles() {
@@ -1099,7 +1131,8 @@ public class MCOpenVR extends MCVR {
                 int error = VRInput_GetActionHandle(action.name, longRef);
 
                 if (error != EVRInputError_VRInputError_None) {
-                    throw new RuntimeException("Error getting action handle for '" + action.name + "': " + getInputErrorName(error));
+                    throw new RuntimeException(
+                        "Error getting action handle for '" + action.name + "': " + getInputErrorName(error));
                 }
 
                 action.setHandle(longRef.get(0));
@@ -1119,7 +1152,8 @@ public class MCOpenVR extends MCVR {
                 int error = VRInput_GetActionSetHandle(actionSet.name, longRef);
 
                 if (error != EVRInputError_VRInputError_None) {
-                    throw new RuntimeException("Error getting action set handle for '" + actionSet.name + "': " + getInputErrorName(error));
+                    throw new RuntimeException(
+                        "Error getting action set handle for '" + actionSet.name + "': " + getInputErrorName(error));
                 }
 
                 this.actionSetHandles.put(actionSet, longRef.get(0));
@@ -1140,6 +1174,7 @@ public class MCOpenVR extends MCVR {
 
     /**
      * submits the path for or the previously generated action_manifest to OpenVR
+     *
      * @throws RenderConfigException if OpenVR throws any error, or the path is invalid
      */
     private void loadActionManifest() throws RenderConfigException {
@@ -1156,6 +1191,7 @@ public class MCOpenVR extends MCVR {
 
     /**
      * updates the KeyMapping state that is linked to the given VRInputAction
+     *
      * @param action VRInputAction to process
      */
     private void processInputAction(VRInputAction action) {
@@ -1186,8 +1222,9 @@ public class MCOpenVR extends MCVR {
 
     /**
      * checks the axis input of the VRInputAction linked to {@code keyMapping} and runs the callbacks when it's non 0
-     * @param keyMapping KeyMapping to check
-     * @param upCallback action to do when the axis input is positive
+     *
+     * @param keyMapping   KeyMapping to check
+     * @param upCallback   action to do when the axis input is positive
      * @param downCallback action to do when the axis input is negative
      */
     private void processScrollInput(KeyMapping keyMapping, Runnable upCallback, Runnable downCallback) {
@@ -1207,13 +1244,17 @@ public class MCOpenVR extends MCVR {
 
     /**
      * checks the trackpad input of the controller the {@code keyMapping} is on
-     * @param keyMapping KeyMapping to check
-     * @param leftCallback action to do when swiped to the left
+     *
+     * @param keyMapping    KeyMapping to check
+     * @param leftCallback  action to do when swiped to the left
      * @param rightCallback action to do when swiped to the right
-     * @param upCallback action to do when swiped to the up
-     * @param downCallback action to do when swiped to the down
+     * @param upCallback    action to do when swiped to the up
+     * @param downCallback  action to do when swiped to the down
      */
-    private void processSwipeInput(KeyMapping keyMapping, Runnable leftCallback, Runnable rightCallback, Runnable upCallback, Runnable downCallback) {
+    private void processSwipeInput(
+        KeyMapping keyMapping, Runnable leftCallback, Runnable rightCallback, Runnable upCallback,
+        Runnable downCallback)
+    {
         VRInputAction action = this.getInputAction(keyMapping);
 
         if (action.isEnabled() && action.getLastOrigin() != k_ulInvalidInputValueHandle) {
@@ -1247,8 +1288,6 @@ public class MCOpenVR extends MCVR {
                     this.triggerHapticPulse(controller, 0.001F, 400.0F, 0.5F);
                     rightCallback.run();
                 }
-
-
             }
         }
     }
@@ -1294,6 +1333,7 @@ public class MCOpenVR extends MCVR {
 
     /**
      * reads info about the origin of the inputHandle into {@code this.originInfo}
+     *
      * @param inputValueHandle action to get the originInfo for
      * @throws RuntimeException if OpenVR gives an error
      */
@@ -1307,6 +1347,7 @@ public class MCOpenVR extends MCVR {
 
     /**
      * reads info about the origin of the inputHandle into {@code this.originInfo}
+     *
      * @param inputValueHandle action to get the originInfo for
      * @return if the origin was successfully read
      */
@@ -1318,11 +1359,13 @@ public class MCOpenVR extends MCVR {
 
     /**
      * reads the pose info of the given pose handle into {@code this.poseData}
+     *
      * @param poseHandle handle to the pose to get the poseActionData for
      * @throws RuntimeException if OpenVR gives an error
      */
     private void readPoseData(long poseHandle) {
-        int error = VRInput_GetPoseActionDataForNextFrame(poseHandle, ETrackingUniverseOrigin_TrackingUniverseStanding, this.poseData, InputPoseActionData.SIZEOF, k_ulInvalidInputValueHandle);
+        int error = VRInput_GetPoseActionDataForNextFrame(poseHandle, ETrackingUniverseOrigin_TrackingUniverseStanding,
+            this.poseData, InputPoseActionData.SIZEOF, k_ulInvalidInputValueHandle);
 
         if (error != EVRInputError_VRInputError_None) {
             throw new RuntimeException("Error reading pose data: " + getInputErrorName(error));
@@ -1331,7 +1374,8 @@ public class MCOpenVR extends MCVR {
 
     /**
      * updates the pose and tracking state for the given controller/tracker by its given actionHandle
-     * @param controller controller/tracker to check for new pose
+     *
+     * @param controller   controller/tracker to check for new pose
      * @param actionHandle pose handle of the specified controller/tracker
      */
     private void updateControllerPose(int controller, long actionHandle) {
@@ -1355,7 +1399,8 @@ public class MCOpenVR extends MCVR {
                 TrackedDevicePose pose = this.poseData.pose();
 
                 if (pose.bPoseIsValid()) {
-                    OpenVRUtil.convertSteamVRMatrix3ToMatrix4f(pose.mDeviceToAbsoluteTracking(), this.poseMatrices[deviceIndex]);
+                    OpenVRUtil.convertSteamVRMatrix3ToMatrix4f(pose.mDeviceToAbsoluteTracking(),
+                        this.poseMatrices[deviceIndex]);
                     HmdVector3 velocity = pose.vVelocity();
                     this.deviceVelocity[deviceIndex].set(
                         velocity.v(0),
@@ -1377,6 +1422,7 @@ public class MCOpenVR extends MCVR {
 
     /**
      * updates the pose and tracking state for the given tracker, by its deviceHandle
+     *
      * @param controller controller/tracker to check for new pose
      */
     private void updateTrackerPose(int controller, boolean fetchDeviceIndex) {
@@ -1415,7 +1461,8 @@ public class MCOpenVR extends MCVR {
         int error = VRCompositor_WaitGetPoses(this.trackedDevicePoses, null);
 
         if (error > EVRCompositorError_VRCompositorError_None) {
-            VRSettings.LOGGER.error("Vivecraft: Compositor Error: GetPoseError {}", OpenVRStereoRenderer.getCompositorError(error));
+            VRSettings.LOGGER.error("Vivecraft: Compositor Error: GetPoseError {}",
+                OpenVRStereoRenderer.getCompositorError(error));
         }
 
         if (error == EVRCompositorError_VRCompositorError_DoNotHaveFocus) {
@@ -1440,8 +1487,10 @@ public class MCOpenVR extends MCVR {
         // eye transforms
         try (MemoryStack stack = MemoryStack.stackPush()) {
             HmdMatrix34 temp = HmdMatrix34.calloc(stack);
-            OpenVRUtil.convertSteamVRMatrix3ToMatrix4f(VRSystem_GetEyeToHeadTransform(EVREye_Eye_Left, temp), this.hmdPoseLeftEye);
-            OpenVRUtil.convertSteamVRMatrix3ToMatrix4f(VRSystem_GetEyeToHeadTransform(EVREye_Eye_Right, temp), this.hmdPoseRightEye);
+            OpenVRUtil.convertSteamVRMatrix3ToMatrix4f(VRSystem_GetEyeToHeadTransform(EVREye_Eye_Left, temp),
+                this.hmdPoseLeftEye);
+            OpenVRUtil.convertSteamVRMatrix3ToMatrix4f(VRSystem_GetEyeToHeadTransform(EVREye_Eye_Right, temp),
+                this.hmdPoseRightEye);
         }
 
         // copy device poses
@@ -1498,7 +1547,7 @@ public class MCOpenVR extends MCVR {
             this.updateControllerPose(CAMERA_TRACKER, this.cameraPoseHandle);
 
             // fbt trackers poses
-            for(int i = 3; i < MCVR.TRACKABLE_DEVICE_COUNT; i++) {
+            for (int i = 3; i < MCVR.TRACKABLE_DEVICE_COUNT; i++) {
                 // don't clear osc trackers, only if they are not tracking
                 if (this.deviceSource[i].source != DeviceSource.Source.OSC ||
                     !this.oscTrackers.trackers[this.deviceSource[i].deviceIndex].isTracking())
@@ -1542,7 +1591,8 @@ public class MCOpenVR extends MCVR {
             int error = VRInput_GetInputSourceHandle(path, longRef);
 
             if (error != EVRInputError_VRInputError_None) {
-                throw new RuntimeException("Error getting input source handle for '" + path + "': " + getInputErrorName(error));
+                throw new RuntimeException(
+                    "Error getting input source handle for '" + path + "': " + getInputErrorName(error));
             } else {
                 return longRef.get(0);
             }
@@ -1574,6 +1624,7 @@ public class MCOpenVR extends MCVR {
 
     /**
      * reads input data for the given VRInputAction
+     *
      * @param action to read the data for
      */
     private void readNewData(VRInputAction action) {
@@ -1602,8 +1653,9 @@ public class MCOpenVR extends MCVR {
 
     /**
      * reads digital (on/off) data for the given InputAction
+     *
      * @param action InputAction to check
-     * @param hand if specified checks the input on that hand, else it's a global check
+     * @param hand   if specified checks the input on that hand, else it's a global check
      * @throws RuntimeException if OpenVR gives an error
      */
     private void readDigitalData(VRInputAction action, ControllerType hand) {
@@ -1613,7 +1665,8 @@ public class MCOpenVR extends MCVR {
             hand != null ? this.getControllerHandle(hand) : k_ulInvalidInputValueHandle);
 
         if (error != EVRInputError_VRInputError_None) {
-            throw new RuntimeException("Error reading digital data for '" + action.name + "': " + getInputErrorName(error));
+            throw new RuntimeException(
+                "Error reading digital data for '" + action.name + "': " + getInputErrorName(error));
         } else {
             action.digitalData[index].activeOrigin = this.digital.activeOrigin();
             action.digitalData[index].isActive = this.digital.bActive();
@@ -1624,8 +1677,9 @@ public class MCOpenVR extends MCVR {
 
     /**
      * reads analog (x/y/z axis) data for the given InputAction
+     *
      * @param action InputAction to check
-     * @param hand if specified checks the input on that hand, else it's a global check
+     * @param hand   if specified checks the input on that hand, else it's a global check
      * @throws RuntimeException if OpenVR gives an error
      */
     private void readAnalogData(VRInputAction action, ControllerType hand) {
@@ -1635,7 +1689,8 @@ public class MCOpenVR extends MCVR {
             hand != null ? this.getControllerHandle(hand) : k_ulInvalidInputValueHandle);
 
         if (error != EVRInputError_VRInputError_None) {
-            throw new RuntimeException("Error reading analog data for '" + action.name + "': " + getInputErrorName(error));
+            throw new RuntimeException(
+                "Error reading analog data for '" + action.name + "': " + getInputErrorName(error));
         } else {
             action.analogData[index].x = this.analog.x();
             action.analogData[index].y = this.analog.y();
@@ -1653,7 +1708,7 @@ public class MCOpenVR extends MCVR {
     @Override
     public void calibrateFBT(float headsetYaw) {
         // reset device indices
-        for(int i = 3; i < MCVR.TRACKABLE_DEVICE_COUNT; i++) {
+        for (int i = 3; i < MCVR.TRACKABLE_DEVICE_COUNT; i++) {
             this.updateTrackerPose(i, true);
         }
         super.calibrateFBT(headsetYaw);
@@ -1667,7 +1722,7 @@ public class MCOpenVR extends MCVR {
         for (int device = 0; device < k_unMaxTrackedDeviceCount; device++) {
             if (VRSystem_IsTrackedDeviceConnected(device) &&
                 VRSystem_GetTrackedDeviceClass(device) ==
-                ETrackedDeviceClass_TrackedDeviceClass_GenericTracker)
+                    ETrackedDeviceClass_TrackedDeviceClass_GenericTracker)
             {
                 trackers.add(device);
             }
@@ -1689,7 +1744,8 @@ public class MCOpenVR extends MCVR {
             }
             // super already adds the assigned trackers
             if (trackers.stream().noneMatch(t -> t.getLeft().is(DeviceSource.Source.OPENVR, tracker))) {
-                trackers.add(Triple.of(new DeviceSource(DeviceSource.Source.OPENVR, tracker), type, this.poseMatrices[tracker]));
+                trackers.add(
+                    Triple.of(new DeviceSource(DeviceSource.Source.OPENVR, tracker), type, this.poseMatrices[tracker]));
             }
         }
         return trackers;
@@ -1748,12 +1804,14 @@ public class MCOpenVR extends MCVR {
     @Override
     public boolean isActive() {
         int activityLevel = VRSystem_GetTrackedDeviceActivityLevel(k_unTrackedDeviceIndex_Hmd);
-        return activityLevel == EDeviceActivityLevel_k_EDeviceActivityLevel_UserInteraction || activityLevel == EDeviceActivityLevel_k_EDeviceActivityLevel_UserInteraction_Timeout;
+        return activityLevel == EDeviceActivityLevel_k_EDeviceActivityLevel_UserInteraction ||
+            activityLevel == EDeviceActivityLevel_k_EDeviceActivityLevel_UserInteraction_Timeout;
     }
 
     @Override
     public float getIPD() {
-        return VRSystem_GetFloatTrackedDeviceProperty(k_unTrackedDeviceIndex_Hmd, ETrackedDeviceProperty_Prop_UserIpdMeters_Float, this.errorBuffer);
+        return VRSystem_GetFloatTrackedDeviceProperty(k_unTrackedDeviceIndex_Hmd,
+            ETrackedDeviceProperty_Prop_UserIpdMeters_Float, this.errorBuffer);
     }
 
     /**

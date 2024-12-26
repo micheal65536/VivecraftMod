@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(targets = "com.github.alexthe666.alexsmobs.client.event.ClientEvents")
 public class ClientEventsMixin {
     /**
-     *  menuworld fix
+     * menuworld fix
      */
     @Inject(method = "onGetFluidRenderType", at = @At("HEAD"), remap = false, cancellable = true)
     private void vivecraft$fixNoPlayer(CallbackInfo ci) {

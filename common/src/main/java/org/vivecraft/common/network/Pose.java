@@ -6,7 +6,8 @@ import org.joml.Vector3fc;
 
 /**
  * holds a device Pose
- * @param position position of the device in player local space
+ *
+ * @param position    position of the device in player local space
  * @param orientation orientation of the device in world space
  */
 public record Pose(Vector3fc position, Quaternionfc orientation) {
@@ -24,6 +25,7 @@ public record Pose(Vector3fc position, Quaternionfc orientation) {
 
     /**
      * writes this Pose to the given {@code buffer}
+     *
      * @param buffer buffer to write to
      */
     public void serialize(FriendlyByteBuf buffer) {

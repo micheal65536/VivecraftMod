@@ -87,7 +87,9 @@ public class IrisPipelineManagerVRMixin implements PipelineManagerExtension {
 
     @Group(name = "generateVRPipelines", min = 1, max = 1)
     @Inject(method = "preparePipeline", at = @At(value = "INVOKE", target = "Ljava/util/Map;put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", shift = At.Shift.AFTER), remap = false, expect = 0)
-    private void vivecraft$generateVRPipelines165(NamespacedId newDimension, CallbackInfoReturnable<WorldRenderingPipeline> cir) {
+    private void vivecraft$generateVRPipelines165(
+        NamespacedId newDimension, CallbackInfoReturnable<WorldRenderingPipeline> cir)
+    {
         vivecraft$generateVRPipelines(newDimension);
     }
 
@@ -103,13 +105,16 @@ public class IrisPipelineManagerVRMixin implements PipelineManagerExtension {
                 boolean first = true;
 
                 for (RenderPass renderPass : RenderPass.values()) {
-                    VRSettings.LOGGER.info("Vivecraft: Creating VR pipeline for dimension {}, RenderPass {}", newDimension, renderPass);
+                    VRSettings.LOGGER.info("Vivecraft: Creating VR pipeline for dimension {}, RenderPass {}",
+                        newDimension, renderPass);
                     WorldRenderPass worldRenderPass = WorldRenderPass.getByRenderPass(renderPass);
 
                     if (worldRenderPass != null) {
                         RenderPassManager.setWorldRenderPass(worldRenderPass);
                     } else {
-                        VRSettings.LOGGER.info("Vivecraft: skipped VR pipeline for dimension {}, RenderPass {}, not used", newDimension, renderPass);
+                        VRSettings.LOGGER.info(
+                            "Vivecraft: skipped VR pipeline for dimension {}, RenderPass {}, not used", newDimension,
+                            renderPass);
                         continue;
                     }
 
@@ -120,7 +125,8 @@ public class IrisPipelineManagerVRMixin implements PipelineManagerExtension {
                         !ClientDataHolderVR.getInstance().vrSettings.disableShaderOptimization)
                     {
                         first = false;
-                        Minecraft.getInstance().gui.getChat().addMessage(Component.translatable("vivecraft.messages.slowshader"));
+                        Minecraft.getInstance().gui.getChat()
+                            .addMessage(Component.translatable("vivecraft.messages.slowshader"));
                     }
                 }
                 // set to currently needed renderpass again
@@ -136,7 +142,8 @@ public class IrisPipelineManagerVRMixin implements PipelineManagerExtension {
 
             if (!RenderPassType.isVanilla()) {
                 if (ClientDataHolderVR.getInstance().currentPass != null) {
-                    this.pipeline = this.vivecraft$vrPipelinesCurrentDimension.get(ClientDataHolderVR.getInstance().currentPass);
+                    this.pipeline = this.vivecraft$vrPipelinesCurrentDimension.get(
+                        ClientDataHolderVR.getInstance().currentPass);
                 } else {
                     this.pipeline = this.vivecraft$vrPipelinesCurrentDimension.get(RenderPass.LEFT);
                 }
@@ -146,7 +153,9 @@ public class IrisPipelineManagerVRMixin implements PipelineManagerExtension {
 
     @Group(name = "returnCurrentVRPipeline", min = 1, max = 1)
     @Inject(method = "preparePipeline", at = @At(value = "INVOKE", target = "Ljava/util/Map;get(Ljava/lang/Object;)Ljava/lang/Object;"), remap = false, cancellable = true, expect = 0)
-    private void vivecraft$returnCurrentVRPipeline165(NamespacedId newDimension, CallbackInfoReturnable<WorldRenderingPipeline> cir) {
+    private void vivecraft$returnCurrentVRPipeline165(
+        NamespacedId newDimension, CallbackInfoReturnable<WorldRenderingPipeline> cir)
+    {
         if (!RenderPassType.isVanilla()) {
             this.pipeline = vivecraft$getCurrentVRPipeline(newDimension);
             cir.setReturnValue(this.pipeline);

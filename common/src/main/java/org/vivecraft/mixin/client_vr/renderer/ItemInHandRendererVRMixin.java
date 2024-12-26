@@ -59,13 +59,18 @@ public abstract class ItemInHandRendererVRMixin {
     private float offHandHeight;
 
     @Shadow
-    public abstract void renderItem(LivingEntity entity, ItemStack itemStack, ItemDisplayContext displayContext, boolean leftHand, PoseStack poseStack, MultiBufferSource buffer, int seed);
+    public abstract void renderItem(
+        LivingEntity entity, ItemStack itemStack, ItemDisplayContext displayContext, boolean leftHand,
+        PoseStack poseStack, MultiBufferSource buffer, int seed);
 
     @Shadow
-    protected abstract void renderMap(PoseStack poseStack, MultiBufferSource buffer, int combinedLight, ItemStack stack);
+    protected abstract void renderMap(
+        PoseStack poseStack, MultiBufferSource buffer, int combinedLight, ItemStack stack);
 
     @Shadow
-    protected abstract void renderPlayerArm(PoseStack poseStack, MultiBufferSource buffer, int combinedLight, float equippedProgress, float swingProgress, HumanoidArm side);
+    protected abstract void renderPlayerArm(
+        PoseStack poseStack, MultiBufferSource buffer, int combinedLight, float equippedProgress, float swingProgress,
+        HumanoidArm side);
 
     @Inject(method = "renderPlayerArm", at = @At("HEAD"), cancellable = true)
     private void vivecraft$overrideArm(
@@ -85,7 +90,8 @@ public abstract class ItemInHandRendererVRMixin {
         CallbackInfo ci)
     {
         if (VRState.VR_RUNNING) {
-            this.vivecraft$vrRenderArmWithItem(player, partialTick, hand, swingProgress, itemStack, poseStack, buffer, combinedLight);
+            this.vivecraft$vrRenderArmWithItem(player, partialTick, hand, swingProgress, itemStack, poseStack, buffer,
+                combinedLight);
             ci.cancel();
         }
     }
@@ -163,12 +169,14 @@ public abstract class ItemInHandRendererVRMixin {
             ))
             {
                 useLeftHandModelinLeftHand = true; //test
-                VivecraftItemRendering.applyThirdPersonItemTransforms(poseStack, transformType, mainHand, player, equippedProgress, partialTick, itemStack, hand);
+                VivecraftItemRendering.applyThirdPersonItemTransforms(poseStack, transformType, mainHand, player,
+                    equippedProgress, partialTick, itemStack, hand);
 
                 itemDisplayContext = mainHand || !useLeftHandModelinLeftHand ?
                     ItemDisplayContext.THIRD_PERSON_RIGHT_HAND : ItemDisplayContext.THIRD_PERSON_LEFT_HAND;
             } else {
-                VivecraftItemRendering.applyFirstPersonItemTransforms(poseStack, transformType, mainHand, player, equippedProgress, partialTick, itemStack, hand);
+                VivecraftItemRendering.applyFirstPersonItemTransforms(poseStack, transformType, mainHand, player,
+                    equippedProgress, partialTick, itemStack, hand);
 
                 itemDisplayContext = mainHand || !useLeftHandModelinLeftHand ?
                     ItemDisplayContext.FIRST_PERSON_RIGHT_HAND : ItemDisplayContext.FIRST_PERSON_LEFT_HAND;
@@ -184,7 +192,8 @@ public abstract class ItemInHandRendererVRMixin {
                     poseStack.pushPose();
 
                     // render item
-                    renderItem(player, itemStack, itemDisplayContext, !mainHand && useLeftHandModelinLeftHand, poseStack, buffer, combinedLight);
+                    renderItem(player, itemStack, itemDisplayContext, !mainHand && useLeftHandModelinLeftHand,
+                        poseStack, buffer, combinedLight);
 
                     if (ClientNetworking.isThirdPersonItems()) {
                         // account for the -2/16 offset of the third person spyglass transform
@@ -208,7 +217,8 @@ public abstract class ItemInHandRendererVRMixin {
                     poseStack.popPose();
                 }
             } else {
-                this.renderItem(player, itemStack, itemDisplayContext, !mainHand && useLeftHandModelinLeftHand, poseStack, buffer, combinedLight);
+                this.renderItem(player, itemStack, itemDisplayContext, !mainHand && useLeftHandModelinLeftHand,
+                    poseStack, buffer, combinedLight);
             }
 
             ClientDataHolderVR.IS_FP_HAND = false;
@@ -298,7 +308,8 @@ public abstract class ItemInHandRendererVRMixin {
                     sideRotation = Mth.sin((swingProgress * 3.0F) * Mth.PI);
                 }
 
-                poseStack.mulPose(Axis.ZP.rotationDegrees((side == HumanoidArm.RIGHT ? -1F : 1F) * sideRotation * 45.0F));
+                poseStack.mulPose(
+                    Axis.ZP.rotationDegrees((side == HumanoidArm.RIGHT ? -1F : 1F) * sideRotation * 45.0F));
             }
             case Use -> {
                 float forwardMovement;

@@ -21,6 +21,5 @@ public class WinScreenVRMixin {
         } else {
             original.call(sourceFactor, destFactor);
         }
-
     }
 }

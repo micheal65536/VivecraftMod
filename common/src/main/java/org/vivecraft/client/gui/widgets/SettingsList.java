@@ -14,12 +14,12 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
-import javax.annotation.Nullable;
 import org.vivecraft.client.gui.framework.GuiVROptionSlider;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.settings.VRSettings;
 import org.vivecraft.server.config.ConfigBuilder;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -104,7 +104,8 @@ public class SettingsList extends ContainerObjectSelectionList<SettingsList.Base
                 if (setting.isValueOverridden()) {
                     tooltipPrefix = I18n.get("vivecraft.message.overriddenbyserver");
                 } else if (setting.isFloat() && (setting.isValueMinOverridden() || setting.isValueMaxOverridden())) {
-                    tooltipPrefix = I18n.get("vivecraft.message.limitedbyserver", setting.getValueMin(), setting.getValueMax());
+                    tooltipPrefix = I18n.get("vivecraft.message.limitedbyserver", setting.getValueMin(),
+                        setting.getValueMax());
                 }
             }
             tooltip = Tooltip.create(Component.literal(tooltipPrefix + I18n.get(tooltipString, (Object) null)));
@@ -134,7 +135,9 @@ public class SettingsList extends ContainerObjectSelectionList<SettingsList.Base
         }
 
         BaseEntry entry = new WidgetEntry(Component.translatable(optionString), widget);
-        if (dh.vrSettings.overrides.hasSetting(option) && dh.vrSettings.overrides.getSetting(option).isValueOverridden()) {
+        if (dh.vrSettings.overrides.hasSetting(option) &&
+            dh.vrSettings.overrides.getSetting(option).isValueOverridden())
+        {
             entry.setActive(false);
         }
         return entry;
@@ -149,8 +152,13 @@ public class SettingsList extends ContainerObjectSelectionList<SettingsList.Base
         }
 
         @Override
-        public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
-            guiGraphics.drawString(Minecraft.getInstance().font, this.name, Minecraft.getInstance().screen.width / 2 - this.width / 2, top + height - Minecraft.getInstance().font.lineHeight - 1, 0xFFFFFF);
+        public void render(
+            GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY,
+            boolean hovering, float partialTick)
+        {
+            guiGraphics.drawString(Minecraft.getInstance().font, this.name,
+                Minecraft.getInstance().screen.width / 2 - this.width / 2,
+                top + height - Minecraft.getInstance().font.lineHeight - 1, 0xFFFFFF);
         }
 
         @Override
@@ -199,7 +207,10 @@ public class SettingsList extends ContainerObjectSelectionList<SettingsList.Base
         }
 
         @Override
-        public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
+        public void render(
+            GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY,
+            boolean hovering, float partialTick)
+        {
             super.render(guiGraphics, index, top, left, width, height, mouseX, mouseY, hovering, partialTick);
             this.resetButton.setX(left + 230);
             this.resetButton.setY(top);
@@ -235,8 +246,12 @@ public class SettingsList extends ContainerObjectSelectionList<SettingsList.Base
         }
 
         @Override
-        public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
-            guiGraphics.drawString(Minecraft.getInstance().font, this.name, left + 90 - 140, top + height / 2 - Minecraft.getInstance().font.lineHeight / 2, 0xFFFFFF);
+        public void render(
+            GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY,
+            boolean hovering, float partialTick)
+        {
+            guiGraphics.drawString(Minecraft.getInstance().font, this.name, left + 90 - 140,
+                top + height / 2 - Minecraft.getInstance().font.lineHeight / 2, 0xFFFFFF);
             this.valueWidget.setX(left + 105);
             this.valueWidget.setY(top);
             this.valueWidget.render(guiGraphics, mouseX, mouseY, partialTick);

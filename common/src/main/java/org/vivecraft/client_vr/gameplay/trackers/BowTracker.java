@@ -15,7 +15,6 @@ import org.joml.Vector3fc;
 import org.vivecraft.client.VivecraftVRMod;
 import org.vivecraft.client.network.ClientNetworking;
 import org.vivecraft.client.utils.ClientUtils;
-import org.vivecraft.common.utils.MathUtils;
 import org.vivecraft.client.utils.ScaleHelper;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.VRData;
@@ -23,6 +22,7 @@ import org.vivecraft.client_vr.extensions.PlayerExtension;
 import org.vivecraft.client_vr.provider.ControllerType;
 import org.vivecraft.client_vr.settings.VRSettings;
 import org.vivecraft.common.network.packet.c2s.DrawPayloadC2S;
+import org.vivecraft.common.utils.MathUtils;
 
 public class BowTracker extends Tracker {
     private static final long MAX_DRAW_MILLIS = 1100L;
@@ -186,7 +186,8 @@ public class BowTracker extends Tracker {
 
             if (ammo != ItemStack.EMPTY &&
                 notchDist <= notchDistThreshold &&
-                controllersDot <= NOTCH_DOT_THRESHOLD) {
+                controllersDot <= NOTCH_DOT_THRESHOLD)
+            {
                 // can draw
                 if (!this.canDraw) {
                     this.startDrawTime = Util.getMillis();

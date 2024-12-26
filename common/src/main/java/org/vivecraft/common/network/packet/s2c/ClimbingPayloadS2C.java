@@ -15,11 +15,14 @@ import java.util.List;
 
 /**
  * packet that holds if the server allows climbing, and optionally a list of blocks that are allowed or blocked
- * @param allowed if climbing is enabled
+ *
+ * @param allowed   if climbing is enabled
  * @param blockmode id of the block mode. 0: DISABLED, 1: WHITELIST, 2: BLACKLIST
- * @param blocks list of blocks, can be {@code null}
+ * @param blocks    list of blocks, can be {@code null}
  */
-public record ClimbingPayloadS2C(boolean allowed, ClimbeyBlockmode blockmode, @Nullable List<String> blocks) implements VivecraftPayloadS2C {
+public record ClimbingPayloadS2C(boolean allowed, ClimbeyBlockmode blockmode,
+                                 @Nullable List<String> blocks) implements VivecraftPayloadS2C
+{
 
     @Override
     public PayloadIdentifier payloadId() {
@@ -50,7 +53,7 @@ public record ClimbingPayloadS2C(boolean allowed, ClimbeyBlockmode blockmode, @N
         // legacy support, very old server plugin versions didn't have blocklists
         if (buffer.readableBytes() > 0) {
             ClimbeyBlockmode blockmode = ClimbeyBlockmode.values()[buffer.readByte()];
-            List<String> blocks  = new ArrayList<>();
+            List<String> blocks = new ArrayList<>();
             // there could be no blocks sent
             if (buffer.readableBytes() > 0) {
                 while (buffer.readableBytes() > 0) {
@@ -62,6 +65,4 @@ public record ClimbingPayloadS2C(boolean allowed, ClimbeyBlockmode blockmode, @N
             return new ClimbingPayloadS2C(allowed, ClimbeyBlockmode.DISABLED, null);
         }
     }
-
-
 }

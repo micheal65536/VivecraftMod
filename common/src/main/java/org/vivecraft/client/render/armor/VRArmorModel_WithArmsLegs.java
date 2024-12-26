@@ -37,11 +37,13 @@ public class VRArmorModel_WithArmsLegs<T extends LivingEntity> extends VRArmorMo
 
         partDefinition.addOrReplaceChild("left_foot", CubeListBuilder.create()
                 .texOffs(0, 23 - lowerExtension).mirror()
-                .addBox(-2.0F, -5.0F - lowerExtension, -2.0F, 4.0F, 5.0F + lowerExtension, 4.0F, cubeDeformation.extend(lowerShrinkage - 0.1F)),
+                .addBox(-2.0F, -5.0F - lowerExtension, -2.0F, 4.0F, 5.0F + lowerExtension, 4.0F,
+                    cubeDeformation.extend(lowerShrinkage - 0.1F)),
             PartPose.offset(1.9F, 24.0F, 0.0F));
         partDefinition.addOrReplaceChild("right_foot", CubeListBuilder.create()
                 .texOffs(0, 23 - lowerExtension)
-                .addBox(-2.0F, -5.0F - lowerExtension, -2.0F, 4.0F, 5.0F + lowerExtension, 4.0F, cubeDeformation.extend(lowerShrinkage - 0.1F)),
+                .addBox(-2.0F, -5.0F - lowerExtension, -2.0F, 4.0F, 5.0F + lowerExtension, 4.0F,
+                    cubeDeformation.extend(lowerShrinkage - 0.1F)),
             PartPose.offset(-1.9F, 24.0F, 0.0F));
 
         partDefinition.addOrReplaceChild("left_leg", CubeListBuilder.create()

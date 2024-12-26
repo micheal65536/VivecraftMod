@@ -19,6 +19,7 @@ import java.lang.Math;
 public class ModelUtils {
     /**
      * copies the bottom face texture from the {@code source} ModelPart to the top/bottom face of the {@code target} ModelPart
+     *
      * @param source ModelPart to copy the top/bottom face from
      * @param target ModelPart to copy the top/bottom face to
      */
@@ -39,6 +40,7 @@ public class ModelUtils {
     /**
      * copies the bottom face texture from the {@code source} ModelPart to the {@code target} ModelPart,
      * and replaces the bottom {@code source} face, and the top {@code target} face with the top {@code source} face
+     *
      * @param source ModelPart to copy the top/bottom face from
      * @param target ModelPart to copy the top/bottom face to
      */
@@ -62,12 +64,14 @@ public class ModelUtils {
 
     /**
      * copies the UV from the {@code source} Polygon to the {@code target} Polygon
+     *
      * @param source Polygon to copy the UV from
      * @param target Polygon to copy the UV to
      */
     private static void copyUV(ModelPart.Polygon source, ModelPart.Polygon target) {
         for (int i = 0; i < source.vertices.length; i++) {
-            ModelPart.Vertex newVertex = new ModelPart.Vertex(target.vertices[i].pos, source.vertices[i].u, source.vertices[i].v);
+            ModelPart.Vertex newVertex = new ModelPart.Vertex(target.vertices[i].pos, source.vertices[i].u,
+                source.vertices[i].v);
             // Optifine has custom internal polygon data which also needs to be modified
             if (OptifineHelper.isOptifineLoaded()) {
                 OptifineHelper.copyRenderPositions(target.vertices[i], newVertex);
@@ -78,7 +82,8 @@ public class ModelUtils {
 
     /**
      * calculates how far down the player is bending over
-     * @param entity Player entity to check for
+     *
+     * @param entity  Player entity to check for
      * @param rotInfo RotInfo for the given player
      * @return 0-1 of how far the player is bending over
      */
@@ -105,12 +110,13 @@ public class ModelUtils {
 
     /**
      * converts a player local point to player model space
-     * @param player player this position is from
-     * @param position Position to convert
-     * @param rotInfo player VR info
-     * @param bodyYaw players Y rotation
+     *
+     * @param player        player this position is from
+     * @param position      Position to convert
+     * @param rotInfo       player VR info
+     * @param bodyYaw       players Y rotation
      * @param useWorldScale when set will cancel out the worldScale, instead of entity scale
-     * @param out Vector3f to store the result in
+     * @param out           Vector3f to store the result in
      */
     public static void worldToModel(
         LivingEntity player, Vector3fc position, ClientVRPlayers.RotInfo rotInfo, float bodyYaw,
@@ -141,9 +147,10 @@ public class ModelUtils {
 
     /**
      * converts a world direction to player model space
+     *
      * @param direction direction to convert
-     * @param bodyYaw players Y rotation
-     * @param out Vector3f to store the result in
+     * @param bodyYaw   players Y rotation
+     * @param out       Vector3f to store the result in
      */
     public static void worldToModelDirection(Vector3fc direction, float bodyYaw, Vector3f out) {
         direction.rotateY(-Mth.PI + bodyYaw, out);
@@ -152,9 +159,10 @@ public class ModelUtils {
 
     /**
      * converts a player model direction to world space
+     *
      * @param direction direction to convert
-     * @param bodyYaw players Y rotation
-     * @param out Vector3f to store the result in
+     * @param bodyYaw   players Y rotation
+     * @param out       Vector3f to store the result in
      */
     public static void modelToWorldDirection(Vector3fc direction, float bodyYaw, Vector3f out) {
         out.set(-direction.x(), -direction.y(), direction.z())
@@ -163,13 +171,14 @@ public class ModelUtils {
 
     /**
      * converts a player model space point to player local space
-     * @param player player this position is from
+     *
+     * @param player        player this position is from
      * @param modelPosition source point in model space
-     * @param rotInfo player VR info
-     * @param bodyYaw players Y rotation
-     * @param applyScale if the woldScale/entity scale should be applied
+     * @param rotInfo       player VR info
+     * @param bodyYaw       players Y rotation
+     * @param applyScale    if the woldScale/entity scale should be applied
      * @param useWorldScale when set will apply the worldScale, instead of entity scale
-     * @param out Vector3f to store the result in
+     * @param out           Vector3f to store the result in
      * @return {@code out} vector
      */
     public static Vector3f modelToWorld(
@@ -182,15 +191,16 @@ public class ModelUtils {
 
     /**
      * converts a player model space point to player local space
-     * @param player player this position is from
-     * @param x x coordinate of the source point
-     * @param y y coordinate of the source point
-     * @param z z coordinate of the source point
-     * @param rotInfo player VR info
-     * @param bodyYaw players Y rotation
-     * @param applyScale if the woldScale/entity scale should be applied
+     *
+     * @param player        player this position is from
+     * @param x             x coordinate of the source point
+     * @param y             y coordinate of the source point
+     * @param z             z coordinate of the source point
+     * @param rotInfo       player VR info
+     * @param bodyYaw       players Y rotation
+     * @param applyScale    if the woldScale/entity scale should be applied
      * @param useWorldScale when set will apply the worldScale, instead of entity scale
-     * @param out Vector3f to store the result in
+     * @param out           Vector3f to store the result in
      * @return {@code out} vector
      */
     public static Vector3f modelToWorld(
@@ -221,16 +231,17 @@ public class ModelUtils {
 
     /**
      * sets the matrix {@code tempM} so that the ModelPart {@code part} points at the given player local world space point
-     * @param player player this position is from
-     * @param part ModelPart to use as the pivot point
-     * @param target target point the {@code part} should face, player local in world space
-     * @param targetRot target rotation the {@code part} should respect
-     * @param rotInfo players data
-     * @param bodyYaw players Y rotation
+     *
+     * @param player        player this position is from
+     * @param part          ModelPart to use as the pivot point
+     * @param target        target point the {@code part} should face, player local in world space
+     * @param targetRot     target rotation the {@code part} should respect
+     * @param rotInfo       players data
+     * @param bodyYaw       players Y rotation
      * @param useWorldScale when set will apply the worldScale, instead of entity scale
-     * @param tempVDir Vector3f object to work with, contains the direction after the call, in model space
-     * @param tempVUp second Vector3f object to work with, contains the up direction after the call
-     * @param tempM Matrix3f object to work with, contains the rotation after the call
+     * @param tempVDir      Vector3f object to work with, contains the direction after the call, in model space
+     * @param tempVUp       second Vector3f object to work with, contains the up direction after the call
+     * @param tempM         Matrix3f object to work with, contains the rotation after the call
      */
     public static void pointModelAtLocal(
         LivingEntity player, ModelPart part, Vector3fc target, Quaternionfc targetRot, ClientVRPlayers.RotInfo rotInfo,
@@ -254,13 +265,14 @@ public class ModelUtils {
 
     /**
      * sets the matrix {@code tempM} so that the ModelPart {@code part} points at the given model space point, while facing forward
-     * @param part ModelPart to use as the pivot point
-     * @param targetX x coordinate of the target point the {@code part} should face, in model space
-     * @param targetY y coordinate of the target point the {@code part} should face, in model space
-     * @param targetZ z coordinate of the target point the {@code part} should face, in model space
+     *
+     * @param part     ModelPart to use as the pivot point
+     * @param targetX  x coordinate of the target point the {@code part} should face, in model space
+     * @param targetY  y coordinate of the target point the {@code part} should face, in model space
+     * @param targetZ  z coordinate of the target point the {@code part} should face, in model space
      * @param tempVDir Vector3f object to work with, contains the direction vector after the call
-     * @param tempVUp second Vector3f object to work with, contains the up vector after the call
-     * @param tempM Matrix3f object to work with, contains the rotation after the call
+     * @param tempVUp  second Vector3f object to work with, contains the up vector after the call
+     * @param tempM    Matrix3f object to work with, contains the rotation after the call
      */
     public static void pointModelAtModelForward(
         ModelPart part, float targetX, float targetY, float targetZ, Vector3f tempVDir,
@@ -278,13 +290,14 @@ public class ModelUtils {
 
     /**
      * sets the matrix {@code tempM} so that the ModelPart {@code part} points at the given model space point, while facing forward
-     * @param part ModelPart to use as the pivot point
-     * @param targetX x coordinate of the target point the {@code part} should face, in model space
-     * @param targetY y coordinate of the target point the {@code part} should face, in model space
-     * @param targetZ z coordinate of the target point the {@code part} should face, in model space
-     * @param up up vector the ModelPart should face
+     *
+     * @param part     ModelPart to use as the pivot point
+     * @param targetX  x coordinate of the target point the {@code part} should face, in model space
+     * @param targetY  y coordinate of the target point the {@code part} should face, in model space
+     * @param targetZ  z coordinate of the target point the {@code part} should face, in model space
+     * @param up       up vector the ModelPart should face
      * @param tempVDir Vector3f object to work with, contains the direction vector after the call
-     * @param tempM Matrix3f object to work with, contains the rotation after the call
+     * @param tempM    Matrix3f object to work with, contains the rotation after the call
      */
     public static void pointModelAtModelWithUp(
         ModelPart part, float targetX, float targetY, float targetZ, Vector3fc up, Vector3f tempVDir, Matrix3f tempM)
@@ -298,7 +311,8 @@ public class ModelUtils {
 
     /**
      * rotates the given Matrix3f to point in the {@code dir} model direction
-     * @param dir direction Vector the matrix should look at
+     *
+     * @param dir   direction Vector the matrix should look at
      * @param upDir up direction for the look matrix
      * @param tempM Matrix3f object to work with, contains the rotation after the call
      */
@@ -312,9 +326,10 @@ public class ModelUtils {
 
     /**
      * rotates the given Matrix3f to point in the {@code direction} world direction
-     * @param bodyYaw players Y rotation
+     *
+     * @param bodyYaw   players Y rotation
      * @param direction direction quat to transform to model space
-     * @param tempM Matrix3f object to work with, contains the rotation after the call
+     * @param tempM     Matrix3f object to work with, contains the rotation after the call
      */
     public static void toModelDir(float bodyYaw, Quaternionfc direction, Matrix3f tempM) {
         tempM.set(direction);
@@ -326,9 +341,10 @@ public class ModelUtils {
 
     /**
      * sets the rotation of the ModelPart to be equal to the given Matrix
-     * @param part ModelPart to set the rotation of
+     *
+     * @param part     ModelPart to set the rotation of
      * @param rotation Matrix holding the worldspace rotation
-     * @param tempV Vector3f object to work with, contains the euler angles after the call
+     * @param tempV    Vector3f object to work with, contains the euler angles after the call
      */
     public static void setRotation(ModelPart part, Matrix3fc rotation, Vector3f tempV) {
         rotation.getEulerAnglesZYX(tempV);
@@ -339,17 +355,18 @@ public class ModelUtils {
 
     /**
      * estimates the direction the limb joint should be in
-     * @param upper upper body part
-     * @param lower lower body part
-     * @param lowerRot rotation of lower body part
-     * @param bodyYaw players Y rotation
-     * @param jointDown if the joint should go up or down
-     * @param jointPos available joint position, can be {@code null}
-     * @param player player the {@code jointPos} is from
-     * @param rotInfo player VR info
+     *
+     * @param upper         upper body part
+     * @param lower         lower body part
+     * @param lowerRot      rotation of lower body part
+     * @param bodyYaw       players Y rotation
+     * @param jointDown     if the joint should go up or down
+     * @param jointPos      available joint position, can be {@code null}
+     * @param player        player the {@code jointPos} is from
+     * @param rotInfo       player VR info
      * @param useWorldScale when set will cancel out the worldScale, instead of entity scale
-     * @param tempV Vector3f object to work with, contains the joint direction after the call
-     * @param tempV2 Vector3f object to work with
+     * @param tempV         Vector3f object to work with, contains the joint direction after the call
+     * @param tempV2        Vector3f object to work with
      */
     public static void estimateJointDir(
         ModelPart upper, ModelPart lower, Quaternionfc lowerRot, float bodyYaw, boolean jointDown,
@@ -379,15 +396,16 @@ public class ModelUtils {
 
     /**
      * estimates a point between start and end so that the total length is {@code limbLength}
-     * @param startX x position of the start point
-     * @param startY y position of the start point
-     * @param startZ z position of the start point
-     * @param endX x position of the end point
-     * @param endY y position of the end point
-     * @param endZ z position of the end point
+     *
+     * @param startX             x position of the start point
+     * @param startY             y position of the start point
+     * @param startZ             z position of the start point
+     * @param endX               x position of the end point
+     * @param endY               y position of the end point
+     * @param endZ               z position of the end point
      * @param preferredDirection preferred direction he joint should be at
-     * @param limbLength length of the limb
-     * @param tempV Vector3f object to work with, contains the estimated joint point after the call
+     * @param limbLength         length of the limb
+     * @param tempV              Vector3f object to work with, contains the estimated joint point after the call
      */
     public static void estimateJoint(
         float startX, float startY, float startZ, float endX, float endY, float endZ, Vector3fc preferredDirection,
@@ -407,11 +425,12 @@ public class ModelUtils {
 
     /**
      * applies the attack animation, and applies rotation changes to the provided matrix
-     * @param arm player arm to apply the animation to
-     * @param attackTime progress of the attack animation 0-1
+     *
+     * @param arm          player arm to apply the animation to
+     * @param attackTime   progress of the attack animation 0-1
      * @param isMainPlayer if the ModelPart is from the main player
-     * @param tempM rotation of the arm in world space, this matrix will be modified
-     * @param tempV Vector3f object to work with, contains the world space offset after the call
+     * @param tempM        rotation of the arm in world space, this matrix will be modified
+     * @param tempV        Vector3f object to work with, contains the world space offset after the call
      */
     public static void swingAnimation(
         HumanoidArm arm, float attackTime, boolean isMainPlayer, Matrix3f tempM, Vector3f tempV)
@@ -456,16 +475,18 @@ public class ModelUtils {
             }
         }
     }
+
     /**
      * applies the attack animation with an offset rotation point, and applies rotation changes to the provided matrix
-     * @param part ModelPart ot rotate/offset
-     * @param arm player arm to apply the animation to
-     * @param offset offset for the model rotation
-     * @param attackTime progress of the attack animation 0-1
+     *
+     * @param part         ModelPart ot rotate/offset
+     * @param arm          player arm to apply the animation to
+     * @param offset       offset for the model rotation
+     * @param attackTime   progress of the attack animation 0-1
      * @param isMainPlayer if the ModelPart is from the main player
-     * @param tempM rotation of the arm in world space, this matrix will be modified
-     * @param tempV Vector3f object to work with
-     * @param tempV2 Vector3f object to work with
+     * @param tempM        rotation of the arm in world space, this matrix will be modified
+     * @param tempV        Vector3f object to work with
+     * @param tempV2       Vector3f object to work with
      */
     public static void swingAnimation(
         ModelPart part, HumanoidArm arm, float offset, float attackTime, boolean isMainPlayer, Matrix3f tempM,
@@ -473,7 +494,7 @@ public class ModelUtils {
     {
         if (attackTime > 0.0F) {
             // need to get the pre and post rotation point, to offset the modelPart correctly
-            tempM.transform(0,  offset, 0, tempV2);
+            tempM.transform(0, offset, 0, tempV2);
 
             swingAnimation(arm, attackTime, isMainPlayer, tempM, tempV);
             // apply offset from the animation
@@ -481,7 +502,7 @@ public class ModelUtils {
             part.y -= tempV.y;
             part.z += tempV.z;
 
-            tempM.transform(0,  offset, 0, tempV);
+            tempM.transform(0, offset, 0, tempV);
 
             // apply the offset from the rotation point
             part.x += tempV2.x - tempV.x;
@@ -492,11 +513,12 @@ public class ModelUtils {
 
     /**
      * applies the swimming rotation offset to the provided ModelParts
+     *
      * @param player Player that is swimming
-     * @param xRot rotation of the player, in radians
-     * @param tempV first Vector3f object to work with
+     * @param xRot   rotation of the player, in radians
+     * @param tempV  first Vector3f object to work with
      * @param tempV2 second Vector3f object to work with, contains the global player offset after the call
-     * @param parts list of ModelParts to modify
+     * @param parts  list of ModelParts to modify
      */
     public static void applySwimRotationOffset(
         LivingEntity player, float xRot, Vector3f tempV, Vector3f tempV2, ModelPart... parts)
@@ -513,7 +535,7 @@ public class ModelUtils {
             tempV2.y += 2;
         } else {
             // make sure this one is empty
-            tempV2.set(0,0,0);
+            tempV2.set(0, 0, 0);
         }
 
         for (ModelPart part : parts) {

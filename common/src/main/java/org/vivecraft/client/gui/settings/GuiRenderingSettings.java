@@ -38,7 +38,7 @@ public class GuiRenderingSettings extends GuiVROptionsBase {
         if (widget instanceof GuiVROption button) {
             if (VRState.VR_INITIALIZED && (
                 button.getId() == VRSettings.VrOptions.DOUBLE_GUI_RESOLUTION.ordinal() ||
-                button.getId() == VRSettings.VrOptions.GUI_SCALE.ordinal()
+                    button.getId() == VRSettings.VrOptions.GUI_SCALE.ordinal()
             ))
             {
                 this.dataHolder.vrRenderer.resizeFrameBuffers("GUI Setting Changed");

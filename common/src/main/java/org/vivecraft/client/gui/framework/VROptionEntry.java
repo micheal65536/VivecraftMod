@@ -25,7 +25,9 @@ public class VROptionEntry {
         this.center = false;
     }
 
-    public VROptionEntry(VRSettings.VrOptions option, BiFunction<GuiVROption, Vec2, Boolean> customHandler, boolean center) {
+    public VROptionEntry(
+        VRSettings.VrOptions option, BiFunction<GuiVROption, Vec2, Boolean> customHandler, boolean center)
+    {
         this.option = option;
         this.title = null;
         this.customHandler = customHandler;

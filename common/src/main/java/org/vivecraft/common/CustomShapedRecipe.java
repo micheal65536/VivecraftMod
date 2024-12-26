@@ -36,7 +36,8 @@ public class CustomShapedRecipe {
                 .forGetter(itemStack -> itemStack.getOrCreateTag().getInt("HideFlags")),
             ExtraCodecs
                 .strictOptionalField(ExtraCodecs.POSITIVE_INT, "color", -1)
-                .forGetter(itemStack -> itemStack.getOrCreateTagElement(ItemStack.TAG_DISPLAY).getInt(ItemStack.TAG_COLOR))
+                .forGetter(
+                    itemStack -> itemStack.getOrCreateTagElement(ItemStack.TAG_DISPLAY).getInt(ItemStack.TAG_COLOR))
         ).apply(instance, (vanillaitem, count, name, fallbackname, unbreakable, hideflags, color) -> {
             ItemStack itemStack = new ItemStack(vanillaitem, count);
             if (!name.getString().isEmpty()) {
@@ -60,6 +61,7 @@ public class CustomShapedRecipe {
     /**
      * CODEC that tries the vivecraft codec first, and falls back to the vanilla one if it fails
      */
-    public static final Codec<ItemStack> CODEC = ExtraCodecs.either(VIVECRAFT_ITEMSTACK_OBJECT_CODEC, ItemStack.ITEM_WITH_COUNT_CODEC)
+    public static final Codec<ItemStack> CODEC = ExtraCodecs.either(VIVECRAFT_ITEMSTACK_OBJECT_CODEC,
+            ItemStack.ITEM_WITH_COUNT_CODEC)
         .xmap(itemStackItemStackEither -> itemStackItemStackEither.map(stack -> stack, stack -> stack), Either::right);
 }
