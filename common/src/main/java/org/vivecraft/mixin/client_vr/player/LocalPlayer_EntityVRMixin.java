@@ -46,9 +46,6 @@ public abstract class LocalPlayer_EntityVRMixin {
     public abstract @Nullable Entity getVehicle();
 
     @Shadow
-    public abstract void setPos(Vec3 pos);
-
-    @Shadow
     public abstract void setOnGround(boolean onGround);
 
     @Shadow

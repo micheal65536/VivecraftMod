@@ -16,6 +16,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.vivecraft.client.utils.ClientUtils;
 import org.vivecraft.client_vr.ClientDataHolderVR;
@@ -24,6 +25,7 @@ import org.vivecraft.client_vr.gameplay.trackers.CameraTracker;
 import org.vivecraft.client_vr.render.RenderPass;
 import org.vivecraft.client_vr.settings.VRHotkeys;
 import org.vivecraft.client_vr.settings.VRSettings;
+import org.vivecraft.common.utils.MathUtils;
 
 import java.util.function.Function;
 
@@ -32,12 +34,13 @@ public class VRWidgetHelper {
     private static final ClientDataHolderVR DATA_HOLDER = ClientDataHolderVR.getInstance();
 
     private static final RandomSource RANDOM = RandomSource.create();
+    private static final ResourceLocation TRANSPARENT_TEXTURE = new ResourceLocation("vivecraft:transparent");
     public static boolean DEBUG = false;
 
     /**
      * renders the third person camcorder
      */
-    public static void renderVRThirdPersonCamWidget() {
+    public static void renderVRThirdPersonCamWidget(PoseStack poseStack) {
         if (!DATA_HOLDER.vrSettings.mixedRealityRenderCameraModel) return;
         if (DATA_HOLDER.currentPass == RenderPass.LEFT || DATA_HOLDER.currentPass == RenderPass.RIGHT) {
             if ((DATA_HOLDER.vrSettings.displayMirrorMode == VRSettings.MirrorMode.MIXED_REALITY ||
@@ -51,7 +54,7 @@ public class VRWidgetHelper {
                     scale *= 1.03F;
                 }
 
-                renderVRCameraWidget(-0.748F, -0.438F, -0.06F, scale, RenderPass.THIRD,
+                renderVRCameraWidget(poseStack, -0.748F, -0.438F, -0.06F, scale, RenderPass.THIRD,
                     ClientDataHolderVR.THIRD_PERSON_CAMERA_MODEL, ClientDataHolderVR.THIRD_PERSON_CAMERA_DISPLAY_MODEL,
                     () -> {
                         DATA_HOLDER.vrRenderer.framebufferMR.bindRead();
@@ -70,7 +73,7 @@ public class VRWidgetHelper {
     /**
      * renders the screenshot camera
      */
-    public static void renderVRHandheldCameraWidget() {
+    public static void renderVRHandheldCameraWidget(PoseStack poseStack) {
         if (DATA_HOLDER.currentPass != RenderPass.CAMERA && DATA_HOLDER.cameraTracker.isVisible()) {
             float scale = 0.25F;
 
@@ -79,7 +82,7 @@ public class VRWidgetHelper {
                 scale *= 1.03F;
             }
 
-            renderVRCameraWidget(-0.5F, -0.25F, -0.22F, scale, RenderPass.CAMERA,
+            renderVRCameraWidget(poseStack, -0.5F, -0.25F, -0.22F, scale, RenderPass.CAMERA,
                 CameraTracker.CAMERA_MODEL, CameraTracker.CAMERA_DISPLAY_MODEL, () -> {
                     if (VREffectsHelper.getNearOpaqueBlock(
                         DATA_HOLDER.vrPlayer.vrdata_world_render.getEye(RenderPass.CAMERA).getPosition(),
@@ -88,7 +91,7 @@ public class VRWidgetHelper {
                         DATA_HOLDER.vrRenderer.cameraFramebuffer.bindRead();
                         RenderSystem.setShaderTexture(0, DATA_HOLDER.vrRenderer.cameraFramebuffer.getColorTextureId());
                     } else {
-                        RenderSystem.setShaderTexture(0, new ResourceLocation("vivecraft:textures/black.png"));
+                        RenderSystem.setShaderTexture(0, RenderHelper.BLACK_TEXTURE);
                     }
                 }, (face) -> face == Direction.SOUTH ? DisplayFace.NORMAL : DisplayFace.NONE);
         }
@@ -96,6 +99,7 @@ public class VRWidgetHelper {
 
     /**
      * renders a camera model with screen
+     * @param poseStack PoseStack used for positioning
      * @param offsetX model x offset
      * @param offsetY model y offset
      * @param offsetZ model z offset
@@ -106,22 +110,22 @@ public class VRWidgetHelper {
      * @param displayBindFunc function that binds the camera buffer, or something else
      * @param displayFaceFunc function that specifies if the view should be mirrored, normal or not shown at all
      */
-    public static void renderVRCameraWidget(float offsetX, float offsetY, float offsetZ, float scale, RenderPass renderPass, ModelResourceLocation model, ModelResourceLocation displayModel, Runnable displayBindFunc, Function<Direction, DisplayFace> displayFaceFunc) {
-        // TODO: is this reset really needed?
-        PoseStack poseStack = RenderSystem.getModelViewStack();
+    public static void renderVRCameraWidget(PoseStack poseStack, float offsetX, float offsetY, float offsetZ, float scale, RenderPass renderPass, ModelResourceLocation model, ModelResourceLocation displayModel, Runnable displayBindFunc, Function<Direction, DisplayFace> displayFaceFunc) {
+
         poseStack.pushPose();
-        poseStack.setIdentity();
-        RenderHelper.applyVRModelView(DATA_HOLDER.currentPass, poseStack);
 
         // model position relative to the view position
         Vec3 widgetPosition = DATA_HOLDER.vrPlayer.vrdata_world_render.getEye(renderPass).getPosition();
         Vec3 eye = RenderHelper.getSmoothCameraPosition(DATA_HOLDER.currentPass, DATA_HOLDER.vrPlayer.vrdata_world_render);
-        Vec3 widgetOffset = widgetPosition.subtract(eye);
+        Vector3f widgetOffset = MathUtils.subtractToVector3f(widgetPosition, eye);
 
         // orient and scale model
         poseStack.translate(widgetOffset.x, widgetOffset.y, widgetOffset.z);
 
-        poseStack.mulPoseMatrix(DATA_HOLDER.vrPlayer.vrdata_world_render.getEye(renderPass).getMatrix());
+        Matrix4f rotation = DATA_HOLDER.vrPlayer.vrdata_world_render.getEye(renderPass).getMatrix();
+        poseStack.mulPoseMatrix(rotation);
+        poseStack.last().normal().mul(new Matrix3f(rotation));
+
         scale = scale * DATA_HOLDER.vrPlayer.vrdata_world_render.worldScale;
         poseStack.scale(scale, scale, scale);
 
@@ -132,7 +136,6 @@ public class VRWidgetHelper {
 
         // apply model offset
         poseStack.translate(offsetX, offsetY, offsetZ);
-        RenderSystem.applyModelViewMatrix();
 
         // lighting for the model
         BlockPos blockpos = BlockPos.containing(DATA_HOLDER.vrPlayer.vrdata_world_render.getEye(renderPass).getPosition());
@@ -146,7 +149,7 @@ public class VRWidgetHelper {
         if (MC.level != null) {
             RenderSystem.setShader(GameRenderer::getRendertypeEntityCutoutNoCullShader);
         } else {
-            RenderSystem.setShader(GameRenderer::getPositionTexColorNormalShader);
+            RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         }
         MC.gameRenderer.lightTexture().turnOnLightLayer();
 
@@ -155,13 +158,8 @@ public class VRWidgetHelper {
 
         // render camera model
         bufferBuilder.begin(Mode.QUADS, DefaultVertexFormat.NEW_ENTITY);
-        // TODO why do we use a new poseStack here?
-        PoseStack poseStack2 = new PoseStack();
-        RenderHelper.applyVRModelView(DATA_HOLDER.currentPass, poseStack2);
-        poseStack2.last().pose().identity();
-        poseStack2.last().normal().mul(new Matrix3f(DATA_HOLDER.vrPlayer.vrdata_world_render.getEye(renderPass).getMatrix()));
 
-        MC.getBlockRenderer().getModelRenderer().renderModel(poseStack2.last(), bufferBuilder, null, MC.getModelManager().getModel(model), 1.0F, 1.0F, 1.0F, combinedLight, OverlayTexture.NO_OVERLAY);
+        MC.getBlockRenderer().getModelRenderer().renderModel(poseStack.last(), bufferBuilder, null, MC.getModelManager().getModel(model), 1.0F, 1.0F, 1.0F, combinedLight, OverlayTexture.NO_OVERLAY);
         tesselator.end();
 
         // render camera display
@@ -173,14 +171,12 @@ public class VRWidgetHelper {
 
         // need to render this manually, because the uvs in the model are for the atlas texture, and not fullscreen
         for (BakedQuad bakedquad : MC.getModelManager().getModel(displayModel).getQuads(null, null, RANDOM)) {
-            if (displayFaceFunc.apply(bakedquad.getDirection()) != DisplayFace.NONE && bakedquad.getSprite().contents().name().equals(new ResourceLocation("vivecraft:transparent"))) {
+            if (displayFaceFunc.apply(bakedquad.getDirection()) != DisplayFace.NONE && bakedquad.getSprite().contents().name().equals(TRANSPARENT_TEXTURE)) {
                 int[] vertexList = bakedquad.getVertices();
                 boolean mirrored = displayFaceFunc.apply(bakedquad.getDirection()) == DisplayFace.MIRROR;
-                // make normals point up, so they are always bright
-                // TODO: might break with shaders?
-                Vector3f normal = poseStack.last().normal().transform(new Vector3f(0.0F, 1.0F, 0.0F));
                 int step = vertexList.length / 4;
                 bufferBuilder.vertex(
+                        poseStack.last().pose(),
                         Float.intBitsToFloat(vertexList[0]),
                         Float.intBitsToFloat(vertexList[1]),
                         Float.intBitsToFloat(vertexList[2]))
@@ -188,8 +184,9 @@ public class VRWidgetHelper {
                     .uv(mirrored ? 1.0F : 0.0F, 1.0F)
                     .overlayCoords(OverlayTexture.NO_OVERLAY)
                     .uv2(LightTexture.FULL_BRIGHT)
-                    .normal(normal.x, normal.y, normal.z).endVertex();
+                    .normal(0.0F, 1.0F, 0.0F).endVertex();
                 bufferBuilder.vertex(
+                        poseStack.last().pose(),
                         Float.intBitsToFloat(vertexList[step]),
                         Float.intBitsToFloat(vertexList[step + 1]),
                         Float.intBitsToFloat(vertexList[step + 2]))
@@ -197,8 +194,9 @@ public class VRWidgetHelper {
                     .uv(mirrored ? 1.0F : 0.0F, 0.0F)
                     .overlayCoords(OverlayTexture.NO_OVERLAY)
                     .uv2(LightTexture.FULL_BRIGHT)
-                    .normal(normal.x, normal.y, normal.z).endVertex();
+                    .normal(0.0F, 1.0F, 0.0F).endVertex();
                 bufferBuilder.vertex(
+                        poseStack.last().pose(),
                         Float.intBitsToFloat(vertexList[step * 2]),
                         Float.intBitsToFloat(vertexList[step * 2 + 1]),
                         Float.intBitsToFloat(vertexList[step * 2 + 2]))
@@ -206,8 +204,9 @@ public class VRWidgetHelper {
                     .uv(mirrored ? 0.0F : 1.0F, 0.0F)
                     .overlayCoords(OverlayTexture.NO_OVERLAY)
                     .uv2(LightTexture.FULL_BRIGHT)
-                    .normal(normal.x, normal.y, normal.z).endVertex();
+                    .normal(0.0F, 1.0F, 0.0F).endVertex();
                 bufferBuilder.vertex(
+                        poseStack.last().pose(),
                         Float.intBitsToFloat(vertexList[step * 3]),
                         Float.intBitsToFloat(vertexList[step * 3 + 1]),
                         Float.intBitsToFloat(vertexList[step * 3 + 2]))
@@ -215,7 +214,7 @@ public class VRWidgetHelper {
                     .uv(mirrored ? 0.0F : 1.0F, 1.0F)
                     .overlayCoords(OverlayTexture.NO_OVERLAY)
                     .uv2(LightTexture.FULL_BRIGHT)
-                    .normal(normal.x, normal.y, normal.z).endVertex();
+                    .normal(0.0F, 1.0F, 0.0F).endVertex();
             }
         }
         tesselator.end();
@@ -224,7 +223,6 @@ public class VRWidgetHelper {
         RenderSystem.enableBlend();
 
         poseStack.popPose();
-        RenderSystem.applyModelViewMatrix();
     }
 
     public enum DisplayFace {

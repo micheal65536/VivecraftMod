@@ -58,11 +58,11 @@ public abstract class ServerPlayerMixin extends PlayerMixin {
         {
             ItemStack easterEggItem;
             if (this.random.nextInt(2) == 1) {
-                easterEggItem = new ItemStack(Items.PUMPKIN_PIE)
-                    .setHoverName(Component.literal("EAT ME"));
+                easterEggItem = new ItemStack(Items.PUMPKIN_PIE);
+                easterEggItem.setHoverName(Component.literal("EAT ME"));
             } else {
-                easterEggItem = PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER)
-                    .setHoverName(Component.literal("DRINK ME"));
+                easterEggItem = PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER);
+                easterEggItem.setHoverName(Component.literal("DRINK ME"));
             }
 
             easterEggItem.getOrCreateTag().putInt("HideFlags", 32);

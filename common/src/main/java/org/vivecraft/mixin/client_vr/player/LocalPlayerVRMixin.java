@@ -14,7 +14,6 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -63,10 +62,6 @@ public abstract class LocalPlayerVRMixin extends LocalPlayer_PlayerVRMixin imple
 
     @Shadow
     private boolean startedUsingItem;
-
-    @Shadow
-    @Final
-    public ClientPacketListener connection;
 
     @Shadow
     private InteractionHand usingItemHand;
@@ -479,16 +474,15 @@ public abstract class LocalPlayerVRMixin extends LocalPlayer_PlayerVRMixin imple
     @Unique
     public void vivecraft$stepSound(BlockPos blockPos, Vec3 soundPos) {
         BlockState blockState = this.level().getBlockState(blockPos);
-        Block block = blockState.getBlock();
-        SoundType soundType = block.getSoundType(blockState);
+        SoundType soundType = blockState.getSoundType();
         BlockState aboveBlockState = this.level().getBlockState(blockPos.above());
 
-        if (aboveBlockState.getBlock() == Blocks.SNOW) {
-            soundType = Blocks.SNOW.getSoundType(aboveBlockState);
+        if (aboveBlockState.is(Blocks.SNOW)) {
+            soundType = aboveBlockState.getSoundType();
         }
 
         // TODO: liquid is deprecated
-        if (!this.isSilent() && !block.defaultBlockState().liquid()) {
+        if (!this.isSilent() && !blockState.liquid()) {
             float volume = soundType.getVolume();
             float pitch = soundType.getPitch();
             SoundEvent soundevent = soundType.getStepSound();

@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Vec3i;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.phys.Vec3;
@@ -38,6 +39,9 @@ public class RenderHelper {
     private static final ClientDataHolderVR DATA_HOLDER = ClientDataHolderVR.getInstance();
     private static final Minecraft MC = Minecraft.getInstance();
 
+    public static final ResourceLocation WHITE_TEXTURE = new ResourceLocation("vivecraft:textures/white.png");
+    public static final ResourceLocation BLACK_TEXTURE = new ResourceLocation("vivecraft:textures/black.png");
+
     private static int POLY_BLEND_SRC_A;
     private static int POLY_BLEND_DST_A;
     private static int POLY_BLEND_SRC_RGB;
@@ -48,18 +52,25 @@ public class RenderHelper {
     private static boolean POLY_CULL;
 
     /**
+     * gets the rotation matrix for the given RenderPass
+     * @param renderPass RenderPass to get the rotation matrix for
+     */
+    public static Matrix4f getVRModelView(RenderPass renderPass) {
+        if (renderPass == RenderPass.CENTER && DATA_HOLDER.vrSettings.displayMirrorCenterSmooth > 0.0F) {
+            return new Matrix4f().rotation(MCVR.get().hmdRotHistory
+                .averageRotation(DATA_HOLDER.vrSettings.displayMirrorCenterSmooth));
+        } else {
+            return DATA_HOLDER.vrPlayer.vrdata_world_render.getEye(renderPass).getMatrix().transpose();
+        }
+    }
+
+    /**
      * Applies the rotation from the given RenderPass to the given PoseStack
      * @param renderPass RenderPass rotation to use
      * @param poseStack PoseStack to apply the rotation to
      */
     public static void applyVRModelView(RenderPass renderPass, PoseStack poseStack) {
-        Matrix4f modelView;
-        if (renderPass == RenderPass.CENTER && DATA_HOLDER.vrSettings.displayMirrorCenterSmooth > 0.0F) {
-            modelView = new Matrix4f().rotation(MCVR.get().hmdRotHistory
-                .averageRotation(DATA_HOLDER.vrSettings.displayMirrorCenterSmooth));
-        } else {
-            modelView = DATA_HOLDER.vrPlayer.vrdata_world_render.getEye(renderPass).getMatrix().transpose();
-        }
+        Matrix4f modelView = getVRModelView(renderPass);
         poseStack.last().pose().mul(modelView);
         poseStack.last().normal().mul(new Matrix3f(modelView));
     }
@@ -241,10 +252,10 @@ public class RenderHelper {
      */
     public static void drawScreen(GuiGraphics guiGraphics, float partialTick, Screen screen, boolean maxGuiScale) {
         // setup modelview for screen rendering
-        PoseStack posestack = RenderSystem.getModelViewStack();
-        posestack.pushPose();
-        posestack.setIdentity();
-        posestack.translate(0.0F, 0.0F, -11000.0F);
+        PoseStack poseStack = RenderSystem.getModelViewStack();
+        poseStack.pushPose();
+        poseStack.setIdentity();
+        poseStack.translate(0.0F, 0.0F, -11000.0F);
         RenderSystem.applyModelViewMatrix();
 
         double guiScale = maxGuiScale ? GuiHandler.GUI_SCALE_FACTOR_MAX : MC.getWindow().getGuiScale();
@@ -269,7 +280,7 @@ public class RenderHelper {
             GlStateManager.SourceFactor.ONE,
             GlStateManager.DestFactor.ONE);
 
-        posestack.popPose();
+        poseStack.popPose();
         RenderSystem.applyModelViewMatrix();
 
         if (DATA_HOLDER.vrSettings.guiMipmaps) {
@@ -385,7 +396,7 @@ public class RenderHelper {
      * @param size size of the quad
      * @param packedLight block and sky light packed into an int
      * @param color color of the quad, expects an array of length 4 for: r, g, b, a
-     * @param matrix matrix to use to
+     * @param matrix matrix to use to for positioning
      * @param shader a shader supplier dor what shader to use, needs to be one of the entity shaders
      * @param flipY if the texture should be flipped vertically
      */
@@ -533,40 +544,40 @@ public class RenderHelper {
         Vec3 frontLeftBottom = end.add(left.x + down.x, left.y + down.y, left.z + down.z);
         Vec3 frontLeftTop = end.add(left.x + up.x, left.y + up.y, left.z + up.z);
 
-        Matrix4f mat = poseStack.last().pose();
+        Matrix4f matrix = poseStack.last().pose();
 
-        addVertex(consumer, mat, backRightBottom, color, alpha, forward);
-        addVertex(consumer, mat, backLeftBottom, color, alpha, forward);
-        addVertex(consumer, mat, backLeftTop, color, alpha, forward);
-        addVertex(consumer, mat, backRightTop, color, alpha, forward);
+        addVertex(consumer, matrix, backRightBottom, color, alpha, forward);
+        addVertex(consumer, matrix, backLeftBottom, color, alpha, forward);
+        addVertex(consumer, matrix, backLeftTop, color, alpha, forward);
+        addVertex(consumer, matrix, backRightTop, color, alpha, forward);
 
         forward.reverse();
-        addVertex(consumer, mat, frontLeftBottom, color, alpha, forward);
-        addVertex(consumer, mat, frontRightBottom, color, alpha, forward);
-        addVertex(consumer, mat, frontRightTop, color, alpha, forward);
-        addVertex(consumer, mat, frontLeftTop, color, alpha, forward);
+        addVertex(consumer, matrix, frontLeftBottom, color, alpha, forward);
+        addVertex(consumer, matrix, frontRightBottom, color, alpha, forward);
+        addVertex(consumer, matrix, frontRightTop, color, alpha, forward);
+        addVertex(consumer, matrix, frontLeftTop, color, alpha, forward);
 
-        addVertex(consumer, mat, frontRightBottom, color, alpha, rightNormal);
-        addVertex(consumer, mat, backRightBottom, color, alpha, rightNormal);
-        addVertex(consumer, mat, backRightTop, color, alpha, rightNormal);
-        addVertex(consumer, mat, frontRightTop, color, alpha, rightNormal);
+        addVertex(consumer, matrix, frontRightBottom, color, alpha, rightNormal);
+        addVertex(consumer, matrix, backRightBottom, color, alpha, rightNormal);
+        addVertex(consumer, matrix, backRightTop, color, alpha, rightNormal);
+        addVertex(consumer, matrix, frontRightTop, color, alpha, rightNormal);
 
         rightNormal.reverse();
-        addVertex(consumer, mat, backLeftBottom, color, alpha, rightNormal);
-        addVertex(consumer, mat, frontLeftBottom, color, alpha, rightNormal);
-        addVertex(consumer, mat, frontLeftTop, color, alpha, rightNormal);
-        addVertex(consumer, mat, backLeftTop, color, alpha, rightNormal);
+        addVertex(consumer, matrix, backLeftBottom, color, alpha, rightNormal);
+        addVertex(consumer, matrix, frontLeftBottom, color, alpha, rightNormal);
+        addVertex(consumer, matrix, frontLeftTop, color, alpha, rightNormal);
+        addVertex(consumer, matrix, backLeftTop, color, alpha, rightNormal);
 
-        addVertex(consumer, mat, backLeftTop, color, alpha, upNormal);
-        addVertex(consumer, mat, frontLeftTop, color, alpha, upNormal);
-        addVertex(consumer, mat, frontRightTop, color, alpha, upNormal);
-        addVertex(consumer, mat, backRightTop, color, alpha, upNormal);
+        addVertex(consumer, matrix, backLeftTop, color, alpha, upNormal);
+        addVertex(consumer, matrix, frontLeftTop, color, alpha, upNormal);
+        addVertex(consumer, matrix, frontRightTop, color, alpha, upNormal);
+        addVertex(consumer, matrix, backRightTop, color, alpha, upNormal);
 
         upNormal.reverse();
-        addVertex(consumer, mat, frontLeftBottom, color, alpha, upNormal);
-        addVertex(consumer, mat, backLeftBottom, color, alpha, upNormal);
-        addVertex(consumer, mat, backRightBottom, color, alpha, upNormal);
-        addVertex(consumer, mat, frontRightBottom, color, alpha, upNormal);
+        addVertex(consumer, matrix, frontLeftBottom, color, alpha, upNormal);
+        addVertex(consumer, matrix, backLeftBottom, color, alpha, upNormal);
+        addVertex(consumer, matrix, backRightBottom, color, alpha, upNormal);
+        addVertex(consumer, matrix, frontRightBottom, color, alpha, upNormal);
     }
 
     /**

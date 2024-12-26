@@ -51,10 +51,11 @@ public abstract class CreativeModeInventoryScreenVRMixin extends EffectRendering
     @Unique
     private void vivecraft$addCreativeItems(CreativeModeTab tab, NonNullList<ItemStack> items) {
         if (tab == BuiltInRegistries.CREATIVE_MODE_TAB.get(CreativeModeTabs.FOOD_AND_DRINKS) || tab == null) {
-            ItemStack eatMeCake = (new ItemStack(Items.PUMPKIN_PIE)).setHoverName(Component.literal("EAT ME"));
+            ItemStack eatMeCake = new ItemStack(Items.PUMPKIN_PIE);
+            eatMeCake.setHoverName(Component.literal("EAT ME"));
 
-            ItemStack drinkMePotion = PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER)
-                .setHoverName(Component.literal("DRINK ME"));
+            ItemStack drinkMePotion = PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER);
+            drinkMePotion.setHoverName(Component.literal("DRINK ME"));
             drinkMePotion.getOrCreateTag().putInt("HideFlags", 32);
 
             items.add(eatMeCake);
@@ -66,7 +67,7 @@ public abstract class CreativeModeInventoryScreenVRMixin extends EffectRendering
             boots.setHoverName(Component.translatableWithFallback("vivecraft.item.jumpboots", "Jump Boots"));
             boots.getOrCreateTag().putBoolean("Unbreakable", true);
             boots.getOrCreateTag().putInt("HideFlags", 4);
-            boots.getOrCreateTagElement(ItemStack.TAG_DISPLAY).putInt(ItemStack.TAG_COLOR, 9233775);
+            boots.getOrCreateTagElement(ItemStack.TAG_DISPLAY).putInt(ItemStack.TAG_COLOR, 0x8CE56F);
 
             ItemStack claws = new ItemStack(Items.SHEARS);
             claws.setHoverName(Component.translatableWithFallback("vivecraft.item.climbclaws", "Climb Claws"));

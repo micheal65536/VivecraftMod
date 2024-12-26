@@ -6,7 +6,7 @@ import org.vivecraft.common.network.packet.PayloadIdentifier;
 import org.vivecraft.common.network.packet.VivecraftPayload;
 
 /**
- * Vivecraft packet sent from Clients to the Server
+ * Vivecraft packet sent from the Server to the Clients
  */
 public interface VivecraftPayloadS2C extends VivecraftPayload {
 

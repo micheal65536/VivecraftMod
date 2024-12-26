@@ -12,7 +12,7 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 import org.vivecraft.common.utils.MathUtils;
 import org.vivecraft.client_vr.ClientDataHolderVR;
-import org.vivecraft.client_vr.ItemTags;
+import org.vivecraft.data.ItemTags;
 import org.vivecraft.client_vr.VRData;
 import org.vivecraft.client_vr.settings.VRSettings;
 

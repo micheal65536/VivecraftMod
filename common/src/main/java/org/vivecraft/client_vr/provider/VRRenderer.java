@@ -15,7 +15,6 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.Tuple;
 import org.joml.Matrix4f;
@@ -267,12 +266,12 @@ public abstract class VRRenderer {
         BufferBuilder builder = Tesselator.getInstance().getBuilder();
         builder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION);
 
-        mc.getTextureManager().bindForSetup(new ResourceLocation("vivecraft:textures/black.png"));
+        mc.getTextureManager().bindForSetup(RenderHelper.BLACK_TEXTURE);
 
         for (int i = 0; i < verts.length; i += 2) {
             builder.vertex(
-                verts[i] * this.renderScale,
-                verts[i + 1] * this.renderScale,
+                verts[i] * this.renderScale + 0.5F,
+                verts[i + 1] * this.renderScale + 0.5F,
                 0.0F).endVertex();
         }
 

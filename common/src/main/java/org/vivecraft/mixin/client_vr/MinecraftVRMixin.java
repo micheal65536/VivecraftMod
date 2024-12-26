@@ -14,16 +14,13 @@ import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.*;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.*;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderBuffers;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -82,7 +79,6 @@ import org.vivecraft.client_xr.render_pass.RenderPassManager;
 import org.vivecraft.common.network.packet.c2s.VRActivePayloadC2S;
 import org.vivecraft.mod_compat_vr.optifine.OptifineHelper;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -117,10 +113,6 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
     @Final
     private Window window;
 
-    @Final
-    @Shadow
-    public Font font;
-
     @Shadow
     private boolean pause;
 
@@ -148,19 +140,12 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
     private ProfileResults fpsPieResults;
 
     @Shadow
-    public MultiPlayerGameMode gameMode;
-
-    @Shadow
     @Final
     private RenderBuffers renderBuffers;
 
     @Shadow
     @Final
     private EntityRenderDispatcher entityRenderDispatcher;
-
-    @Shadow
-    @Final
-    public LevelRenderer levelRenderer;
 
     @Shadow
     @Final
@@ -181,14 +166,7 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
     protected abstract void renderFpsMeter(GuiGraphics guiGraphics, ProfileResults profileResults);
 
     @Shadow
-    public abstract void tick();
-
-    @Shadow
     public abstract CompletableFuture<Void> reloadResourcePacks();
-
-    @Shadow
-    @Nullable
-    public abstract ClientPacketListener getConnection();
 
     @Shadow
     public abstract boolean isLocalServer();

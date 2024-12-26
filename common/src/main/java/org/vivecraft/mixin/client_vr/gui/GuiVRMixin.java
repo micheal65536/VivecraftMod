@@ -3,6 +3,7 @@ package org.vivecraft.mixin.client_vr.gui;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -88,7 +89,7 @@ public abstract class GuiVRMixin implements GuiExtension {
 
     @ModifyExpressionValue(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;getSleepTimer()I", ordinal = 0))
     private int vivecraft$noSleepOverlay(int sleepTimer) {
-        return VRState.VR_RUNNING ? 0 : sleepTimer;
+        return RenderPassType.isGuiOnly() ? 0 : sleepTimer;
     }
 
     @ModifyExpressionValue(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/KeyMapping;isDown()Z"))
@@ -114,7 +115,7 @@ public abstract class GuiVRMixin implements GuiExtension {
     }
 
     @Inject(method = "renderHotbar", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 1, shift = At.Shift.AFTER))
-    private void vivecraft$hotbarContextIndicator(float partialTick, GuiGraphics guiGraphics, CallbackInfo ci) {
+    private void vivecraft$hotbarContextIndicator(CallbackInfo ci, @Local(argsOnly = true) GuiGraphics guiGraphics) {
         if (VRState.VR_RUNNING && ClientDataHolderVR.getInstance().interactTracker.hotbar >= 0 &&
             ClientDataHolderVR.getInstance().interactTracker.hotbar < 9 &&
             this.getCameraPlayer().getInventory().selected != ClientDataHolderVR.getInstance().interactTracker.hotbar &&
@@ -171,7 +172,7 @@ public abstract class GuiVRMixin implements GuiExtension {
     }
 
     @Inject(method = "renderHotbar", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;disableBlend()V", remap = false))
-    private void vivecraft$renderViveIcons(float partialTick, GuiGraphics guiGraphics, CallbackInfo ci) {
+    private void vivecraft$renderViveIcons(CallbackInfo ci, @Local(argsOnly = true) GuiGraphics guiGraphics) {
         if (VRState.VR_RUNNING) {
             this.vivecraft$renderViveHudIcons(guiGraphics);
         }

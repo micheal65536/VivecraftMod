@@ -39,11 +39,9 @@ public class BlockedServerScreen extends Screen {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
 
         guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 15, 0xFFFFFF);
         this.message.renderCentered(guiGraphics, this.width / 2, 120);
-
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
     }
 }

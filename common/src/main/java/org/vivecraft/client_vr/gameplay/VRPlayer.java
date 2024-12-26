@@ -25,10 +25,11 @@ import org.joml.Vector3f;
 import org.joml.Vector3fc;
 import org.vivecraft.client.VivecraftVRMod;
 import org.vivecraft.client.network.ClientNetworking;
+import org.vivecraft.client.utils.ClientUtils;
 import org.vivecraft.common.utils.MathUtils;
 import org.vivecraft.client.utils.ScaleHelper;
 import org.vivecraft.client_vr.ClientDataHolderVR;
-import org.vivecraft.client_vr.ItemTags;
+import org.vivecraft.data.ItemTags;
 import org.vivecraft.client_vr.MethodHolder;
 import org.vivecraft.client_vr.VRData;
 import org.vivecraft.client_vr.extensions.GameRendererExtension;
@@ -193,7 +194,7 @@ public class VRPlayer {
             this.worldScale = this.rawWorldScale;
 
             // scale world with player size
-            this.worldScale *= ScaleHelper.getEntityEyeHeightScale(this.mc.player, this.mc.getFrameTime());
+            this.worldScale *= ScaleHelper.getEntityEyeHeightScale(this.mc.player, ClientUtils.getCurrentPartialTick());
             // limit scale
             // min is minClip + player position indicator offset
             this.worldScale = Mth.clamp(this.worldScale, 0.025F, 100F);

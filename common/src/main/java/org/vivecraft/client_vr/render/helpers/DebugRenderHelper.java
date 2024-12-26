@@ -8,7 +8,6 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -170,6 +169,11 @@ public class DebugRenderHelper {
         BufferUploader.drawWithShader(bufferbuilder.end());
     }
 
+    /**
+     * renders cubes for all tracked devices the current VR runtime offers
+     * @param poseStack PoseStack to use for positioning
+     * @param showNames if device names should be shown
+     */
     private static void renderTackerPositions(PoseStack poseStack, boolean showNames) {
         VRData data = DATA_HOLDER.vrPlayer.getVRDataWorld();
         Vec3 camPos = RenderHelper.getSmoothCameraPosition(DATA_HOLDER.currentPass, data);
@@ -214,7 +218,7 @@ public class DebugRenderHelper {
     }
 
     /**
-     * renders forward, upo and right axes using the {@code poseStack} position and orientation
+     * renders forward, up and right axes using the {@code poseStack} position and orientation
      * @param poseStack PoseStack to use for positioning
      */
     public static void renderLocalAxes(PoseStack poseStack) {
@@ -338,29 +342,59 @@ public class DebugRenderHelper {
         }
     }
 
+    /**
+     * renders the given text above the given device, facing the camera
+     * @param poseStack PoseStack to use for positioning
+     * @param device device index to render at
+     * @param text text to render
+     */
     public static void renderTextAtDevice(PoseStack poseStack, int device, String text) {
         renderTextAtPosition(poseStack, DATA_HOLDER.vrPlayer.getVRDataWorld().getDevice(device).getPosition(), text);
     }
 
+    /**
+     * renders the given text at the given world space position, facing the camera
+     * @param poseStack PoseStack to use for positioning
+     * @param position position to render at, in world space
+     * @param text text to render
+     */
     public static void renderTextAtPosition(PoseStack poseStack, Vec3 position, String text) {
         VRData data = DATA_HOLDER.vrPlayer.getVRDataWorld();
         Vec3 camPos = RenderHelper.getSmoothCameraPosition(DATA_HOLDER.currentPass, data);
         Quaternionf rot = data.getEye(DATA_HOLDER.currentPass).getMatrix()
             .getNormalizedRotation(new Quaternionf())
             .rotateY(Mth.PI);
-        Vec3 pos = position.subtract(camPos);
+        Vector3f pos = MathUtils.subtractToVector3f(position, camPos);
 
         renderTextAtRelativePosition(poseStack, pos.x, pos.y, pos.z, rot, text);
     }
 
+    /**
+     * renders the given text at the given camera relative position, with the given rotation
+     * @param poseStack PoseStack to use for positioning
+     * @param x x position relative to the camera
+     * @param y y position relative to the camera
+     * @param z z position relative to the camera
+     * @param rot rotation the text should look at
+     * @param text text to render
+     */
     public static void renderTextAtRelativePosition(
-        PoseStack poseStack, double x, double y, double z, Quaternionf rot, String text)
+        PoseStack poseStack, float x, float y, float z, Quaternionf rot, String text)
     {
         renderTextAtRelativePosition(poseStack, x, y, z, rot, Component.literal(text));
     }
 
+    /**
+     * renders the given text at the given camera relative position, with the given rotation
+     * @param poseStack PoseStack to use for positioning
+     * @param x x position relative to the camera
+     * @param y y position relative to the camera
+     * @param z z position relative to the camera
+     * @param rot rotation the text should look at
+     * @param text text to render
+     */
     public static void renderTextAtRelativePosition(
-        PoseStack poseStack, double x, double y, double z, Quaternionf rot, Component text)
+        PoseStack poseStack, float x, float y, float z, Quaternionf rot, Component text)
     {
         poseStack.pushPose();
         poseStack.translate(x, y + 0.05F, z);
@@ -382,7 +416,7 @@ public class DebugRenderHelper {
      */
     private static void addCube(PoseStack poseStack, Vector3fc position, float size, Vector3fc color) {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        RenderSystem.setShaderTexture(0, new ResourceLocation("vivecraft:textures/white.png"));
+        RenderSystem.setShaderTexture(0, RenderHelper.WHITE_TEXTURE);
 
         BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);

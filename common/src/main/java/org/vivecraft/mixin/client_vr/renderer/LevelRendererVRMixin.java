@@ -86,12 +86,6 @@ public abstract class LevelRendererVRMixin implements ResourceManagerReloadListe
         PoseStack poseStack, VertexConsumer consumer, Entity entity, double camX, double camY, double camZ,
         BlockPos pos, BlockState state);
 
-    @Shadow
-    private static void renderShape(
-        PoseStack poseStack, VertexConsumer consumer, VoxelShape shape, double x, double y, double z, float red,
-        float green, float blue, float alpha)
-    {}
-
     @ModifyArg(method = "renderSnowAndRain", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;floor(D)I", ordinal = 0))
     private double vivecraft$rainX(double x, @Share("centerPos") LocalRef<Vec3> centerPos) {
         if (!RenderPassType.isVanilla() && (ClientDataHolderVR.getInstance().currentPass == RenderPass.LEFT ||
@@ -241,24 +235,20 @@ public abstract class LevelRendererVRMixin implements ResourceManagerReloadListe
         if (RenderPassType.isVanilla()) return;
 
         if (this.transparencyChain != null) {
-            VREffectsHelper.renderVRFabulous(partialTick, (LevelRenderer) (Object) this,
-                ClientDataHolderVR.getInstance().menuHandMain, ClientDataHolderVR.getInstance().menuHandOff,
-                poseStack);
+            VREffectsHelper.renderVRFabulous(partialTick, (LevelRenderer) (Object) this, poseStack);
         } else {
-            VREffectsHelper.renderVrFast(partialTick, false, ClientDataHolderVR.getInstance().menuHandMain,
-                ClientDataHolderVR.getInstance().menuHandOff, poseStack);
+            VREffectsHelper.renderVrFast(partialTick, false, poseStack);
             if (ShadersHelper.isShaderActive() && ClientDataHolderVR.getInstance().vrSettings.shaderGUIRender ==
                 VRSettings.ShaderGUIRender.BEFORE_TRANSLUCENT_SOLID)
             {
                 // shaders active, and render gui before translucents
-                VREffectsHelper.renderVrFast(partialTick, true, ClientDataHolderVR.getInstance().menuHandMain,
-                    ClientDataHolderVR.getInstance().menuHandOff, poseStack);
+                VREffectsHelper.renderVrFast(partialTick, true, poseStack);
                 guiRendered.set(true);
             }
         }
     }
 
-    @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;pushPose()V", shift = Shift.BEFORE, ordinal = 3))
+    @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;pushPose()V", ordinal = 3))
     private void vivecraft$renderVrStuffPart2(
         CallbackInfo ci, @Local(argsOnly = true) PoseStack poseStack, @Local(argsOnly = true) float partialTick,
         @Share("guiRendered") LocalBooleanRef guiRendered)
@@ -270,8 +260,7 @@ public abstract class LevelRendererVRMixin implements ResourceManagerReloadListe
         ))
         {
             // no shaders, or shaders, and gui after translucents
-            VREffectsHelper.renderVrFast(partialTick, true, ClientDataHolderVR.getInstance().menuHandMain,
-                ClientDataHolderVR.getInstance().menuHandOff, poseStack);
+            VREffectsHelper.renderVrFast(partialTick, true, poseStack);
             guiRendered.set(true);
         }
     }
@@ -286,8 +275,7 @@ public abstract class LevelRendererVRMixin implements ResourceManagerReloadListe
         if (RenderPassType.isVanilla()) return;
 
         if (!guiRendered.get() && this.transparencyChain == null) {
-            VREffectsHelper.renderVrFast(partialTick, true, ClientDataHolderVR.getInstance().menuHandMain,
-                ClientDataHolderVR.getInstance().menuHandOff, poseStack);
+            VREffectsHelper.renderVrFast(partialTick, true, poseStack);
         }
     }
 

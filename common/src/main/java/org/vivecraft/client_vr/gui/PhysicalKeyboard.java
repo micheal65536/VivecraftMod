@@ -2,17 +2,14 @@ package org.vivecraft.client_vr.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.*;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.util.Tuple;
@@ -28,6 +25,7 @@ import org.vivecraft.client_vr.gameplay.screenhandlers.KeyboardHandler;
 import org.vivecraft.client_vr.provider.ControllerType;
 import org.vivecraft.client_vr.provider.InputSimulator;
 import org.vivecraft.client_vr.provider.MCVR;
+import org.vivecraft.client_vr.render.helpers.RenderHelper;
 import org.vivecraft.client_vr.settings.OptionEnum;
 import org.vivecraft.client_vr.settings.VRSettings;
 import org.vivecraft.client_vr.utils.RGBAColor;
@@ -433,86 +431,93 @@ public class PhysicalKeyboard {
 
     private void drawBox(BufferBuilder buf, AABB box, RGBAColor color, PoseStack poseStack) {
         // Alright let's draw a box
-        org.joml.Matrix4f matrix = poseStack.last().pose();
+        Matrix4f matrix = poseStack.last().pose();
         float minX = (float) box.minX, minY = (float) box.minY, minZ = (float) box.minZ;
         float maxX = (float) box.maxX, maxY = (float) box.maxY, maxZ = (float) box.maxZ;
+
+        // front
         buf.vertex(matrix, minX, minY, minZ).uv(0, 0)
             .color(color.r, color.g, color.b, color.a)
-            .normal(0.0F, 0.0F, -1.0F).endVertex();
+            .endVertex();
         buf.vertex(matrix, minX, maxY, minZ).uv(0, 0)
             .color(color.r, color.g, color.b, color.a)
-            .normal(0.0F, 0.0F, -1.0F).endVertex();
+            .endVertex();
         buf.vertex(matrix, maxX, maxY, minZ).uv(0, 0)
             .color(color.r, color.g, color.b, color.a)
-            .normal(0.0F, 0.0F, -1.0F).endVertex();
+            .endVertex();
         buf.vertex(matrix, maxX, minY, minZ).uv(0, 0)
             .color(color.r, color.g, color.b, color.a)
-            .normal(0.0F, 0.0F, -1.0F).endVertex();
+            .endVertex();
 
+        // top
         buf.vertex(matrix, minX, minY, minZ).uv(0, 0)
             .color(color.r, color.g, color.b, color.a)
-            .normal(0.0F, -1.0F, 0.0F).endVertex();
+            .endVertex();
         buf.vertex(matrix, maxX, minY, minZ).uv(0, 0)
             .color(color.r, color.g, color.b, color.a)
-            .normal(0.0F, -1.0F, 0.0F).endVertex();
+            .endVertex();
         buf.vertex(matrix, maxX, minY, maxZ).uv(0, 0)
             .color(color.r, color.g, color.b, color.a)
-            .normal(0.0F, -1.0F, 0.0F).endVertex();
+            .endVertex();
         buf.vertex(matrix, minX, minY, maxZ).uv(0, 0)
             .color(color.r, color.g, color.b, color.a)
-            .normal(0.0F, -1.0F, 0.0F).endVertex();
+            .endVertex();
 
+        // left
         buf.vertex(matrix, minX, minY, minZ).uv(0, 0)
             .color(color.r, color.g, color.b, color.a)
-            .normal(-1.0F, 0.0F, 0.0F).endVertex();
+            .endVertex();
         buf.vertex(matrix, minX, minY, maxZ).uv(0, 0)
             .color(color.r, color.g, color.b, color.a)
-            .normal(-1.0F, 0.0F, 0.0F).endVertex();
+            .endVertex();
         buf.vertex(matrix, minX, maxY, maxZ).uv(0, 0)
             .color(color.r, color.g, color.b, color.a)
-            .normal(-1.0F, 0.0F, 0.0F).endVertex();
+            .endVertex();
         buf.vertex(matrix, minX, maxY, minZ).uv(0, 0)
             .color(color.r, color.g, color.b, color.a)
-            .normal(-1.0F, 0.0F, 0.0F).endVertex();
+            .endVertex();
 
+        // back
         buf.vertex(matrix, maxX, maxY, maxZ).uv(0, 0)
             .color(color.r, color.g, color.b, color.a)
-            .normal(0.0F, 0.0F, 1.0F).endVertex();
+            .endVertex();
         buf.vertex(matrix, minX, maxY, maxZ).uv(0, 0)
             .color(color.r, color.g, color.b, color.a)
-            .normal(0.0F, 0.0F, 1.0F).endVertex();
+            .endVertex();
         buf.vertex(matrix, minX, minY, maxZ).uv(0, 0)
             .color(color.r, color.g, color.b, color.a)
-            .normal(0.0F, 0.0F, 1.0F).endVertex();
+            .endVertex();
         buf.vertex(matrix, maxX, minY, maxZ).uv(0, 0)
             .color(color.r, color.g, color.b, color.a)
-            .normal(0.0F, 0.0F, 1.0F).endVertex();
+            .endVertex();
 
+        // bottom
         buf.vertex(matrix, maxX, maxY, maxZ).uv(0, 0)
             .color(color.r, color.g, color.b, color.a)
-            .normal(0.0F, 1.0F, 0.0F).endVertex();
+            .endVertex();
         buf.vertex(matrix, maxX, maxY, minZ).uv(0, 0)
             .color(color.r, color.g, color.b, color.a)
-            .normal(0.0F, 1.0F, 0.0F).endVertex();
+            .endVertex();
         buf.vertex(matrix, minX, maxY, minZ).uv(0, 0)
             .color(color.r, color.g, color.b, color.a)
-            .normal(0.0F, 1.0F, 0.0F).endVertex();
+            .endVertex();
         buf.vertex(matrix, minX, maxY, maxZ).uv(0, 0)
             .color(color.r, color.g, color.b, color.a)
-            .normal(0.0F, 1.0F, 0.0F).endVertex();
+            .endVertex();
 
+        // right
         buf.vertex(matrix, maxX, maxY, maxZ).uv(0, 0)
             .color(color.r, color.g, color.b, color.a)
-            .normal(1.0F, 0.0F, 0.0F).endVertex();
+            .endVertex();
         buf.vertex(matrix, maxX, minY, maxZ).uv(0, 0)
             .color(color.r, color.g, color.b, color.a)
-            .normal(1.0F, 0.0F, 0.0F).endVertex();
+            .endVertex();
         buf.vertex(matrix, maxX, minY, minZ).uv(0, 0)
             .color(color.r, color.g, color.b, color.a)
-            .normal(1.0F, 0.0F, 0.0F).endVertex();
+            .endVertex();
         buf.vertex(matrix, maxX, maxY, minZ).uv(0, 0)
             .color(color.r, color.g, color.b, color.a)
-            .normal(1.0F, 0.0F, 0.0F).endVertex();
+            .endVertex();
         // Woo that was fun
     }
 
@@ -526,8 +531,10 @@ public class PhysicalKeyboard {
         if (this.easterEggActive) {
             // https://qimg.techjargaming.com/i/UkG1cWAh.png
             for (KeyButton key : this.keys) {
-                RGBAColor color = RGBAColor.fromHSB((this.dh.tickCounter + this.mc.getFrameTime()) / 100.0F +
-                        (float) (key.boundingBox.minX + (key.boundingBox.maxX - key.boundingBox.minX) / 2.0D) / 2.0F, 1.0F,
+                RGBAColor color = RGBAColor.fromHSB(
+                    (this.dh.tickCounter + ClientUtils.getCurrentPartialTick()) / 100.0F +
+                        (float) (key.boundingBox.minX + (key.boundingBox.maxX - key.boundingBox.minX) / 2.0D) / 2.0F,
+                    1.0F,
                     1.0F);
                 key.color.r = color.r;
                 key.color.g = color.g;
@@ -548,12 +555,6 @@ public class PhysicalKeyboard {
             });
         }
 
-        RenderSystem.setShader(GameRenderer::getPositionTexColorNormalShader);
-
-        // TODO: does this still do the right thing for shaders?
-        this.mc.getTextureManager().bindForSetup(new ResourceLocation("vivecraft:textures/white.png"));
-        RenderSystem.setShaderTexture(0, new ResourceLocation("vivecraft:textures/white.png"));
-
         // We need to ignore depth so we can see the back faces and text
         RenderSystem.depthFunc(GL11.GL_ALWAYS);
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
@@ -566,10 +567,15 @@ public class PhysicalKeyboard {
         ArrayList<Tuple<String, Vector3f>> labels = new ArrayList<>();
         float textScale = 0.002F * this.scale;
 
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+
+        this.mc.getTextureManager().bindForSetup(RenderHelper.WHITE_TEXTURE);
+        RenderSystem.setShaderTexture(0, RenderHelper.WHITE_TEXTURE);
+
         // Start building vertices for key boxes
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder buf = tesselator.getBuilder();
-        buf.begin(Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL);
+        buf.begin(Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
 
         for (KeyButton key : this.keys) {
             AABB box = key.getRenderBoundingBox();
@@ -593,7 +599,6 @@ public class PhysicalKeyboard {
         tesselator.end();
 
         RenderSystem.depthFunc(GL11.GL_LEQUAL);
-        //GlStateManager._disableLighting();
 
         // Start building vertices for text
         MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(tesselator.getBuilder());
@@ -604,13 +609,12 @@ public class PhysicalKeyboard {
             poseStack.translate(label.getB().x, label.getB().y, label.getB().z);
             poseStack.scale(textScale, textScale, 1.0F);
             font.drawInBatch(label.getA(), 0.0F, 0.0F, 0xFFFFFFFF, false, poseStack.last().pose(), bufferSource,
-                Font.DisplayMode.NORMAL, 0, 15728880, font.isBidirectional());
+                Font.DisplayMode.NORMAL, 0, LightTexture.FULL_BRIGHT, font.isBidirectional());
             poseStack.popPose();
         }
 
         // Draw all the labels
         bufferSource.endBatch();
-        //GlStateManager._enableLighting();
 
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();

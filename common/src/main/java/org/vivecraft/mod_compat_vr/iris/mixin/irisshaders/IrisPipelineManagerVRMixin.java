@@ -104,23 +104,12 @@ public class IrisPipelineManagerVRMixin implements PipelineManagerExtension {
 
                 for (RenderPass renderPass : RenderPass.values()) {
                     VRSettings.LOGGER.info("Vivecraft: Creating VR pipeline for dimension {}, RenderPass {}", newDimension, renderPass);
-                    WorldRenderPass worldRenderPass = null;
-                    switch (renderPass) {
-                        case LEFT, RIGHT -> worldRenderPass = WorldRenderPass.STEREO_XR;
-                        case CENTER -> worldRenderPass = WorldRenderPass.CENTER;
-                        case THIRD -> worldRenderPass = WorldRenderPass.MIXED_REALITY;
-                        case SCOPEL -> worldRenderPass = WorldRenderPass.LEFT_TELESCOPE;
-                        case SCOPER -> worldRenderPass = WorldRenderPass.RIGHT_TELESCOPE;
-                        case CAMERA -> worldRenderPass = WorldRenderPass.CAMERA;
-                        default -> {
-                            VRSettings.LOGGER.info("Vivecraft: skipped VR pipeline for dimension {}, RenderPass {}, not used", newDimension, renderPass);
-                            continue;
-                        }
-                    }
+                    WorldRenderPass worldRenderPass = WorldRenderPass.getByRenderPass(renderPass);
 
                     if (worldRenderPass != null) {
                         RenderPassManager.setWorldRenderPass(worldRenderPass);
                     } else {
+                        VRSettings.LOGGER.info("Vivecraft: skipped VR pipeline for dimension {}, RenderPass {}, not used", newDimension, renderPass);
                         continue;
                     }
 

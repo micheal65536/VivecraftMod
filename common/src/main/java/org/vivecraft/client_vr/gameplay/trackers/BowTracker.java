@@ -14,6 +14,7 @@ import org.joml.Vector3f;
 import org.joml.Vector3fc;
 import org.vivecraft.client.VivecraftVRMod;
 import org.vivecraft.client.network.ClientNetworking;
+import org.vivecraft.client.utils.ClientUtils;
 import org.vivecraft.common.utils.MathUtils;
 import org.vivecraft.client.utils.ScaleHelper;
 import org.vivecraft.client_vr.ClientDataHolderVR;
@@ -70,7 +71,8 @@ public class BowTracker extends Tracker {
         } else if (ClientDataHolderVR.getInstance().vrSettings.bowMode == VRSettings.BowMode.VANILLA) {
             return itemStack.getItem() == Items.BOW;
         } else {
-            return itemStack.getItem().getUseAnimation(itemStack) == UseAnim.BOW && !itemStack.is(org.vivecraft.client_vr.ItemTags.VIVECRAFT_BOW_EXCLUSION);
+            return itemStack.getItem().getUseAnimation(itemStack) == UseAnim.BOW && !itemStack.is(
+                org.vivecraft.data.ItemTags.VIVECRAFT_BOW_EXCLUSION);
         }
     }
 
@@ -126,7 +128,7 @@ public class BowTracker extends Tracker {
             this.maxDraw = this.mc.player.getBbHeight() * 0.22F;
 
             // this is meant to be relative to the base Bb height, not the scaled one
-            this.maxDraw /= ScaleHelper.getEntityBbScale(player, this.mc.getFrameTime());
+            this.maxDraw /= ScaleHelper.getEntityBbScale(player, ClientUtils.getCurrentPartialTick());
 
             int bowHand = 1;
             int arrowHand = 0;

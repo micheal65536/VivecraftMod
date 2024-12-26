@@ -19,8 +19,8 @@ public class CommonModEvents {
 
     @SubscribeEvent
     public static void register(RegisterPayloadHandlerEvent event) {
-        final IPayloadRegistrar registrar = event.registrar("vivecraft")
-            .optional();
+        final IPayloadRegistrar registrar = event.registrar("vivecraft").optional();
+
         registrar.play(CommonNetworkHelper.CHANNEL,
             VivecraftPayloadBiDir::new,
             (packet, context) -> {

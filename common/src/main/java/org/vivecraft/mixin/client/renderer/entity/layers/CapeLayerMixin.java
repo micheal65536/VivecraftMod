@@ -43,7 +43,7 @@ public abstract class CapeLayerMixin extends RenderLayer<AbstractClientPlayer, P
     private ResourceLocation vivecraft$whiteCape(PlayerSkin skin, Operation<ResourceLocation> original) {
         ResourceLocation capeTexture = original.call(skin);
         if (capeTexture == null) {
-            capeTexture = new ResourceLocation("vivecraft:textures/white.png");
+            capeTexture = RenderHelper.WHITE_TEXTURE;
         }
         return capeTexture;
     }

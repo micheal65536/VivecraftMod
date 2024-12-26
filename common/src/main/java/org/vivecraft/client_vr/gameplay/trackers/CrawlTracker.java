@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Pose;
 import org.vivecraft.client.network.ClientNetworking;
+import org.vivecraft.client.utils.ClientUtils;
 import org.vivecraft.client.utils.ScaleHelper;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.common.network.packet.c2s.CrawlPayloadC2S;
@@ -45,7 +46,7 @@ public class CrawlTracker extends Tracker {
 
     @Override
     public void doProcess(LocalPlayer player) {
-        float scaledWorldScale = this.dh.vrPlayer.worldScale / ScaleHelper.getEntityEyeHeightScale(player, this.mc.getFrameTime());
+        float scaledWorldScale = this.dh.vrPlayer.worldScale / ScaleHelper.getEntityEyeHeightScale(player, ClientUtils.getCurrentPartialTick());
         this.crawling = this.dh.vr.hmdPivotHistory.averagePosition(0.2F).y * scaledWorldScale + 0.1F < this.dh.vrSettings.crawlThreshold;
         this.updateState(player);
     }

@@ -21,6 +21,7 @@ import org.vivecraft.client.ClientVRPlayers;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.render.helpers.RenderHelper;
 import org.vivecraft.client_xr.render_pass.RenderPassType;
+import org.vivecraft.data.ItemTags;
 
 @Mixin(FishingHookRenderer.class)
 public abstract class FishingHookRendererVRMixin {
@@ -43,10 +44,12 @@ public abstract class FishingHookRendererVRMixin {
         double value, FishingHook fishingHook, @Local(ordinal = 1, argsOnly = true) float partialTick,
         @Local Player player, @Share("linePos") LocalRef<Vec3> linePos)
     {
+        boolean mainHandFishingRod = player.getMainHandItem().getItem() instanceof FishingRodItem ||
+            player.getMainHandItem().is(ItemTags.VIVECRAFT_FISHING_RODS);
         ClientVRPlayers.RotInfo info;
         if (!RenderPassType.isVanilla() && player == Minecraft.getInstance().player) {
             // own player
-            int c = player.getMainHandItem().getItem() instanceof FishingRodItem ? 0 : 1;
+            int c = mainHandFishingRod ? 0 : 1;
             Vec3 aimSource = RenderHelper.getControllerRenderPos(c);
             Vector3f aimDirection = ClientDataHolderVR.getInstance().vrPlayer.vrdata_world_render.getHand(c).getDirection();
             aimDirection.mul(0.47F * ClientDataHolderVR.getInstance().vrPlayer.vrdata_world_render.worldScale);
@@ -55,7 +58,7 @@ public abstract class FishingHookRendererVRMixin {
             return linePos.get().x;
         } else if (ClientVRPlayers.getInstance().isVRPlayer(player) && !(info = ClientVRPlayers.getInstance().getRotationsForPlayer(player.getUUID())).seated) {
             // other players in standing mode
-            Vector3fc aimSource = player.getMainHandItem().getItem() instanceof FishingRodItem ? info.mainHandPos : info.offHandPos;
+            Vector3fc aimSource = mainHandFishingRod ? info.mainHandPos : info.offHandPos;
             // just set it to the hand, everything else looks silly
             linePos.set(player.getPosition(partialTick).add(aimSource.x(), aimSource.y(), aimSource.z()));
             return linePos.get().x;

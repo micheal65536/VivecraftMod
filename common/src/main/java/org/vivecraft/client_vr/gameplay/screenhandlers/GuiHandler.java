@@ -467,10 +467,10 @@ public class GuiHandler {
     }
 
     /**
-     * sets upt he {@code poseStack} to render the gui, and returns the world position of the gui
+     * sets up the {@code poseStack} to render the gui, and returns the world position of the gui
      * @param currentPass renderpass to position the gui for
      * @param poseStack PoseStack to alter
-     * @return
+     * @return gui position in world space
      */
     public static Vec3 applyGUIModelView(RenderPass currentPass, PoseStack poseStack) {
         MC.getProfiler().push("applyGUIModelView");

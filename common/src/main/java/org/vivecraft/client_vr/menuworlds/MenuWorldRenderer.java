@@ -193,7 +193,7 @@ public class MenuWorldRenderer {
         poseStack.mulPose(Axis.YP.rotationDegrees(this.worldRotation));
 
         // small offset to center on source block, and add the partial block offset, this shouldn't be too noticeable on the fog
-        poseStack.translate(-0.5, -Mth.frac(this.blockAccess.getGround()), -0.5);
+        poseStack.translate(-0.5F, -Mth.frac(this.blockAccess.getGround()), -0.5F);
 
         // not sure why this needs to be rotated twice, but it works
         Vec3 offset = new Vec3(0.5, -Mth.frac(this.blockAccess.getGround()), 0.5)
@@ -708,7 +708,7 @@ public class MenuWorldRenderer {
 
             //if (OptifineHelper.isOptifineLoaded()) {
             // needs a full Level
-            //CustomSky.renderSky(this.world, poseStack, Minecraft.getInstance().getFrameTime());
+            //CustomSky.renderSky(this.world, poseStack, ClientUtils.getCurrentPartialTick());
             //}
 
             poseStack.mulPose(Axis.XP.rotationDegrees(this.getTimeOfDay() * 360.0f));
@@ -845,7 +845,7 @@ public class MenuWorldRenderer {
 
             float cloudSizeXZ = 12.0f;
             float cloudSizeY = 4.0f;
-            double cloudOffset = ((float) this.ticks + this.mc.getFrameTime()) * 0.03f;
+            double cloudOffset = ((float) this.ticks + ClientUtils.getCurrentPartialTick()) * 0.03f;
             double cloudX = (x + cloudOffset) / 12.0;
             double cloudY = cloudHeight - y + 0.33;
             if (OptifineHelper.isOptifineLoaded()) {
@@ -1110,7 +1110,7 @@ public class MenuWorldRenderer {
         }
         RenderSystem.depthMask(true);
         int count = -1;
-        float rainAnimationTime = this.ticks + this.mc.getFrameTime();
+        float rainAnimationTime = this.ticks + ClientUtils.getCurrentPartialTick();
         RenderSystem.setShader(GameRenderer::getParticleShader);
         turnOnLightLayer();
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
@@ -1166,7 +1166,7 @@ public class MenuWorldRenderer {
 
                     blend = ((1.0f - distance * distance) * 0.5f + 0.5f);
                     int x = this.ticks + rainX * rainX * 3121 + rainX * 45238971 + rainZ * rainZ * 418711 + rainZ * 13761 & 0x1F;
-                    yOffset = -((float) x + this.mc.getFrameTime()) / 32.0f * (3.0f + randomSource.nextFloat());
+                    yOffset = -((float) x + ClientUtils.getCurrentPartialTick()) / 32.0f * (3.0f + randomSource.nextFloat());
                 } else if (precipitation == Biome.Precipitation.SNOW) {
                     if (count != 1) {
                         if (count >= 0) {
@@ -1179,7 +1179,7 @@ public class MenuWorldRenderer {
 
                     blend = ((1.0f - distance * distance) * 0.3f + 0.5f);
                     xOffset = (float) (randomSource.nextDouble() + (double) rainAnimationTime * 0.01 * (double) ((float) randomSource.nextGaussian()));
-                    float ae = -((float) (this.ticks & 0x1FF) + this.mc.getFrameTime()) / 512.0f;
+                    float ae = -((float) (this.ticks & 0x1FF) + ClientUtils.getCurrentPartialTick()) / 512.0f;
                     float af = (float) (randomSource.nextDouble() + (double) (rainAnimationTime * (float) randomSource.nextGaussian()) * 0.001);
                     yOffset = ae + af;
 
@@ -1291,7 +1291,7 @@ public class MenuWorldRenderer {
             skyColorB = skyColorB * darkening + luminance * (1.0f - darkening);
         }
         if (!this.mc.options.hideLightningFlash().get() && this.skyFlashTime > 0) {
-            float flash = (float) this.skyFlashTime - this.mc.getFrameTime();
+            float flash = (float) this.skyFlashTime - ClientUtils.getCurrentPartialTick();
             if (flash > 1.0f) {
                 flash = 1.0f;
             }
