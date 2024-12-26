@@ -568,8 +568,8 @@ public class VREffectsHelper {
             return;
         }
 
-        // make sure other stuff is finished drawing, or they will render on our buffers.
-        // mainly an issue with iris and the crumbling effect.
+        // make sure other stuff is finished drawing, or they will render on our buffers/use the wrong projection matrix
+        // mainly an issue with iris and the crumbling effect/nausea effect
         MC.renderBuffers().bufferSource().endBatch();
 
         MC.getProfiler().popPush("VR");
@@ -633,6 +633,10 @@ public class VREffectsHelper {
             // skip for spyglass
             return;
         }
+        // make sure other stuff is finished drawing, or they will render on our buffers/use the wrong projection matrix
+        // mainly an issue with iris and the crumbling effect/nausea effect
+        MC.renderBuffers().bufferSource().endBatch();
+
         MC.getProfiler().popPush("VR");
         MC.gameRenderer.lightTexture().turnOffLightLayer();
 
