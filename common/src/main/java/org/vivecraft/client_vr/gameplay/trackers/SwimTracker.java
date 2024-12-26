@@ -2,15 +2,17 @@ package org.vivecraft.client_vr.gameplay.trackers;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.world.phys.Vec3;
 import org.vivecraft.client_vr.ClientDataHolderVR;
+import org.vivecraft.client_vr.settings.AutoCalibration;
 
 public class SwimTracker extends Tracker {
     Vec3 motion = Vec3.ZERO;
-    double friction = 0.9F;
+    double friction = 0.85F;
     double lastDist;
-    final double riseSpeed = 0.005F;
-    double swimspeed = 1.3F;
+    final double riseSpeed = 0.0015F;
+    double swimspeed = 1.0F;
 
     public SwimTracker(Minecraft mc, ClientDataHolderVR dh) {
         super(mc, dh);
@@ -52,6 +54,10 @@ public class SwimTracker extends Tracker {
         if (d2 > 0.0D) {
             Vec3 vec36 = vec34.scale(d2 * this.swimspeed * d0);
             this.motion = this.motion.add(vec36.scale(0.15D));
+        }
+
+        if (player.getFluidHeight(FluidTags.WATER) > AutoCalibration.getPlayerHeight() - 0.1F) {
+            this.motion = this.motion.add(0.0f, this.riseSpeed, 0.0f);
         }
 
         this.lastDist = d1;
