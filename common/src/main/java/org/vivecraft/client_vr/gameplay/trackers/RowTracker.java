@@ -2,7 +2,6 @@ package org.vivecraft.client_vr.gameplay.trackers;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.phys.Vec3;
@@ -13,7 +12,7 @@ import org.vivecraft.client_vr.provider.ControllerType;
 import org.vivecraft.common.utils.MathUtils;
 
 public class RowTracker extends Tracker {
-    private static final double TRANSMISSION_EFFICIENCY = 0.9D;
+    private static final double TRANSMISSION_EFFICIENCY = 1.0D;
 
     public double[] forces = new double[]{0.0D, 0.0D};
     private final Vec3[] lastUWPs = new Vec3[2];
@@ -74,15 +73,11 @@ public class RowTracker extends Tracker {
                 inWater = true;
 
                 Vec3 attach = this.getAttachmentPoint(paddle, boat);
-                Vec3 underWaterPoint = attach.add(arm2Pad.normalize()).subtract(boat.position());
+                Vec3 underWaterPoint = attach.add(arm2Pad.normalize());
 
                 if (this.lastUWPs[paddle] != null) {
                     Vector3f forceVector = MathUtils.subtractToVector3f(this.lastUWPs[paddle],
                         underWaterPoint); // intentionally reverse
-                    forceVector = forceVector.sub(
-                        (float) boat.getDeltaMovement().x,
-                        (float) boat.getDeltaMovement().y,
-                        (float) boat.getDeltaMovement().z);
 
                     Vector3f forward = boatRot.transform(MathUtils.FORWARD, new Vector3f());
 
@@ -149,7 +144,7 @@ public class RowTracker extends Tracker {
     private boolean isPaddleUnderWater(int paddle, Boat boat) {
         Vec3 attachAbs = this.getAttachmentPoint(paddle, boat);
         Vec3 armToPaddle = this.getArmToPaddleVector(paddle, boat).normalize();
-        BlockPos blockPos = new BlockPos(attachAbs.add(armToPaddle));
-        return boat.level.getBlockState(blockPos).getMaterial().isLiquid();
+        Vec3 blockPos = attachAbs.add(armToPaddle);
+        return blockPos.subtract(boat.position()).y < 0.2F;
     }
 }
