@@ -298,8 +298,8 @@ public class VREffectsHelper {
         //back
         RenderSystem.setShaderTexture(0, CUBE_BACK);
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        bufferbuilder.vertex(matrix, 0, 0, 100).
-            uv(1, 1).color(255, 255, 255, 255).endVertex();
+        bufferbuilder.vertex(matrix, 0, 0, 100)
+            .uv(1, 1).color(255, 255, 255, 255).endVertex();
         bufferbuilder.vertex(matrix, 0, 100, 100)
             .uv(1, 0).color(255, 255, 255, 255).endVertex();
         bufferbuilder.vertex(matrix, 100, 100, 100)
@@ -461,8 +461,8 @@ public class VREffectsHelper {
             .uv(0, repeat * height).color(r, g, b, a).endVertex();
 
         // back
-        bufferbuilder.vertex(matrix, 0, 0, length).
-            uv(0, 0).color(r, g, b, a).endVertex();
+        bufferbuilder.vertex(matrix, 0, 0, length)
+            .uv(0, 0).color(r, g, b, a).endVertex();
         bufferbuilder.vertex(matrix, 0, height, length)
             .uv(0, repeat * height).color(r, g, b, a).endVertex();
         bufferbuilder.vertex(matrix, width, height, length)
