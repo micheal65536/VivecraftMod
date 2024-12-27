@@ -16,6 +16,7 @@ public class RowTracker extends Tracker {
     public Vec3[] paddleAngles = new Vec3[]{null, null};
     public boolean[] paddleInWater = new boolean[]{false, false};
     double transmissionEfficiency = 1.0D;
+    private int[] hands = new int[2];
 
     public RowTracker(Minecraft mc, ClientDataHolderVR dh) {
         super(mc, dh);
@@ -58,60 +59,70 @@ public class RowTracker extends Tracker {
         Boat boat = (Boat) player.getVehicle();
         Quaternion quaternion = (new Quaternion(boat.getXRot(), -(boat.getYRot() % 360.0F), 0.0F)).normalized();
 
-        for (int i = 0; i <= 1; ++i) {
-            this.paddleAngles[i] = quaternion.inverse().multiply(this.getArmToPaddleVector(i, boat));
+        Vec3 hand0 = quaternion.inverse().multiply(this.getAbsArmPos(0).subtract(boat.position()));
+        Vec3 hand1 = quaternion.inverse().multiply(this.getAbsArmPos(1).subtract(boat.position()));
+        if (hand0.x > hand1.x) {
+            hands[0] = 0;
+            hands[1] = 1;
+        } else {
+            hands[0] = 1;
+            hands[1] = 0;
+        }
+
+        for (int paddle = 0; paddle <= 1; ++paddle) {
+            this.paddleAngles[paddle] = quaternion.inverse().multiply(this.getArmToPaddleVector(paddle, hands[paddle], boat));
 
             boolean inWater;
-            if (!this.isPaddleUnderWater(i, boat)) {
+            if (!this.isPaddleUnderWater(paddle, hands[paddle], boat)) {
                 inWater = false;
 
-                this.forces[i] = 0.0D;
-                this.lastUWPs[i] = null;
+                this.forces[paddle] = 0.0D;
+                this.lastUWPs[paddle] = null;
             } else {
                 inWater = true;
 
-                Vec3 vec3 = this.getArmToPaddleVector(i, boat);
-                Vec3 vec31 = this.getAttachmentPoint(i, boat);
+                Vec3 vec3 = this.getArmToPaddleVector(paddle, hands[paddle], boat);
+                Vec3 vec31 = this.getAttachmentPoint(paddle, boat);
                 Vec3 vec32 = vec31.add(vec3.normalize());
 
-                if (this.lastUWPs[i] != null) {
-                    Vec3 vec33 = this.lastUWPs[i].subtract(vec32);
+                if (this.lastUWPs[paddle] != null) {
+                    Vec3 vec33 = this.lastUWPs[paddle].subtract(vec32);
                     Vec3 vec34 = quaternion.multiply(new Vec3(0.0D, 0.0D, 1.0D));
                     double d0 = vec33.dot(vec34) * this.transmissionEfficiency / 5.0D;
 
-                    if ((!(d0 < 0.0D) || !(this.forces[i] > 0.0D)) && (!(d0 > 0.0D) || !(this.forces[i] < 0.0D))) {
-                        this.forces[i] = Math.min(Math.max(d0, -0.1D), 0.1D);
+                    if ((!(d0 < 0.0D) || !(this.forces[paddle] > 0.0D)) && (!(d0 > 0.0D) || !(this.forces[paddle] < 0.0D))) {
+                        this.forces[paddle] = Math.min(Math.max(d0, -0.1D), 0.1D);
                     } else {
-                        this.forces[i] = 0.0D;
+                        this.forces[paddle] = 0.0D;
                     }
                 }
 
-                this.lastUWPs[i] = vec32;
+                this.lastUWPs[paddle] = vec32;
             }
 
             if (inWater) {
-                if (!this.paddleInWater[i]) {
-                    this.dh.vr.triggerHapticPulse(i == 0 ? ControllerType.LEFT : ControllerType.RIGHT, 0.05F, 100.0F, 0.8F);
+                if (!this.paddleInWater[paddle]) {
+                    this.dh.vr.triggerHapticPulse(ControllerType.values()[hands[paddle]], 0.05F, 100.0F, 0.8F);
                 } else {
-                    float strength = (float) (Math.abs(this.forces[i]) / 0.1D);
+                    float strength = (float) (Math.abs(this.forces[paddle]) / 0.1D);
                     if (strength > 0.05F) {
                         strength = strength * 0.7F + 0.3F;
-                        this.dh.vr.triggerHapticPulse(i == 0 ? ControllerType.LEFT : ControllerType.RIGHT, 0.05F, 100.0F, strength);
+                        this.dh.vr.triggerHapticPulse(ControllerType.values()[hands[paddle]], 0.05F, 100.0F, strength);
                     }
                 }
             } else {
-                if (this.paddleInWater[i]) {
-                    this.dh.vr.triggerHapticPulse(i == 0 ? ControllerType.LEFT : ControllerType.RIGHT, 0.05F, 100.0F, 0.2F);
+                if (this.paddleInWater[paddle]) {
+                    this.dh.vr.triggerHapticPulse(ControllerType.values()[hands[paddle]], 0.05F, 100.0F, 0.2F);
                 }
             }
 
-            this.paddleInWater[i] = inWater;
+            this.paddleInWater[paddle] = inWater;
         }
     }
 
-    Vec3 getArmToPaddleVector(int paddle, Boat boat) {
+    Vec3 getArmToPaddleVector(int paddle, int hand, Boat boat) {
         Vec3 vec3 = this.getAttachmentPoint(paddle, boat);
-        Vec3 vec31 = this.getAbsArmPos(paddle == 0 ? 1 : 0);
+        Vec3 vec31 = this.getAbsArmPos(hand);
         return vec3.subtract(vec31);
     }
 
@@ -127,9 +138,9 @@ public class RowTracker extends Tracker {
         return VRPlayer.get().roomOrigin.add(quaternion.multiply(vec3));
     }
 
-    boolean isPaddleUnderWater(int paddle, Boat boat) {
+    boolean isPaddleUnderWater(int paddle, int hand, Boat boat) {
         Vec3 vec3 = this.getAttachmentPoint(paddle, boat);
-        Vec3 vec31 = this.getArmToPaddleVector(paddle, boat).normalize();
+        Vec3 vec31 = this.getArmToPaddleVector(paddle, hand, boat).normalize();
         Vec3 vec32 = vec3.add(vec31);
         return vec32.subtract(boat.position()).y < 0.2F;
     }
