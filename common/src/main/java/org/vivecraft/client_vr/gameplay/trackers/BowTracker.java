@@ -59,6 +59,14 @@ public class BowTracker extends Tracker {
         return this.canDraw || this.isDrawing;
     }
 
+    public boolean isCharged() {
+        if (!ClientNetworking.SERVER_WANTS_DATA) {
+            return Util.getMillis() - this.startDrawTime >= MAX_DRAW_MILLIS;
+        } else {
+            return false;
+        }
+    }
+
     public static boolean isBow(ItemStack itemStack) {
         if (itemStack == ItemStack.EMPTY) {
             return false;
@@ -269,6 +277,10 @@ public class BowTracker extends Tracker {
                     if (drawPercent == 1.0D) {
                         this.dh.vr.triggerHapticPulse(bowHand, hapStrength);
                     }
+                }
+
+                if (this.isCharged() && this.hapCounter % 4 == 0) {
+                    this.dh.vr.triggerHapticPulse(bowHand, 200);
                 }
 
                 this.lastHapStep = hapStep;
