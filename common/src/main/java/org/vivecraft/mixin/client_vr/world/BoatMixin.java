@@ -39,7 +39,7 @@ public abstract class BoatMixin extends Entity implements BoatExtension {
         super(entityType, level);
     }
 
-    @ModifyExpressionValue(method = "controlBoat", at = @At(value = "CONSTANT", args = "floatValue=1F", ordinal = 0))
+    @ModifyExpressionValue(method = "controlBoatq", at = @At(value = "CONSTANT", args = "floatValue=1F", ordinal = 0))
     private float vivecraft$inputLeft(float leftInput) {
         return VRState.VR_RUNNING ? Minecraft.getInstance().player.input.leftImpulse : leftInput;
     }
@@ -101,17 +101,11 @@ public abstract class BoatMixin extends Entity implements BoatExtension {
                 this.deltaRotation += dataHolder.rowTracker.forces[0] * 50;
                 this.deltaRotation -= dataHolder.rowTracker.forces[1] * 50;
 
-                if (this.deltaRotation < 0F) {
-                    this.inputLeft = true;
-                }
-                if (this.deltaRotation > 0F) {
-                    this.inputRight = true;
-                }
-
                 acceleration = (float) (dataHolder.rowTracker.forces[0] + dataHolder.rowTracker.forces[1]);
-                if (acceleration > 0.005F) {
-                    this.inputUp = true;
-                }
+
+                this.inputLeft = dataHolder.rowTracker.paddleInWater[0] && !dataHolder.rowTracker.paddleInWater[1];
+                this.inputRight = dataHolder.rowTracker.paddleInWater[1] && !dataHolder.rowTracker.paddleInWater[0];
+                this.inputUp = dataHolder.rowTracker.paddleInWater[0] || dataHolder.rowTracker.paddleInWater[1];
 
                 this.paddleAngles[0] = dataHolder.rowTracker.paddleAngles[0];
                 this.paddleAngles[1] = dataHolder.rowTracker.paddleAngles[1];
