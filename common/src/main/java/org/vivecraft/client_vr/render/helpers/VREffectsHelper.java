@@ -59,6 +59,7 @@ public class VREffectsHelper {
 
     private static final ClientDataHolderVR DATA_HOLDER = ClientDataHolderVR.getInstance();
     private static final Minecraft MC = Minecraft.getInstance();
+    private static final ResourceLocation SCOPE_TEXTURE = new ResourceLocation("textures/misc/spyglass_scope.png");
 
     /**
      * checks if the given position is inside a block that blocks vision
@@ -122,7 +123,7 @@ public class VREffectsHelper {
             poseStack.last().pose());
 
         // draw spyglass overlay
-        RenderSystem.setShaderTexture(0, new ResourceLocation("textures/misc/spyglass_scope.png"));
+        RenderSystem.setShaderTexture(0, SCOPE_TEXTURE);
         RenderSystem.enableBlend();
         // slight offset to not cause z fighting
         poseStack.translate(0.0F, 0.0F, 0.00001F);
