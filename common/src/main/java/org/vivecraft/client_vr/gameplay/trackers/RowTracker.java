@@ -13,6 +13,7 @@ import org.vivecraft.common.utils.math.Quaternion;
 public class RowTracker extends Tracker {
     Vec3[] lastUWPs = new Vec3[2];
     public double[] forces = new double[]{0.0D, 0.0D};
+    public Vec3[] paddleAngles = new Vec3[]{null, null};
     double transmissionEfficiency = 0.9D;
 
     public RowTracker(Minecraft mc, ClientDataHolderVR dh) {
@@ -46,6 +47,8 @@ public class RowTracker extends Tracker {
     public void reset(LocalPlayer player) {
         this.forces[0] = 0.0D;
         this.forces[1] = 0.0D;
+        this.paddleAngles[0] = null;
+        this.paddleAngles[1] = null;
     }
 
     public void doProcess(LocalPlayer player) {
@@ -53,6 +56,8 @@ public class RowTracker extends Tracker {
         Quaternion quaternion = (new Quaternion(boat.getXRot(), -(boat.getYRot() % 360.0F), 0.0F)).normalized();
 
         for (int i = 0; i <= 1; ++i) {
+            this.paddleAngles[i] = quaternion.inverse().multiply(this.getArmToPaddleVector(i, boat));
+
             if (!this.isPaddleUnderWater(i, boat)) {
                 this.forces[i] = 0.0D;
                 this.lastUWPs[i] = null;

@@ -5,6 +5,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,9 +16,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.VRState;
+import org.vivecraft.client_vr.extensions.BoatExtension;
 
 @Mixin(Boat.class)
-public abstract class BoatMixin extends Entity {
+public abstract class BoatMixin extends Entity implements BoatExtension {
 
     @Shadow
     private float deltaRotation;
@@ -30,6 +32,8 @@ public abstract class BoatMixin extends Entity {
 
     @Shadow
     public abstract void setPaddleState(boolean pLeft, boolean pRight);
+
+    public Vec3[] paddleAngles = new Vec3[]{null, null};
 
     public BoatMixin(EntityType<?> entityType, Level level) {
         super(entityType, level);
@@ -129,6 +133,19 @@ public abstract class BoatMixin extends Entity {
         this.setDeltaMovement(this.getDeltaMovement().x + mx, this.getDeltaMovement().y, this.getDeltaMovement().z + mz);
 
         this.setPaddleState(this.inputRight && !this.inputLeft || this.inputUp, this.inputLeft && !this.inputRight || this.inputUp);
+        this.paddleAngles[0] = clientDataHolderVR.rowTracker.paddleAngles[0];
+        this.paddleAngles[1] = clientDataHolderVR.rowTracker.paddleAngles[1];
         ci.cancel();
+    }
+
+    @Inject(at = @At(value = "HEAD"), method = "tick()V")
+    private void vivecraft$clearPaddleAngles(CallbackInfo ci) {
+        this.paddleAngles[0] = null;
+        this.paddleAngles[1] = null;
+    }
+
+    @Override
+    public Vec3[] vivecraft$getPaddleAngles() {
+        return this.paddleAngles;
     }
 }
