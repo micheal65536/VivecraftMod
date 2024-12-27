@@ -138,12 +138,6 @@ public class ShaderHelper {
                     WATER_EFFECT = 0.0F;
                 }
 
-                if (Mth.lerp(partialTick, MC.player.oSpinningEffectIntensity, MC.player.spinningEffectIntensity) >
-                    0.0F && !MC.player.hasEffect(MobEffects.CONFUSION))
-                {
-
-                }
-
                 float portalTime = Mth.lerp(partialTick, MC.player.oSpinningEffectIntensity,
                     MC.player.spinningEffectIntensity);
                 if (DATA_HOLDER.vrSettings.portalEffect &&
