@@ -211,9 +211,9 @@ public class VRPlayer {
                 (worldScaleOverride.isValueMinOverridden() || worldScaleOverride.isValueMaxOverridden()))
             {
                 // a vr runtime worldscale also scales the distance between the eyes, so that can be used to calculate it
-                float measuredIPD = ClientDataHolderVR.getInstance().vr.getEyePosition(RenderPass.LEFT)
-                    .sub(ClientDataHolderVR.getInstance().vr.getEyePosition(RenderPass.RIGHT)).length();
-                float queriedIPD = ClientDataHolderVR.getInstance().vr.getIPD();
+                float measuredIPD = this.dh.vr.getEyePosition(RenderPass.LEFT)
+                    .sub(this.dh.vr.getEyePosition(RenderPass.RIGHT)).length();
+                float queriedIPD = this.dh.vr.getIPD();
 
                 float runtimeWorldScale = queriedIPD / measuredIPD;
 
@@ -234,7 +234,7 @@ public class VRPlayer {
                                 .withStyle(style -> style.withColor(ChatFormatting.GREEN)),
                             Component.literal("%.2fx".formatted(worldScaleOverride.getValueMax()))
                                 .withStyle(style -> style.withColor(ChatFormatting.GREEN)),
-                            Component.literal(ClientDataHolderVR.getInstance().vr.getRuntimeName())
+                            Component.literal(this.dh.vr.getRuntimeName())
                                 .withStyle(style -> style.withColor(ChatFormatting.GOLD)))));
                 }
             }
