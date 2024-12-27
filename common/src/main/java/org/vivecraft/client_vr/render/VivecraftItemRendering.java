@@ -169,6 +169,11 @@ public class VivecraftItemRendering {
 
             float f3 = (float) ((180D / Math.PI) * (double) f2);
 
+            if (dh.bowTracker.isCharged()) {
+                long j = Util.getMillis() - dh.bowTracker.startDrawTime;
+                translateX += 0.003D * Math.sin((double) j);
+            }
+
             pMatrixStack.translate(0.0D, 0.0D, 0.1D);
             pMatrixStack.last().pose().multiply(dh.vrPlayer.vrdata_world_render.getController(1).getMatrix().transposed().toMCMatrix());
             rotation.mul(Vector3f.YP.rotationDegrees(f1));

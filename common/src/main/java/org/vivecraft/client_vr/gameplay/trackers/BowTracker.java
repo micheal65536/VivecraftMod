@@ -97,6 +97,14 @@ public class BowTracker extends Tracker {
         }
     }
 
+    public boolean isCharged() {
+        if (!ClientNetworking.serverWantsData) {
+            return Util.getMillis() - this.startDrawTime >= this.maxDrawMillis;
+        } else {
+            return false;
+        }
+    }
+
     public void reset(LocalPlayer player) {
         this.isDrawing = false;
         this.canDraw = false;
@@ -240,6 +248,10 @@ public class BowTracker extends Tracker {
                     if (d1 == 1.0D) {
                         this.dh.vr.triggerHapticPulse(1, j1);
                     }
+                }
+
+                if (this.isCharged() && this.hapcounter % 4 == 0) {
+                    this.dh.vr.triggerHapticPulse(1, 200);
                 }
 
                 this.lasthapStep = i1;
