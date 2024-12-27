@@ -2,7 +2,6 @@ package org.vivecraft.client_vr.gameplay.trackers;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.phys.Vec3;
 import org.vivecraft.client_vr.ClientDataHolderVR;
@@ -16,7 +15,7 @@ public class RowTracker extends Tracker {
     public double[] forces = new double[]{0.0D, 0.0D};
     public Vec3[] paddleAngles = new Vec3[]{null, null};
     public boolean[] paddleInWater = new boolean[]{false, false};
-    double transmissionEfficiency = 0.9D;
+    double transmissionEfficiency = 1.0D;
 
     public RowTracker(Minecraft mc, ClientDataHolderVR dh) {
         super(mc, dh);
@@ -73,11 +72,10 @@ public class RowTracker extends Tracker {
 
                 Vec3 vec3 = this.getArmToPaddleVector(i, boat);
                 Vec3 vec31 = this.getAttachmentPoint(i, boat);
-                Vec3 vec32 = vec31.add(vec3.normalize()).subtract(boat.position());
+                Vec3 vec32 = vec31.add(vec3.normalize());
 
                 if (this.lastUWPs[i] != null) {
                     Vec3 vec33 = this.lastUWPs[i].subtract(vec32);
-                    vec33 = vec33.subtract(boat.getDeltaMovement());
                     Vec3 vec34 = quaternion.multiply(new Vec3(0.0D, 0.0D, 1.0D));
                     double d0 = vec33.dot(vec34) * this.transmissionEfficiency / 5.0D;
 
@@ -132,7 +130,7 @@ public class RowTracker extends Tracker {
     boolean isPaddleUnderWater(int paddle, Boat boat) {
         Vec3 vec3 = this.getAttachmentPoint(paddle, boat);
         Vec3 vec31 = this.getArmToPaddleVector(paddle, boat).normalize();
-        BlockPos blockpos = new BlockPos(vec3.add(vec31));
-        return boat.level.getBlockState(blockpos).getMaterial().isLiquid();
+        Vec3 vec32 = vec3.add(vec31);
+        return vec32.subtract(boat.position()).y < 0.2F;
     }
 }
