@@ -9,6 +9,7 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.vivecraft.client_vr.ClientDataHolderVR;
+import org.vivecraft.client_vr.provider.ControllerType;
 import org.vivecraft.common.utils.MathUtils;
 
 public class RowTracker extends Tracker {
@@ -101,6 +102,22 @@ public class RowTracker extends Tracker {
 
                 this.forces[paddle] = 0.0D;
                 this.lastUWPs[paddle] = null;
+            }
+
+            if (inWater) {
+                if (!this.paddleInWater[paddle]) {
+                    this.dh.vr.triggerHapticPulse(paddle == 0 ? ControllerType.LEFT : ControllerType.RIGHT, 0.05F, 100.0F, 0.8F);
+                } else {
+                    float strength = (float) (Math.abs(this.forces[paddle]) / 0.1D);
+                    if (strength > 0.05F) {
+                        strength = strength * 0.7F + 0.3F;
+                        this.dh.vr.triggerHapticPulse(paddle == 0 ? ControllerType.LEFT : ControllerType.RIGHT, 0.05F, 100.0F, strength);
+                    }
+                }
+            } else {
+                if (this.paddleInWater[paddle]) {
+                    this.dh.vr.triggerHapticPulse(paddle == 0 ? ControllerType.LEFT : ControllerType.RIGHT, 0.05F, 100.0F, 0.2F);
+                }
             }
 
             this.paddleInWater[paddle] = inWater;
