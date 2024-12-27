@@ -14,6 +14,7 @@ public class RowTracker extends Tracker {
     Vec3[] lastUWPs = new Vec3[2];
     public double[] forces = new double[]{0.0D, 0.0D};
     public Vec3[] paddleAngles = new Vec3[]{null, null};
+    public boolean[] paddleInWater = new boolean[]{false, false};
     double transmissionEfficiency = 0.9D;
 
     public RowTracker(Minecraft mc, ClientDataHolderVR dh) {
@@ -41,7 +42,7 @@ public class RowTracker extends Tracker {
     }
 
     public boolean isRowing() {
-        return this.forces[0] != 0.0D || this.forces[1] != 0.0D;
+        return this.paddleAngles[0] != null || this.paddleAngles[1] != null;
     }
 
     public void reset(LocalPlayer player) {
@@ -49,6 +50,8 @@ public class RowTracker extends Tracker {
         this.forces[1] = 0.0D;
         this.paddleAngles[0] = null;
         this.paddleAngles[1] = null;
+        this.paddleInWater[0] = false;
+        this.paddleInWater[1] = false;
     }
 
     public void doProcess(LocalPlayer player) {
@@ -58,10 +61,15 @@ public class RowTracker extends Tracker {
         for (int i = 0; i <= 1; ++i) {
             this.paddleAngles[i] = quaternion.inverse().multiply(this.getArmToPaddleVector(i, boat));
 
+            boolean inWater;
             if (!this.isPaddleUnderWater(i, boat)) {
+                inWater = false;
+
                 this.forces[i] = 0.0D;
                 this.lastUWPs[i] = null;
             } else {
+                inWater = true;
+
                 Vec3 vec3 = this.getArmToPaddleVector(i, boat);
                 Vec3 vec31 = this.getAttachmentPoint(i, boat);
                 Vec3 vec32 = vec31.add(vec3.normalize()).subtract(boat.position());
@@ -81,6 +89,8 @@ public class RowTracker extends Tracker {
 
                 this.lastUWPs[i] = vec32;
             }
+
+            this.paddleInWater[i] = inWater;
         }
     }
 

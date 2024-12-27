@@ -110,20 +110,17 @@ public abstract class BoatMixin extends Entity implements BoatExtension {
                 this.deltaRotation += clientDataHolderVR.rowTracker.forces[0] * 50;
                 this.deltaRotation -= clientDataHolderVR.rowTracker.forces[1] * 50;
 
-                if (deltaRotation < 0) {
-                    this.inputLeft = true;
-                }
-                if (deltaRotation > 0) {
-                    this.inputRight = true;
-                }
-
                 f = (float) (clientDataHolderVR.rowTracker.forces[0] + clientDataHolderVR.rowTracker.forces[1]);
-                if (f > 0.005) {
-                    this.inputUp = true;
-                }
 
                 mx = Math.sin(-this.getYRot() * 0.017453292F) * f;
                 mz = Math.cos(this.getYRot() * 0.017453292F) * f;
+
+                this.inputLeft = clientDataHolderVR.rowTracker.paddleInWater[0] && !clientDataHolderVR.rowTracker.paddleInWater[1];
+                this.inputRight = clientDataHolderVR.rowTracker.paddleInWater[1] && !clientDataHolderVR.rowTracker.paddleInWater[0];
+                this.inputUp = clientDataHolderVR.rowTracker.paddleInWater[0] || clientDataHolderVR.rowTracker.paddleInWater[1];
+
+                this.paddleAngles[0] = clientDataHolderVR.rowTracker.paddleAngles[0];
+                this.paddleAngles[1] = clientDataHolderVR.rowTracker.paddleAngles[1];
             } else {
                 //default boat (seated mode)
                 mx = Math.sin(-this.getYRot() * 0.017453292F) * f;
@@ -133,8 +130,6 @@ public abstract class BoatMixin extends Entity implements BoatExtension {
         this.setDeltaMovement(this.getDeltaMovement().x + mx, this.getDeltaMovement().y, this.getDeltaMovement().z + mz);
 
         this.setPaddleState(this.inputRight && !this.inputLeft || this.inputUp, this.inputLeft && !this.inputRight || this.inputUp);
-        this.paddleAngles[0] = clientDataHolderVR.rowTracker.paddleAngles[0];
-        this.paddleAngles[1] = clientDataHolderVR.rowTracker.paddleAngles[1];
         ci.cancel();
     }
 
