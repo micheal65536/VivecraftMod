@@ -7,6 +7,7 @@ import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.phys.Vec3;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.gameplay.VRPlayer;
+import org.vivecraft.client_vr.provider.ControllerType;
 import org.vivecraft.client_vr.settings.VRSettings;
 import org.vivecraft.common.utils.math.Quaternion;
 
@@ -88,6 +89,22 @@ public class RowTracker extends Tracker {
                 }
 
                 this.lastUWPs[i] = vec32;
+            }
+
+            if (inWater) {
+                if (!this.paddleInWater[i]) {
+                    this.dh.vr.triggerHapticPulse(i == 0 ? ControllerType.LEFT : ControllerType.RIGHT, 0.05F, 100.0F, 0.8F);
+                } else {
+                    float strength = (float) (Math.abs(this.forces[i]) / 0.1D);
+                    if (strength > 0.05F) {
+                        strength = strength * 0.7F + 0.3F;
+                        this.dh.vr.triggerHapticPulse(i == 0 ? ControllerType.LEFT : ControllerType.RIGHT, 0.05F, 100.0F, strength);
+                    }
+                }
+            } else {
+                if (this.paddleInWater[i]) {
+                    this.dh.vr.triggerHapticPulse(i == 0 ? ControllerType.LEFT : ControllerType.RIGHT, 0.05F, 100.0F, 0.2F);
+                }
             }
 
             this.paddleInWater[i] = inWater;
