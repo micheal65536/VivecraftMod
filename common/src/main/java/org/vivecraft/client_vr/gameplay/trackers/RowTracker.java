@@ -16,6 +16,7 @@ public class RowTracker extends Tracker {
 
     public double[] forces = new double[]{0.0D, 0.0D};
     private final Vec3[] lastUWPs = new Vec3[2];
+    public Vec3[] paddleAngles = new Vec3[]{null, null};
 
     public RowTracker(Minecraft mc, ClientDataHolderVR dh) {
         super(mc, dh);
@@ -48,6 +49,8 @@ public class RowTracker extends Tracker {
     public void reset(LocalPlayer player) {
         this.forces[0] = 0.0D;
         this.forces[1] = 0.0D;
+        this.paddleAngles[0] = null;
+        this.paddleAngles[1] = null;
     }
 
     @Override
@@ -59,8 +62,10 @@ public class RowTracker extends Tracker {
             0.0F).normalize();
 
         for (int paddle = 0; paddle <= 1; paddle++) {
+            Vec3 arm2Pad = this.getArmToPaddleVector(paddle, boat);
+            this.paddleAngles[paddle] = MathUtils.toMcVec3(boatRot.transformInverse(new Vector3f((float) arm2Pad.x, (float) arm2Pad.y, (float) arm2Pad.z)));
+
             if (this.isPaddleUnderWater(paddle, boat)) {
-                Vec3 arm2Pad = this.getArmToPaddleVector(paddle, boat);
                 Vec3 attach = this.getAttachmentPoint(paddle, boat);
                 Vec3 underWaterPoint = attach.add(arm2Pad.normalize()).subtract(boat.position());
 
