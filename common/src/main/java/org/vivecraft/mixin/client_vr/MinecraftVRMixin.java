@@ -85,7 +85,9 @@ import org.vivecraft.mod_compat_vr.optifine.OptifineHelper;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 @Mixin(Minecraft.class)
 public abstract class MinecraftVRMixin implements MinecraftExtension {
@@ -218,24 +220,25 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
     }
 
     // on first resource load finished
-    @Inject(method = {"method_53522", // fabric
-        "lambda$new$6"}, // forge
-        at = @At("HEAD"), remap = false)
-    private void vivecraft$initVROnLaunch(CallbackInfo ci) {
-        // set initial resourcepacks
-        this.vivecraft$resourcepacks = this.resourceManager.listPacks().map(PackResources::packId).toList();
+    @ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/LoadingOverlay;<init>(Lnet/minecraft/client/Minecraft;Lnet/minecraft/server/packs/resources/ReloadInstance;Ljava/util/function/Consumer;Z)V"))
+    private Consumer<Optional<Throwable>> vivecraft$initVROnLaunch(Consumer<Optional<Throwable>> consumer) {
+        return optional -> {
+            consumer.accept(optional);
+            // set initial resourcepacks
+            this.vivecraft$resourcepacks = this.resourceManager.listPacks().map(PackResources::packId).toList();
 
-        if (OptifineHelper.isOptifineLoaded() && ClientDataHolderVR.getInstance().menuWorldRenderer != null &&
-            ClientDataHolderVR.getInstance().menuWorldRenderer.isReady())
-        {
-            // with optifine this texture somehow fails to load, so manually reload it
-            try {
-                this.textureManager.getTexture(Gui.CROSSHAIR_SPRITE).load(this.resourceManager);
-            } catch (IOException e) {
-                // if there was an error, just reload everything
-                reloadResourcePacks();
+            if (OptifineHelper.isOptifineLoaded() && ClientDataHolderVR.getInstance().menuWorldRenderer != null &&
+                ClientDataHolderVR.getInstance().menuWorldRenderer.isReady())
+            {
+                // with optifine this texture somehow fails to load, so manually reload it
+                try {
+                    this.textureManager.getTexture(Gui.CROSSHAIR_SPRITE).load(this.resourceManager);
+                } catch (IOException e) {
+                    // if there was an error, just reload everything
+                    reloadResourcePacks();
+                }
             }
-        }
+        };
     }
 
     @Inject(method = "onGameLoadFinished", at = @At("TAIL"))
