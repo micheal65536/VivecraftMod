@@ -27,6 +27,8 @@ public class ClientEvents {
     }
 
     @SubscribeEvent
+    // this is only removed in 1.21.1 don't bother me please
+    @SuppressWarnings("removal")
     public static void registerConfigScreen(FMLConstructModEvent constructModEvent) {
         ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class,
             () -> new ConfigScreenHandler.ConfigScreenFactory((mc, screen) -> new VivecraftMainSettings(screen)));
