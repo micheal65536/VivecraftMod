@@ -74,7 +74,6 @@
     "client_vr.renderer.entity.EntityRendererVRMixin",
     "client_vr.renderer.entity.FishingHookRendererVRMixin",
     "client_vr.renderer.entity.GuardianRendererVRMixin",
-    "client_vr.renderer.entity.MobRendererVRMixin",
     "client_vr.renderer.entity.layers.CustomHeadLayerMixin",
     "client_vr.renderer.entity.layers.HumanoidArmorLayerMixin",
     "client_vr.tutorial.MovementTutorialStepInstanceVRMixin",

@@ -2,6 +2,7 @@ package org.vivecraft.mixin.client_vr.player;
 
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.player.LocalPlayer;
@@ -30,6 +31,7 @@ import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.VRState;
 import org.vivecraft.client_vr.extensions.PlayerExtension;
 import org.vivecraft.client_vr.gameplay.VRPlayer;
+import org.vivecraft.client_vr.render.helpers.RenderHelper;
 import org.vivecraft.client_vr.settings.VRSettings;
 import org.vivecraft.client_vr.utils.external.jinfinadeck;
 import org.vivecraft.client_vr.utils.external.jkatvr;
@@ -225,11 +227,19 @@ public abstract class LocalPlayerVRMixin extends LocalPlayer_PlayerVRMixin imple
         }
     }
 
+    @Inject(method = "getRopeHoldPosition", at = @At("HEAD"), cancellable = true)
+    private void vivecraft$vrRopePosition( CallbackInfoReturnable<Vec3> cir) {
+        if (VRState.VR_RUNNING && vivecraft$isLocalPlayer(this)) {
+            // vanilla rop position is fixed to the view in first person, so attached it to the hand instead
+            cir.setReturnValue(RenderHelper.getControllerRenderPos(0));
+        }
+    }
+
     /**
      * inject into {@link Player#eat(Level, ItemStack)}
      */
     @Override
-    protected void vivecraft$beforeEat(Level level, ItemStack food, CallbackInfoReturnable<ItemStack> cir) {
+    protected void vivecraft$beforeEat(CallbackInfoReturnable<ItemStack> cir, @Local(argsOnly = true) ItemStack food) {
         if (VRState.VR_RUNNING && food.isEdible() && vivecraft$isLocalPlayer(this) &&
             food.getHoverName().getString().equals("EAT ME"))
         {

@@ -581,6 +581,7 @@
   "vivecraft.messages.menuworldexporterror": "World export failed with error: %s",
   "vivecraft.messages.stencil": "§a[Vivecraft]§r A different mod uses the stencil buffer, if you run into weird rendering issues, try disabling the Eye Stencil in: %s\nYou can disable this message in: %s",
   "vivecraft.messages.slowshader": "§a[Vivecraft]§r The selected shader uses features, that need the shadows to be processed for every render pass. §6This might be slow.§r",
+  "vivecraft.messages.menuworldshaderdisable": "§a[Vivecraft]§r Temporarily disabling shaders to load the Menuworld.",
   "vivecraft.messages.3options": "%s > %s > %s",
   "vivecraft.messages.openSettings": "Click to open settings",
   "vivecraft.messages.blocklist.title": "Server is on the Vivecraft Server Blocklist",

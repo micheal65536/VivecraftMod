@@ -1,5 +1,6 @@
 package org.vivecraft.mixin.client_vr.player;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.entity.player.Player;
@@ -30,5 +31,5 @@ public abstract class LocalPlayer_PlayerVRMixin extends LocalPlayer_LivingEntity
      * dummy to be overridden in {@link LocalPlayerVRMixin}
      */
     @Inject(method = "eat", at = @At("HEAD"))
-    protected void vivecraft$beforeEat(Level level, ItemStack food, CallbackInfoReturnable<ItemStack> cir) {}
+    protected void vivecraft$beforeEat(CallbackInfoReturnable<ItemStack> cir, @Local(argsOnly = true) ItemStack food) {}
 }

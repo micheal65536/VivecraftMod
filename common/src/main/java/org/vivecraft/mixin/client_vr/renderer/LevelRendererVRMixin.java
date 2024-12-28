@@ -177,18 +177,6 @@ public abstract class LevelRendererVRMixin implements ResourceManagerReloadListe
         this.vivecraft$renderedEntity = null;
     }
 
-    @ModifyVariable(method = "renderLevel", at = @At("HEAD"), argsOnly = true)
-    private boolean vivecraft$noBlockOutlineOnInteract(boolean renderBlockOutline) {
-        // don't draw the block outline when the interaction outline is active
-        return renderBlockOutline && (RenderPassType.isVanilla() ||
-            !(ClientDataHolderVR.getInstance().interactTracker.isInteractActive(0) &&
-                (ClientDataHolderVR.getInstance().interactTracker.inBlockHit[0] != null ||
-                    ClientDataHolderVR.getInstance().interactTracker.bukkit[0]
-                )
-            )
-        );
-    }
-
     @Inject(method = "renderLevel", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;hitResult:Lnet/minecraft/world/phys/HitResult;", ordinal = 1))
     private void vivecraft$interactOutline(
         CallbackInfo ci, @Local(argsOnly = true) Camera camera, @Local(argsOnly = true) PoseStack poseStack)

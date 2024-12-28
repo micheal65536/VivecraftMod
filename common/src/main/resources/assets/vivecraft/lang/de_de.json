@@ -579,6 +579,7 @@
   "vivecraft.messages.menuworldexporterror": "Weltexport fehlgeschlagen mit folgendem Fehler: %s",
   "vivecraft.messages.stencil": "§a[Vivecraft]§r Ein anderer Mod verwendet den Schablonen Puffer, wenn Sie Grafikfehler bemerken, versuchen Sie die Augenschablone in folgendem Menü zu deaktivieren: %s\nSie können diese Nachricht in folgendem Menü deaktivieren: %s",
   "vivecraft.messages.slowshader": "§a[Vivecraft]§r Der ausgewählte Shader benutzt Features, welche die Schatten in jedem Darstellungsdurchgang verarbeiten muss. §6Das kann langsam sein.§r",
+  "vivecraft.messages.menuworldshaderdisable": "§a[Vivecraft]§r Shader wurde temporär deaktiviert, um die Menüwelt zu laden.",
   "vivecraft.messages.3options": "%s > %s > %s",
   "vivecraft.messages.openSettings": "Klicken um die Einstellungen zu öffnen.",
   "vivecraft.messages.blocklist.title": "Server ist auf der Vivecraft Serverblockliste",

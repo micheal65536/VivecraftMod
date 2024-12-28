@@ -3,6 +3,7 @@ package org.vivecraft.mixin.client_vr.renderer;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -244,7 +245,16 @@ public abstract class GameRendererVRMixin
 
     @Inject(method = "shouldRenderBlockOutline", at = @At("HEAD"), cancellable = true)
     private void vivecraft$shouldDrawBlockOutline(CallbackInfoReturnable<Boolean> cir) {
-        if (VRState.VR_RUNNING) {
+        if (!RenderPassType.isVanilla()) {
+            if (vivecraft$DATA_HOLDER.interactTracker.isInteractActive(0) &&
+                (vivecraft$DATA_HOLDER.interactTracker.inBlockHit[0] != null ||
+                    vivecraft$DATA_HOLDER.interactTracker.bukkit[0]
+                ))
+            {
+                // no block outline when the main arm has interaction
+                cir.setReturnValue(false);
+            }
+
             if (vivecraft$DATA_HOLDER.teleportTracker.isAiming() ||
                 vivecraft$DATA_HOLDER.vrSettings.renderBlockOutlineMode == VRSettings.RenderPointerElement.NEVER)
             {
@@ -358,22 +368,16 @@ public abstract class GameRendererVRMixin
         return RenderPassType.isVanilla() ? renderLevel : this.vivecraft$shouldDrawGui;
     }
 
-    @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;renderItemActivationAnimation(IIF)V"))
-    private void vivecraft$noItemActivationAnimationOnGUI(
-        GameRenderer instance, int width, int height, float partialTick, Operation<Void> original)
+    @WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;renderItemActivationAnimation(IIF)V"))
+    private boolean vivecraft$noItemActivationAnimationOnGUI(
+        GameRenderer instance, int width, int height, float partialTicks)
     {
-        if (RenderPassType.isVanilla()) {
-            original.call(instance, width, height, partialTick);
-        }
+        return RenderPassType.isVanilla();
     }
 
-    @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;render(Lnet/minecraft/client/gui/GuiGraphics;F)V"))
-    private void vivecraft$noGUIWithViewOnly(
-        Gui instance, GuiGraphics guiGraphics, float partialTick, Operation<Void> original)
-    {
-        if (RenderPassType.isVanilla() || !ClientDataHolderVR.VIEW_ONLY) {
-            original.call(instance, guiGraphics, partialTick);
-        }
+    @WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;render(Lnet/minecraft/client/gui/GuiGraphics;F)V"))
+    private boolean vivecraft$noGUIWithViewOnly(Gui instance, GuiGraphics guiGraphics, float partialTick) {
+        return RenderPassType.isVanilla() || !ClientDataHolderVR.VIEW_ONLY;
     }
 
     @Inject(method = "takeAutoScreenshot", at = @At("HEAD"), cancellable = true)

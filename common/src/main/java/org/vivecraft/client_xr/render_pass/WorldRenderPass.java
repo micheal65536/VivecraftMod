@@ -21,9 +21,8 @@ public class WorldRenderPass implements AutoCloseable {
      * creates a WorldRenderPass that writes to {@code target}
      *
      * @param target RenderTarget for this pass
-     * @throws IOException when an error occurs during shader loading
      */
-    public WorldRenderPass(RenderTarget target) throws IOException {
+    public WorldRenderPass(RenderTarget target) {
         this.target = target;
     }
 
