@@ -256,9 +256,7 @@ public abstract class GameRendererVRMixin
             {
                 // no block outline when the main arm has interaction
                 cir.setReturnValue(false);
-            }
-
-            if (vivecraft$DATA_HOLDER.teleportTracker.isAiming() ||
+            } else if (vivecraft$DATA_HOLDER.teleportTracker.isAiming() ||
                 vivecraft$DATA_HOLDER.vrSettings.renderBlockOutlineMode == VRSettings.RenderPointerElement.NEVER)
             {
                 // don't render outline when aiming with tp, or the user disabled it
