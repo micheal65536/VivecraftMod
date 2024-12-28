@@ -8,7 +8,6 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -25,6 +24,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.Triple;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -53,6 +53,7 @@ import org.vivecraft.client_vr.render.helpers.VREffectsHelper;
 import org.vivecraft.client_vr.settings.VRSettings;
 import org.vivecraft.client_xr.render_pass.RenderPassManager;
 import org.vivecraft.client_xr.render_pass.RenderPassType;
+import org.vivecraft.common.utils.MathUtils;
 import org.vivecraft.mod_compat_vr.immersiveportals.ImmersivePortalsHelper;
 
 @Mixin(GameRenderer.class)
@@ -289,7 +290,7 @@ public abstract class GameRendererVRMixin
 
     @ModifyExpressionValue(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/GameRenderer;effectActive:Z"))
     private boolean vivecraft$noEffectInThird(boolean effectActive) {
-        return effectActive && ClientDataHolderVR.getInstance().currentPass != RenderPass.THIRD;
+        return effectActive && vivecraft$DATA_HOLDER.currentPass != RenderPass.THIRD;
     }
 
     @Unique
@@ -426,19 +427,24 @@ public abstract class GameRendererVRMixin
         } else {
             float sinProgress = Mth.sin(progress) * 0.5F;
             poseStack.translate(0.0F, 0.0F, sinProgress - 1.0F);
-            if (ClientDataHolderVR.getInstance().currentPass == RenderPass.THIRD) {
-                sinProgress *= ClientDataHolderVR.getInstance().vrSettings.mixedRealityFov / 70.0F;
+            RenderPass pass = vivecraft$DATA_HOLDER.currentPass;
+            if (pass == RenderPass.THIRD) {
+                // make the item the same size, independent of FOV
+                sinProgress *= vivecraft$DATA_HOLDER.vrSettings.mixedRealityFov / 70.0F;
+            } else if (pass == RenderPass.CENTER) {
+                // make the item the same size, independent of FOV
+                sinProgress *= Minecraft.getInstance().options.fov().get() / 70.0F;
+            } else if (pass == RenderPass.LEFT || pass == RenderPass.RIGHT) {
+                // apply stereo offset, but screen relative, not world
+                VRData data = vivecraft$DATA_HOLDER.vrPlayer.getVRDataWorld();
+                Vector3f offset = MathUtils.subtractToVector3f(data.getEye(pass).getPosition(),
+                    data.getEye(RenderPass.CENTER).getPosition());
+                data.getEye(RenderPass.CENTER).getMatrix().invert().transformPosition(offset);
+                poseStack.translate(-offset.x, -offset.y, -offset.z);
             }
-            RenderHelper.applyVRModelView(ClientDataHolderVR.getInstance().currentPass, poseStack);
-            RenderHelper.applyStereo(ClientDataHolderVR.getInstance().currentPass, poseStack);
 
             // call the scale with original to allow operation stacking
             original.call(poseStack, sinProgress, sinProgress, sinProgress);
-
-            poseStack.mulPose(Axis.YP.rotation(-ClientDataHolderVR.getInstance().vrPlayer.getVRDataWorld()
-                .getEye(ClientDataHolderVR.getInstance().currentPass).getYawRad()));
-            poseStack.mulPose(Axis.XP.rotation(-ClientDataHolderVR.getInstance().vrPlayer.getVRDataWorld()
-                .getEye(ClientDataHolderVR.getInstance().currentPass).getPitchRad()));
         }
     }
 
