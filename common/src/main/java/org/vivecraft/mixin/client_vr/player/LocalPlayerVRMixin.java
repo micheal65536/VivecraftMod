@@ -228,7 +228,7 @@ public abstract class LocalPlayerVRMixin extends LocalPlayer_PlayerVRMixin imple
     }
 
     @Inject(method = "getRopeHoldPosition", at = @At("HEAD"), cancellable = true)
-    private void vivecraft$vrRopePosition( CallbackInfoReturnable<Vec3> cir) {
+    private void vivecraft$vrRopePosition(CallbackInfoReturnable<Vec3> cir) {
         if (VRState.VR_RUNNING && vivecraft$isLocalPlayer(this)) {
             // vanilla rop position is fixed to the view in first person, so attached it to the hand instead
             cir.setReturnValue(RenderHelper.getControllerRenderPos(0));

@@ -107,8 +107,8 @@ public class VRPassHelper {
     /**
      * renders all passes, and submits the final frames to the VR runtime
      *
-     * @param renderLevel if the level is being rendered
-     * @param nanoTime nano time for the current frame
+     * @param renderLevel       if the level is being rendered
+     * @param nanoTime          nano time for the current frame
      * @param actualPartialTick partial tick for rendering
      */
     public static void renderAndSubmit(boolean renderLevel, long nanoTime, float actualPartialTick) {

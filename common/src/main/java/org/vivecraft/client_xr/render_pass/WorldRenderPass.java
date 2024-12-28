@@ -4,8 +4,6 @@ import com.mojang.blaze3d.pipeline.RenderTarget;
 import net.minecraft.client.Minecraft;
 import org.vivecraft.client_vr.render.RenderPass;
 
-import java.io.IOException;
-
 public class WorldRenderPass implements AutoCloseable {
 
     public static WorldRenderPass STEREO_XR;
