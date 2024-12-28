@@ -1,14 +1,14 @@
 package org.vivecraft.mixin.client_vr.multiplayer;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.BlockHitResult;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -61,19 +61,23 @@ public class MultiPlayerGameModeVRMixin {
         }
     }
 
-    @WrapOperation(method = "sameDestroyTarget", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;isSameItemSameTags(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemStack;)Z"))
-    private boolean vivecraft$dualWieldingSkipItemCheck(ItemStack stack, ItemStack other, Operation<Boolean> original) {
+    @WrapMethod(method = "sameDestroyTarget")
+    private boolean vivecraft$dualWieldingSkipItemCheck(BlockPos pos, Operation<Boolean> original) {
         if (VRState.VR_RUNNING && ClientNetworking.SERVER_ALLOWS_DUAL_WIELDING) {
             // check if main or offhand items match the started item, we want to limit abuse of this,
             // but still make both items work
             Limb lastLimb = ClientNetworking.LAST_SENT_LIMB;
+
             ClientNetworking.LAST_SENT_LIMB = Limb.MAIN_HAND;
-            boolean sameItem =
-                original.call(stack, other) || original.call(this.minecraft.player.getOffhandItem(), other);
+            boolean sameItem = original.call(pos);
+
+            ClientNetworking.LAST_SENT_LIMB = Limb.OFF_HAND;
+            sameItem |= original.call(pos);
+
             ClientNetworking.LAST_SENT_LIMB = lastLimb;
             return sameItem;
         } else {
-            return original.call(stack, other);
+            return original.call(pos);
         }
     }
 }
