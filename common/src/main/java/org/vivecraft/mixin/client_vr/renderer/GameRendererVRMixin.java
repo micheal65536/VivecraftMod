@@ -2,7 +2,6 @@ package org.vivecraft.mixin.client_vr.renderer;
 
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -30,11 +29,8 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.At.Shift;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.vivecraft.client.Xevents;
@@ -55,6 +51,8 @@ import org.vivecraft.client_xr.render_pass.RenderPassManager;
 import org.vivecraft.client_xr.render_pass.RenderPassType;
 import org.vivecraft.common.utils.MathUtils;
 import org.vivecraft.mod_compat_vr.immersiveportals.ImmersivePortalsHelper;
+
+import java.util.function.Predicate;
 
 @Mixin(GameRenderer.class)
 public abstract class GameRendererVRMixin
@@ -178,10 +176,14 @@ public abstract class GameRendererVRMixin
         }
     }
 
-    @ModifyReturnValue(method = {"method_18144", "lambda$getMouseOver$61"}, at = @At("RETURN"))
-    private static boolean vivecraft$dontHitRiddenEntity(boolean original, Entity entity) {
+    @ModifyArg(method = "pick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/projectile/ProjectileUtil;getEntityHitResult(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;D)Lnet/minecraft/world/phys/EntityHitResult;"))
+    private Predicate<Entity> vivecraft$dontHitRiddenEntity(Predicate<Entity> filter) {
         // it is technically possible to hit the ridden entity when the distance is 0, we don't want that
-        return original && (!VRState.VR_RUNNING || entity != Minecraft.getInstance().getCameraEntity().getVehicle());
+        if (VRState.VR_RUNNING) {
+            return entity -> filter.test(entity) && entity != Minecraft.getInstance().getCameraEntity().getVehicle();
+        } else {
+            return filter;
+        }
     }
 
     @Inject(method = "tickFov", at = @At("HEAD"), cancellable = true)
