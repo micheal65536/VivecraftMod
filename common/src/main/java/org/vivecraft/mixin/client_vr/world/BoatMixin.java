@@ -47,12 +47,12 @@ public abstract class BoatMixin extends Entity {
         if (VRState.VR_RUNNING && !dataHolder.vrSettings.seated) {
             // only custom boat controls in standing mode
             if (this.inputUp) {
-                //controller-based
+                // controller-based
                 float yaw = dataHolder.vrSettings.vrFreeMoveMode == VRSettings.FreeMove.HMD ?
                     dataHolder.vrPlayer.vrdata_world_pre.hmd.getYaw() :
                     dataHolder.vrPlayer.vrdata_world_pre.getController(1).getYaw();
                 if (dataHolder.vrSettings.vehicleRotation) {
-                    //tank controls
+                    // tank controls
                     float end = this.getYRot() % 360F;
                     float start = yaw;
                     float difference = Math.abs(end - start);
@@ -83,11 +83,11 @@ public abstract class BoatMixin extends Entity {
                             Math.signum(difference) * Math.min(1F, Math.max(0F, Math.abs(difference) - 25F) / 40F);
                     }
                 } else {
-                    //point to move
+                    // point to move
                     this.setYRot(yaw);
                 }
             } else if (dataHolder.rowTracker.isRowing()) {
-                //roomscale rowing
+                // roomscale rowing
 
                 this.deltaRotation += dataHolder.rowTracker.LOar / 1.5F;
                 this.deltaRotation -= dataHolder.rowTracker.ROar / 1.5F;

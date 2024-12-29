@@ -24,7 +24,7 @@ public class MathUtils {
     public static final Vec3 DOWN_D = new Vec3(0.0, -1.0, 0.0);
 
     /**
-     * subtracts {@code b} from {@code a}, anmd returns the result as a Vector3f, should only be used to get local position differences
+     * subtracts {@code b} from {@code a}, and returns the result as a Vector3f, should only be used to get local position differences
      *
      * @param a starting vector
      * @param b vector to subtract from {@code a}

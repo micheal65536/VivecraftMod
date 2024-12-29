@@ -50,7 +50,7 @@ public class VehicleTracker extends Tracker {
 
     public double getVehicleFloor(Entity vehicle, double original) {
 //        if (vehicle instanceof AbstractHorse) {
-        return original; //horses are fine.
+        return original; // horses are fine.
 //        } else {
 //            return vehicle.getY();
 //        }
@@ -69,7 +69,7 @@ public class VehicleTracker extends Tracker {
                 }
             }
         } else if (entity instanceof Mob mob && mob.isControlledByLocalInstance()) {
-            //pigs and striders
+            // pigs and striders
             int c = (player.getMainHandItem().getItem() instanceof FoodOnAStickItem ||
                 player.getMainHandItem().is(ItemTags.VIVECRAFT_FOOD_STICKS)
             ) ? 0 : 1;

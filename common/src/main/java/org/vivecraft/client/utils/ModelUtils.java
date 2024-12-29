@@ -91,7 +91,7 @@ public class ModelUtils {
         // no bending when spinning
         if (entity.isAutoSpinAttack()) return 0.0F;
 
-        //default player eye height, -0.2 neck offset
+        // default player eye height, -0.2 neck offset
         float eyeHeight = 1.42F * rotInfo.worldScale;
 
         float heightOffset = Mth.clamp(headPivot.y() - eyeHeight * rotInfo.heightScale, -eyeHeight, 0F);
@@ -530,7 +530,7 @@ public class ModelUtils {
         // calculate rotation offset, since the player model is offset while swimming
         if (player.isVisuallySwimming() && !player.isAutoSpinAttack() && !player.isFallFlying()) {
             tempV2.set(0.0F, 17.06125F, 5.125F);
-            //tempV2.rotateX(-xRot);
+            // tempV2.rotateX(-xRot);
             MathUtils.rotateX(tempV2, -sin, cos);
             tempV2.y += 2;
         } else {
@@ -545,7 +545,7 @@ public class ModelUtils {
 
             // apply swimming rotation to the offset
             tempV.y -= 24F;
-            //tempV.rotateX(xRot);
+            // tempV.rotateX(xRot);
             MathUtils.rotateX(tempV, sin, cos);
             tempV.y += 24F;
             part.setPos(tempV.x, tempV.y, tempV.z);

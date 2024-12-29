@@ -507,7 +507,7 @@ public class GuiHandler {
         MC.getProfiler().push("applyGUIModelView");
 
         if (MC.screen != null && GUI_POS_ROOM == null) {
-            //naughty mods!
+            // naughty mods!
             onScreenChanged(null, MC.screen, false);
         } else if (MC.screen == null && !MC.mouseHandler.isMouseGrabbed()) {
             // some mod want's to do a mouse selection overlay
@@ -516,7 +516,7 @@ public class GuiHandler {
                 }, false, true);
             }
         } else if (MC.screen == null && GUI_POS_ROOM != null) {
-            //even naughtier mods!
+            // even naughtier mods!
             // someone canceled the setScreen, so guiPos didn't get reset
             onScreenChanged(null, null, false);
         }

@@ -187,7 +187,7 @@ public class VRSettings {
     public int smoothRunTickCount = 20;
     @SettingField
     public boolean smoothTick = false;
-    //Jrbudda's Options
+    // Jrbudda's Options
 
     @SettingField(config = "QUICKCOMMAND", separate = true)
     public String[] vrQuickCommands = getQuickCommandsDefaults();
@@ -203,7 +203,7 @@ public class VRSettings {
     @SettingField(fixedSize = false)
     public int[] keyboardCodes = getKeyboardCodesDefault();
 
-    //Control
+    // Control
     @SettingField(VrOptions.REVERSE_HANDS)
     public boolean reverseHands = false;
     @SettingField(VrOptions.REVERSE_BOW)
@@ -259,7 +259,7 @@ public class VRSettings {
     public boolean thirdPersonItemsCustom = true;
     //
 
-    //Locomotion
+    // Locomotion
     @SettingField(VrOptions.INERTIA_FACTOR)
     public InertiaFactor inertiaFactor = InertiaFactor.NORMAL;
     @SettingField(VrOptions.WALK_UP_BLOCKS)
@@ -344,7 +344,7 @@ public class VRSettings {
     public boolean forceStandingFreeMove = false;
     //
 
-    //Rendering
+    // Rendering
     @SettingField(VrOptions.FSAA)
     public boolean useFsaa = false;   // default to off
     @SettingField(value = VrOptions.LOW_HEALTH_INDICATOR, config = "low_health_indicator")
@@ -367,8 +367,10 @@ public class VRSettings {
     public float fovReductionMin = 0.25f;
     @SettingField(value = VrOptions.STENCIL_ON, config = "stencilOn")
     public boolean vrUseStencil = true;
+    @SettingField(VrOptions.STENCIL_BUFFER_DISABLE)
+    public boolean stencilBufferDisable = false;
     @SettingField
-    public boolean insideBlockSolidColor = false; //unused
+    public boolean insideBlockSolidColor = false; // unused
     @SettingField(VrOptions.RENDER_SCALEFACTOR)
     public float renderScaleFactor = 1.0f;
     @SettingField(VrOptions.MIRROR_DISPLAY)
@@ -418,7 +420,7 @@ public class VRSettings {
 
     //
 
-    //Mixed Reality
+    // Mixed Reality
     @SettingField(VrOptions.MIXED_REALITY_KEY_COLOR)
     public Color mixedRealityKeyColor = new Color(0, 0, 0);
     public float mixedRealityAspectRatio = 16F / 9F;
@@ -450,7 +452,7 @@ public class VRSettings {
     public boolean mixedRealityRenderCameraModel = true;
     //
 
-    //HUD/GUI
+    // HUD/GUI
     @SettingField(VrOptions.TOUCH_HOTBAR)
     public boolean vrTouchHotbar = true;
     @SettingField(value = VrOptions.HUD_SCALE, config = "headHudScale")
@@ -461,7 +463,7 @@ public class VRSettings {
     public float hudPitchOffset = -2f;
     @SettingField
     public float hudYawOffset = 0.0f;
-    public boolean floatInventory = true; //false not working yet, have to account for rotation and tilt in MCOpenVR>processGui()
+    public boolean floatInventory = true; // false not working yet, have to account for rotation and tilt in MCOpenVR>processGui()
     @SettingField(VrOptions.MENU_ALWAYS_FOLLOW_FACE)
     public boolean menuAlwaysFollowFace;
     @SettingField(VrOptions.HUD_LOCK_TO)
@@ -557,7 +559,7 @@ public class VRSettings {
     @SettingField
     public boolean selfButtSparklesInFirstPerson = false;
 
-    //debug settings
+    // debug settings
     @SettingField
     // when set attaches the 3rd person camera tracker to the right controller
     public boolean debugCameraTracker;
@@ -1174,7 +1176,7 @@ public class VRSettings {
     }
 
     /**
-     * gets the float value of the option, wiht server overrides accounted for
+     * gets the float value of the option, with server overrides accounted for
      *
      * @param vrOption option to get
      * @return value of the option, or 0 if unknown
@@ -1467,7 +1469,7 @@ public class VRSettings {
         VR_SETTINGS_BUTTON_POSITION(false, true, "vivecraft.options.left",
             "vivecraft.options.right"), // setting button position
         MODIFY_PAUSE_MENU(false, true), // if the pause menu should be altered
-        //HMD/render
+        // HMD/render
         FSAA(false, true), // Lanczos Scaler
         LOW_HEALTH_INDICATOR(false, true), // red low health pulse
         HIT_INDICATOR(false, true), // red flash when hit
@@ -1585,7 +1587,7 @@ public class VRSettings {
             }
         },
         WALK_UP_BLOCKS(false, true), // Walk up blocks
-        //Movement/aiming controls
+        // Movement/aiming controls
         MOVEMENT_MULTIPLIER(true, false, 0.15f, 1.3f, 0.01f, 2), // Move. Speed Multiplier
         INERTIA_FACTOR(false, true) { // Player Inertia
 
@@ -1618,12 +1620,13 @@ public class VRSettings {
         FEET_COLLISION(false, true),
         SWORD_BLOCK_COLLISION(false, true), // lets swords hit blocks that can be mined or instabroken
         // VIVE END - new options
-        //JRBUDDA VIVE
+        // JRBUDDA VIVE
         ALLOW_CRAWLING(false, true), // Roomscale Crawling
         LIMIT_TELEPORT(false, true), // Limit in Survival
         REVERSE_HANDS(false, true), // Reverse Hands
         REVERSE_BOW(false, true), // Reverses Roomscale Bow Aiming
         STENCIL_ON(false, true), // Use Eye Stencil
+        STENCIL_BUFFER_DISABLE(false, true), // disables the use of the stencil buffer
         BCB_ON(false, true), // Show Body Position
         WORLD_SCALE(true, false, 0, 29, 1, 2) { // World Scale
 
@@ -1858,7 +1861,7 @@ public class VRSettings {
             }
         },
         MIXED_REALITY_RENDER_CAMERA_MODEL(false, true, LangHelper.YES_KEY, LangHelper.NO_KEY), // Show Camera Model
-        //END JRBUDDA
+        // END JRBUDDA
         REALISTIC_JUMP(false, true), // Roomscale Jumping
         REALISTIC_SNEAK(false, true), // Roomscale Sneaking
         PHYSICAL_GUI(false, true) { // Physical GUIs
@@ -1916,7 +1919,7 @@ public class VRSettings {
             }
         },
         VEHICLE_ROTATION(false, true), // Vehicle Rotation
-        //SEATED
+        // SEATED
         RESET_ORIGIN(false, true), // Reset Origin
         X_SENSITIVITY(true, false, 0.1f, 5f, 0.01f, 2), // Rotation Speed
         Y_SENSITIVITY(true, false, 0.1f, 5f, 0.01f, 2), // Y Sensitivity
@@ -1930,7 +1933,7 @@ public class VRSettings {
         FOV_REDUCTION(false, true), // FOV Comfort Reduction
         FOV_REDUCTION_MIN(true, false, 0.1f, 0.7f, 0.05f, 2), // FOV Reduction Size
         FOV_REDUCTION_OFFSET(true, false, 0.0f, 0.3f, 0.01f, 2), // FOV Reduction Offset
-        // OTher buttons
+        // Other buttons
         SEATED_HMD(false, true, "vivecraft.options.hmd", "vivecraft.options.crosshair"), // Forward Direction
         SEATED_HUD_XHAIR(false, true, "vivecraft.options.crosshair", "vivecraft.options.hmd"), // HUD Follows
         BACKPACK_SWITCH(false, true), // Backpack Switching

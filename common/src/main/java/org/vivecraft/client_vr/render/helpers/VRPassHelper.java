@@ -176,7 +176,6 @@ public class VRPassHelper {
             MC.mainRenderTarget.clear(Minecraft.ON_OSX);
             MC.mainRenderTarget.bindWrite(true);
             RenderHelper.drawScreen(guiGraphics, actualPartialTick, KeyboardHandler.UI, true);
-            guiGraphics.flush();
         }
 
         MC.getProfiler().popPush("Radial Menu");
@@ -185,7 +184,6 @@ public class VRPassHelper {
             MC.mainRenderTarget.clear(Minecraft.ON_OSX);
             MC.mainRenderTarget.bindWrite(true);
             RenderHelper.drawScreen(guiGraphics, actualPartialTick, RadialHandler.UI, true);
-            guiGraphics.flush();
         }
         MC.getProfiler().pop();
         RenderHelper.checkGLError("post 2d ");

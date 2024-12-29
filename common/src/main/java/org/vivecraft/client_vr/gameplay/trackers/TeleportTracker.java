@@ -170,7 +170,7 @@ public class TeleportTracker extends Tracker {
                     doTeleport = true;
                 }
             }
-        } else { //not holding down teleport key
+        } else { // not holding down teleport key
             if (this.vrMovementStyle.teleportOnRelease && this.movementTeleportProgress >= 1.0D) {
                 destination = this.movementTeleportDestination;
                 doTeleport = true;
@@ -180,7 +180,7 @@ public class TeleportTracker extends Tracker {
             this.movementTeleportProgress = 0.0D;
         }
 
-        //execute teleport
+        // execute teleport
         if (doTeleport && destination != null &&
             (destination.x != 0.0D || destination.y != 0.0D || destination.z != 0.0D))
         {
@@ -328,7 +328,7 @@ public class TeleportTracker extends Tracker {
                 }
 
                 if (!ok) {
-                    //u fail
+                    // u fail
                     this.movementTeleportDestination = Vec3.ZERO;
                     this.movementTeleportDistance = 0.0D;
                 }

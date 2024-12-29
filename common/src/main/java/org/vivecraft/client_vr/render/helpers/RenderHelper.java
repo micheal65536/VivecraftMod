@@ -173,7 +173,7 @@ public class RenderHelper {
         Vec3 aimSource = getControllerRenderPos(c);
         aimSource = aimSource.subtract(
             getSmoothCameraPosition(DATA_HOLDER.currentPass, DATA_HOLDER.vrPlayer.getVRDataWorld()));
-        //move from head to hand origin.
+        // move from head to hand origin.
         poseStack.translate(aimSource.x, aimSource.y, aimSource.z);
 
         float sc = DATA_HOLDER.vrPlayer.vrdata_world_render.worldScale;
@@ -205,7 +205,7 @@ public class RenderHelper {
      *               if false: restores the previously stored render state.
      */
     public static void setupPolyRendering(boolean enable) {
-//		boolean flag = Config.isShaders(); TODO
+        // boolean flag = Config.isShaders(); TODO
         boolean flag = false;
 
         if (enable) {
@@ -223,8 +223,8 @@ public class RenderHelper {
             RenderSystem.disableCull();
 
             if (flag) {
-//				this.prog = Shaders.activeProgram; TODO
-//				Shaders.useProgram(Shaders.ProgramTexturedLit);
+                // this.prog = Shaders.activeProgram; TODO
+                // Shaders.useProgram(Shaders.ProgramTexturedLit);
             }
         } else {
             RenderSystem.blendFuncSeparate(POLY_BLEND_SRC_RGB, POLY_BLEND_DST_RGB, POLY_BLEND_SRC_A,
@@ -245,19 +245,19 @@ public class RenderHelper {
                 RenderSystem.enableCull();
             }
 
-//			if (flag && this.polytex) {
-//				Shaders.useProgram(this.prog); TODO
-//			}
+            // if (flag && this.polytex) {
+            //     Shaders.useProgram(this.prog); TODO
+            // }
         }
     }
 
     /**
      * renders the given screen to the current main target and generates mipmaps for it
      *
-     * @param guiGraphics GuiGraphics to render with, is not flushed after rendering
+     * @param guiGraphics GuiGraphics to render with
      * @param partialTick partial tick for the screen rendering
      * @param screen      the Screen to render
-     * @param maxGuiScale if set renders the screen at max gui scale
+     * @param maxGuiScale if set, renders the screen at max gui scale
      */
     public static void drawScreen(GuiGraphics guiGraphics, float partialTick, Screen screen, boolean maxGuiScale) {
         // setup modelview for screen rendering
@@ -282,6 +282,7 @@ public class RenderHelper {
             GlStateManager.DestFactor.ONE);
 
         screen.render(guiGraphics, 0, 0, partialTick);
+        guiGraphics.flush();
 
         RenderSystem.blendFuncSeparate(
             GlStateManager.SourceFactor.SRC_ALPHA,

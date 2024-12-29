@@ -168,7 +168,7 @@ public class OptifineHelper {
      * sets the position of the shadow Camera
      *
      * @param poseStack   PoseStack for orienting
-     * @param camera      camera get the position frome
+     * @param camera      camera get the position from
      * @param partialTick current partial tick
      */
     public static void setCameraShadow(PoseStack poseStack, Camera camera, float partialTick) {

@@ -63,7 +63,7 @@ public class BackpackTracker extends Tracker {
             if (zone) {
                 if (!this.wasIn[c]) {
                     if (c == 0) {
-                        //mainhand
+                        // main hand
                         if (!this.dh.climbTracker.isGrabbingLadder() ||
                             !ClimbTracker.isClaws(this.mc.player.getMainHandItem()))
                         {
@@ -76,12 +76,12 @@ public class BackpackTracker extends Tracker {
                             }
                         }
                     } else {
-                        //offhand
+                        // offhand
                         if (!this.dh.climbTracker.isGrabbingLadder() ||
                             !ClimbTracker.isClaws(this.mc.player.getOffhandItem()))
                         {
                             if (this.dh.vrSettings.physicalGuiEnabled) {
-                                //minecraft.physicalGuiManager.toggleInventoryBag();
+                                // minecraft.physicalGuiManager.toggleInventoryBag();
                             } else {
                                 player.connection.send(new ServerboundPlayerActionPacket(
                                     ServerboundPlayerActionPacket.Action.SWAP_ITEM_WITH_OFFHAND, BlockPos.ZERO,

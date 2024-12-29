@@ -133,7 +133,7 @@ public abstract class GuiVRMixin implements GuiExtension {
 
     @ModifyExpressionValue(method = "renderHotbar", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;isEmpty()Z", ordinal = 0))
     private boolean vivecraft$offhandSlotAlwaysVisible(boolean offhandEmpty) {
-        // the result is inverted, so we need to invert ours aswell
+        // the result is inverted, so we need to invert ours as well
         return offhandEmpty && !(VRState.VR_RUNNING && ClientDataHolderVR.getInstance().vrSettings.vrTouchHotbar &&
             !ClientDataHolderVR.getInstance().vrSettings.seated
         );

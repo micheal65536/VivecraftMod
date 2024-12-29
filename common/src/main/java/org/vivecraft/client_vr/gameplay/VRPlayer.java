@@ -637,7 +637,7 @@ public class VRPlayer {
             itemStack.is(ItemTags.VIVECRAFT_THROW_ITEMS)
         )
         {
-            //use r_hand aim
+            // use r_hand aim
 
             VRData data = this.dh.vrPlayer.vrdata_world_pre;
             out = new Vec3(data.getController(c).getDirection());
@@ -703,9 +703,9 @@ public class VRPlayer {
                 player.setXRot(-data.hmd.getPitch());
             }
         } else if (((GameRendererExtension) this.mc.gameRenderer).vivecraft$getCrossVec() != null) {
-            //Look AT the crosshair by default, most compatible with mods.
+            // Look AT the crosshair by default, most compatible with mods.
             Vec3 playerToCrosshair = player.getEyePosition(1)
-                .subtract(((GameRendererExtension) this.mc.gameRenderer).vivecraft$getCrossVec()); //backwards
+                .subtract(((GameRendererExtension) this.mc.gameRenderer).vivecraft$getCrossVec()); // backwards
             double what = playerToCrosshair.y / playerToCrosshair.length();
             if (what > 1) {
                 what = 1;
@@ -719,7 +719,7 @@ public class VRPlayer {
             player.setYRot(yaw);
             player.setYHeadRot(yaw);
         } else {
-            //use HMD only if no crosshair hit.
+            // use HMD only if no crosshair hit.
             player.setYRot(data.hmd.getYaw());
             player.setYHeadRot(player.getYRot());
             player.setXRot(-data.hmd.getPitch());

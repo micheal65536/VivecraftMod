@@ -100,7 +100,7 @@ public class NullVR extends MCVR {
 
             // only supports seated mode
             VRSettings.LOGGER.info("Vivecraft: NullDriver. Forcing seated mode.");
-            //this.dh.vrSettings.seated = true;
+            // this.dh.vrSettings.seated = true;
 
             this.headIsTracking = true;
             this.hmdPose.identity();

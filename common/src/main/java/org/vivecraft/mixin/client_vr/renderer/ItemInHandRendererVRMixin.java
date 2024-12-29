@@ -168,7 +168,7 @@ public abstract class ItemInHandRendererVRMixin {
                 (ClientNetworking.isThirdPersonItems() || (hasCMD && ClientNetworking.isThirdPersonItemsCustom()))
             ))
             {
-                useLeftHandModelinLeftHand = true; //test
+                useLeftHandModelinLeftHand = true; // test
                 VivecraftItemRendering.applyThirdPersonItemTransforms(poseStack, transformType, mainHand, player,
                     equippedProgress, partialTick, itemStack, hand);
 

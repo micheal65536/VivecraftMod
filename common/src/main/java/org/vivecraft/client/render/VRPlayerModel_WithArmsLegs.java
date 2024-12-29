@@ -124,7 +124,7 @@ public class VRPlayerModel_WithArmsLegs<T extends LivingEntity> extends VRPlayer
         if (!noLegs) {
             if (ClientDataHolderVR.getInstance().vrSettings.playerWalkAnim) {
                 // vanilla walking animation on top
-                //limbSwingAmount = 1;
+                // limbSwingAmount = 1;
                 float limbRotation = Mth.cos(limbSwing * 0.6662F) * limbSwingAmount;
                 this.footOffset.set(0, -0.5F, 0)
                     .rotateX(limbRotation)

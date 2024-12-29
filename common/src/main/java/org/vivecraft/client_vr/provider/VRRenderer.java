@@ -22,6 +22,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL43;
 import org.vivecraft.client.Xplat;
 import org.vivecraft.client.extensions.RenderTargetExtension;
+import org.vivecraft.client.utils.StencilHelper;
 import org.vivecraft.client.utils.TextUtils;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.VRTextureTarget;
@@ -166,20 +167,22 @@ public abstract class VRRenderer {
         Minecraft minecraft = Minecraft.getInstance();
         ClientDataHolderVR dataholder = ClientDataHolderVR.getInstance();
 
-        //setup stencil for writing
-        GL11.glEnable(GL11.GL_STENCIL_TEST);
-        RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_REPLACE);
-        RenderSystem.stencilMask(0xFF); // Write to stencil buffer
+        // setup stencil for writing
+        if (StencilHelper.stencilBufferSupported()) {
+            GL11.glEnable(GL11.GL_STENCIL_TEST);
+            RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_REPLACE);
+            RenderSystem.stencilMask(0xFF); // Write to stencil buffer
+        }
 
         if (inverse) {
-            //clear whole image for total mask in color, stencil, depth
+            // clear whole image for total mask in color, stencil, depth
             RenderSystem.clearStencil(0xFF);
             RenderSystem.clearDepth(0);
 
             RenderSystem.stencilFunc(GL11.GL_ALWAYS, 0, 0xFF); // Set any stencil to 0
             RenderSystem.colorMask(false, false, false, true);
         } else {
-            //clear whole image for total transparency
+            // clear whole image for total transparency
             RenderSystem.clearStencil(0);
             RenderSystem.clearDepth(1);
 
@@ -187,7 +190,11 @@ public abstract class VRRenderer {
             RenderSystem.colorMask(true, true, true, true);
         }
 
-        RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT, false);
+        if (StencilHelper.stencilBufferSupported()) {
+            RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT, false);
+        } else {
+            RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, false);
+        }
 
         RenderSystem.clearStencil(0);
         RenderSystem.clearDepth(1);
@@ -206,7 +213,7 @@ public abstract class VRRenderer {
         RenderSystem.getModelViewStack().pushPose();
         RenderSystem.getModelViewStack().setIdentity();
         if (inverse) {
-            //draw on far clip
+            // draw on far clip
             RenderSystem.getModelViewStack().translate(0, 0, -20);
         }
         RenderSystem.applyModelViewMatrix();
@@ -230,9 +237,11 @@ public abstract class VRRenderer {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.enableCull();
         ProgramManager.glUseProgram(program);
-        RenderSystem.stencilFunc(GL11.GL_NOTEQUAL, 255, 1);
-        RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
-        RenderSystem.stencilMask(0); // Dont Write to stencil buffer
+        if (StencilHelper.stencilBufferSupported()) {
+            RenderSystem.stencilFunc(GL11.GL_NOTEQUAL, 255, 1);
+            RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
+            RenderSystem.stencilMask(0); // Dont Write to stencil buffer
+        }
         RenderSystem.depthFunc(GL11.GL_LEQUAL);
     }
 
@@ -277,6 +286,7 @@ public abstract class VRRenderer {
         builder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION);
 
         mc.getTextureManager().bindForSetup(RenderHelper.BLACK_TEXTURE);
+        RenderSystem.setShaderTexture(0, RenderHelper.BLACK_TEXTURE);
 
         for (int i = 0; i < verts.length; i += 2) {
             builder.vertex(
@@ -526,7 +536,7 @@ public abstract class VRRenderer {
             Tuple<Integer, Integer> cameraSize = getCameraTextureSize(eyeFBWidth, eyeFBHeight);
 
             // main render target
-            if (dataholder.vrSettings.vrUseStencil) {
+            if (dataholder.vrSettings.vrUseStencil && StencilHelper.stencilBufferSupported()) {
                 ((RenderTargetExtension) WorldRenderPass.STEREO_XR.target)
                     .vivecraft$setStencil(!Xplat.enableRenderTargetStencil(WorldRenderPass.STEREO_XR.target));
             } else {
@@ -668,7 +678,7 @@ public abstract class VRRenderer {
             int eyeFBHeight = (int) Math.ceil(eyeh * this.renderScale);
 
             this.framebufferVrRender = new VRTextureTarget("3D Render", eyeFBWidth, eyeFBHeight, true, -1, true, false,
-                dataholder.vrSettings.vrUseStencil);
+                dataholder.vrSettings.vrUseStencil && StencilHelper.stencilBufferSupported());
             WorldRenderPass.STEREO_XR = new WorldRenderPass(this.framebufferVrRender);
             VRSettings.LOGGER.info("Vivecraft: {}", this.framebufferVrRender);
             RenderHelper.checkGLError("3D framebuffer setup");

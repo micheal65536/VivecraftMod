@@ -101,7 +101,7 @@ public abstract class MCVR {
     protected Vector3f[] deviceVelocity;
     protected Vector3f[] aimSource = new Vector3f[TRACKABLE_DEVICE_COUNT];
 
-    //hmd sampling
+    // hmd sampling
     private static final int HMD_AVG_MAX_SAMPLES = 90;
     public LinkedList<Vector3f> hmdPosSamples = new LinkedList<>();
     public LinkedList<Float> hmdYawSamples = new LinkedList<>();
@@ -111,7 +111,7 @@ public abstract class MCVR {
     public boolean mrMovingCamActive;
     protected HapticScheduler hapticScheduler;
 
-    //seated
+    // seated
     public float seatedRot;
     public float aimPitch = 0.0F;
     //
@@ -451,7 +451,7 @@ public abstract class MCVR {
     }
 
     /**
-     * changes teh selected hotbar slot in the given direction.
+     * changes the selected hotbar slot in the given direction.
      *
      * @param dir direction to change to, negative is right, positive is left
      */
@@ -803,7 +803,7 @@ public abstract class MCVR {
      * processes vr specific keys
      */
     public void processBindings() {
-        //if (this.inputActions.isEmpty()) return;
+        // if (this.inputActions.isEmpty()) return;
 
         boolean sleeping = this.mc.level != null && this.mc.player != null && this.mc.player.isSleeping();
         boolean gui = this.mc.screen != null;
@@ -1274,7 +1274,7 @@ public abstract class MCVR {
 
                 // find the closest tracker to the reference point
                 for (int i = 0; i < trackers.size(); i++) {
-                    //int trackerIndex = trackers.get(i);
+                    // int trackerIndex = trackers.get(i);
                     Triple<DeviceSource, Integer, Matrix4fc> tracker = trackers.get(i);
 
                     // if regular fbt is already detected, skip those trackers

@@ -199,7 +199,7 @@ public class BowTracker extends Tracker {
                 if (!this.isDrawing) {
                     ((PlayerExtension) player).vivecraft$setItemInUseClient(bow, hand);
                     ((PlayerExtension) player).vivecraft$setItemInUseRemainingClient(stage0);
-                    //Minecraft.getInstance().physicalGuiManager.preClickAction();
+                    // Minecraft.getInstance().physicalGuiManager.preClickAction();
                 }
             } else if (!this.isDrawing && (float) Util.getMillis() - this.tsNotch > 500.0F) {
                 this.canDraw = false;
@@ -210,7 +210,7 @@ public class BowTracker extends Tracker {
             if (!this.isDrawing && this.canDraw && this.pressed && !lastPressed) {
                 // draw
                 this.isDrawing = true;
-                //Minecraft.getInstance().physicalGuiManager.preClickAction();
+                // Minecraft.getInstance().physicalGuiManager.preClickAction();
                 this.mc.gameMode.useItem(player, hand); // server
             }
 
@@ -234,7 +234,7 @@ public class BowTracker extends Tracker {
             }
 
             if (!this.isDrawing && this.canDraw && !lastCanDraw) {
-                //notch
+                // notch
                 this.dh.vr.triggerHapticPulse(arrowHand, 800);
                 this.dh.vr.triggerHapticPulse(bowHand, 800);
             }

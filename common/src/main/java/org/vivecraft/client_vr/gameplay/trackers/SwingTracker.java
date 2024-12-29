@@ -80,7 +80,7 @@ public class SwingTracker extends Tracker {
         } else if (this.dh.vrSettings.vrFreeMoveMode == VRSettings.FreeMove.RUN_IN_PLACE && player.zza > 0.0F) {
             return false; // don't hit things while RIPing.
         } else if (player.isBlocking()) {
-            return false; //don't hit things while blocking.
+            return false; // don't hit things while blocking.
         } else {
             return !this.dh.jumpTracker.isjumping();
         }
@@ -275,7 +275,7 @@ public class SwingTracker extends Tracker {
 
                     this.lastWeaponSolid[i] = true;
 
-                    boolean sameBlock = blockHit.getBlockPos().equals(blockpos); //fix ladders?
+                    boolean sameBlock = blockHit.getBlockPos().equals(blockpos); // fix ladders?
                     // don't break climbable blocks
                     boolean protectedBlock = this.dh.vrSettings.realisticClimbEnabled &&
                         (blockstate.getBlock() instanceof LadderBlock ||
@@ -340,7 +340,7 @@ public class SwingTracker extends Tracker {
                         else {
                             // faster swings do more damage
                             totalHits = (int) (totalHits + Math.min(speed - speedTreshhold, 4.0F));
-                            //this.mc.physicalGuiManager.preClickAction();
+                            // this.mc.physicalGuiManager.preClickAction();
 
                             // send hitting hand
                             ClientNetworking.sendActiveLimb(Limb.values()[i]);
@@ -396,7 +396,7 @@ public class SwingTracker extends Tracker {
 
     private void clearBlockHitDelay() {
         // TODO set destroyTicks to 1 to cancel multiple sound events per hit
-        //MCReflection.PlayerController_blockHitDelay.set(Minecraft.getInstance().gameMode, 0);
+        // MCReflection.PlayerController_blockHitDelay.set(Minecraft.getInstance().gameMode, 0);
         // Minecraft.getInstance().gameMode.blockBreakingCooldown = 1;
     }
 

@@ -32,6 +32,7 @@ import org.vivecraft.client.gui.VivecraftClickEvent;
 import org.vivecraft.client.gui.settings.GuiOtherHUDSettings;
 import org.vivecraft.client.gui.settings.GuiRenderOpticsSettings;
 import org.vivecraft.client.utils.ClientUtils;
+import org.vivecraft.client.utils.StencilHelper;
 import org.vivecraft.client_vr.ClientDataHolderVR;
 import org.vivecraft.client_vr.MethodHolder;
 import org.vivecraft.client_vr.extensions.GameRendererExtension;
@@ -143,33 +144,37 @@ public class VREffectsHelper {
      */
     public static void drawEyeStencil() {
         if (DATA_HOLDER.vrSettings.vrUseStencil) {
-            WAS_STENCIL_ON = GL11C.glIsEnabled(GL11C.GL_STENCIL_TEST);
-            if (WAS_STENCIL_ON && !DATA_HOLDER.showedStencilMessage && DATA_HOLDER.vrSettings.showChatMessageStencil) {
-                DATA_HOLDER.showedStencilMessage = true;
-                MC.gui.getChat().addMessage(Component.translatable("vivecraft.messages.stencil",
-                    Component.translatable("vivecraft.messages.3options",
-                            Component.translatable("options.title"),
-                            Component.translatable("vivecraft.options.screen.main"),
-                            Component.translatable("vivecraft.options.screen.stereorendering"))
-                        .withStyle(style -> style.withClickEvent(
-                                new VivecraftClickEvent(VivecraftClickEvent.VivecraftAction.OPEN_SCREEN,
-                                    new GuiRenderOpticsSettings(null)))
-                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                                Component.translatable("vivecraft.messages.openSettings")))
-                            .withColor(ChatFormatting.GREEN)
-                            .withItalic(true)),
-                    Component.translatable("vivecraft.messages.3options",
-                            Component.translatable("options.title"),
-                            Component.translatable("vivecraft.options.screen.main"),
-                            Component.translatable("vivecraft.options.screen.guiother"))
-                        .withStyle(style -> style.withClickEvent(
-                                new VivecraftClickEvent(VivecraftClickEvent.VivecraftAction.OPEN_SCREEN,
-                                    new GuiOtherHUDSettings(null)))
-                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                                Component.translatable("vivecraft.messages.openSettings")))
-                            .withColor(ChatFormatting.GREEN)
-                            .withItalic(true))
-                ));
+            if (StencilHelper.stencilBufferSupported()) {
+                WAS_STENCIL_ON = GL11C.glIsEnabled(GL11C.GL_STENCIL_TEST);
+                if (WAS_STENCIL_ON && !DATA_HOLDER.showedStencilMessage &&
+                    DATA_HOLDER.vrSettings.showChatMessageStencil)
+                {
+                    DATA_HOLDER.showedStencilMessage = true;
+                    MC.gui.getChat().addMessage(Component.translatable("vivecraft.messages.stencil",
+                        Component.translatable("vivecraft.messages.3options",
+                                Component.translatable("options.title"),
+                                Component.translatable("vivecraft.options.screen.main"),
+                                Component.translatable("vivecraft.options.screen.stereorendering"))
+                            .withStyle(style -> style.withClickEvent(
+                                    new VivecraftClickEvent(VivecraftClickEvent.VivecraftAction.OPEN_SCREEN,
+                                        new GuiRenderOpticsSettings(null)))
+                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                                    Component.translatable("vivecraft.messages.openSettings")))
+                                .withColor(ChatFormatting.GREEN)
+                                .withItalic(true)),
+                        Component.translatable("vivecraft.messages.3options",
+                                Component.translatable("options.title"),
+                                Component.translatable("vivecraft.options.screen.main"),
+                                Component.translatable("vivecraft.options.screen.guiother"))
+                            .withStyle(style -> style.withClickEvent(
+                                    new VivecraftClickEvent(VivecraftClickEvent.VivecraftAction.OPEN_SCREEN,
+                                        new GuiOtherHUDSettings(null)))
+                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                                    Component.translatable("vivecraft.messages.openSettings")))
+                                .withColor(ChatFormatting.GREEN)
+                                .withItalic(true))
+                    ));
+                }
             }
 
             // don't touch the stencil if we don't use it
@@ -187,7 +192,7 @@ public class VREffectsHelper {
      */
     public static void disableStencilTest() {
         // if we did enable the stencil test, disable it
-        if (!WAS_STENCIL_ON) {
+        if (StencilHelper.stencilBufferSupported() && !WAS_STENCIL_ON) {
             GL11C.glDisable(GL11C.GL_STENCIL_TEST);
         }
     }
@@ -295,7 +300,7 @@ public class VREffectsHelper {
             .uv(0, 0).color(255, 255, 255, 255).endVertex();
         BufferUploader.drawWithShader(bufferbuilder.end());
 
-        //back
+        // back
         RenderSystem.setShaderTexture(0, CUBE_BACK);
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
         bufferbuilder.vertex(matrix, 0, 0, 100)
@@ -879,7 +884,7 @@ public class VREffectsHelper {
         Vec3 eye = RenderHelper.getSmoothCameraPosition(DATA_HOLDER.currentPass,
             DATA_HOLDER.vrPlayer.vrdata_world_render);
 
-        //convert previously calculated coords to world coords
+        // convert previously calculated coords to world coords
         Vec3 keyboardPos = VRPlayer.roomToWorldPos(KeyboardHandler.POS_ROOM, DATA_HOLDER.vrPlayer.vrdata_world_render);
 
         Matrix4f keyboardRot = new Matrix4f().rotationY(DATA_HOLDER.vrPlayer.vrdata_world_render.rotation_radians)
@@ -1236,7 +1241,7 @@ public class VREffectsHelper {
         Vec3 crossDistance = crosshairRenderPos.subtract(
             DATA_HOLDER.vrPlayer.vrdata_world_render.getController(0).getPosition());
 
-        //scooch closer a bit for light calc.
+        // scooch closer a bit for light calc.
         crosshairRenderPos = crosshairRenderPos.add(crossDistance.normalize().scale(-0.01D));
 
         poseStack.pushPose();

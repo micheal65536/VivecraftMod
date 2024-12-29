@@ -80,7 +80,7 @@ public class RowTracker extends Tracker {
             this.LOar = maxSpeed;
         }
 
-        //TODO: Backwards paddlin'
+        // TODO: Backwards paddlin'
     }
 
     public void doProcessFinaltransmithastofixthis(LocalPlayer player) {
@@ -106,7 +106,7 @@ public class RowTracker extends Tracker {
 
                     Vector3f forward = boatRot.transform(MathUtils.FORWARD, new Vector3f());
 
-                    //scalar projection onto forward vector
+                    // scalar projection onto forward vector
                     double force = forceVector.dot(forward) * TRANSMISSION_EFFICIENCY / 5.0D;
 
                     if ((force < 0.0D && this.forces[paddle] > 0.0D) || (force > 0.0D && this.forces[paddle] < 0.0D)) {

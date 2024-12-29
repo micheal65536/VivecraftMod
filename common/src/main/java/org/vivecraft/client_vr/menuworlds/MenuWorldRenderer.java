@@ -195,7 +195,7 @@ public class MenuWorldRenderer {
 
         poseStack.pushPose();
 
-        //rotate World
+        // rotate World
         poseStack.mulPose(Axis.YP.rotationDegrees(this.worldRotation));
 
         // small offset to center on source block, and add the partial block offset, this shouldn't be too noticeable on the fog
@@ -449,7 +449,7 @@ public class MenuWorldRenderer {
                 }
             }
 
-            //VRSettings.logger.info("Vivecraft: MenuWorlds: Built segment of {} blocks in {} layer.", count, ((RenderStateShardAccessor) layer).getName());
+            // VRSettings.LOGGER.info("Vivecraft: MenuWorlds: Built segment of {} blocks in {} layer.", count, ((RenderStateShardAccessor) layer).getName());
             this.blockCounts.put(pair, this.blockCounts.getOrDefault(pair, 0) + count);
             this.renderTimes.put(pair,
                 this.renderTimes.getOrDefault(pair, 0L) + (ClientUtils.milliTime() - realStartTime));
@@ -598,7 +598,7 @@ public class MenuWorldRenderer {
         this.updateTorchFlicker();
 
         if (this.areEyesInFluid(FluidTags.WATER)) {
-            int i = 1; //this.isSpectator() ? 10 : 1;
+            int i = 1; // this.isSpectator() ? 10 : 1;
             this.waterVisionTime = Mth.clamp(this.waterVisionTime + i, 0, 600);
         } else if (this.waterVisionTime > 0) {
             this.areEyesInFluid(FluidTags.WATER);
@@ -690,7 +690,7 @@ public class MenuWorldRenderer {
             RenderSystem.setShader(GameRenderer::getPositionShader);
             this.fogRenderer.setupFog(FogRenderer.FogMode.FOG_SKY);
             ShaderInstance skyShader = RenderSystem.getShader();
-            //RenderSystem.disableTexture();
+            // RenderSystem.disableTexture();
 
             Vec3 skyColor = this.getSkyColor(position);
 
@@ -721,7 +721,7 @@ public class MenuWorldRenderer {
                 0); // calcSunriseSunsetColors
 
             if (sunriseColor != null && (!OptifineHelper.isOptifineLoaded() || OptifineHelper.isSunMoonEnabled())) {
-                //RenderSystem.disableTexture();
+                // RenderSystem.disableTexture();
                 RenderSystem.setShader(GameRenderer::getPositionColorShader);
                 RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
                 poseStack.pushPose();
@@ -751,7 +751,7 @@ public class MenuWorldRenderer {
                 poseStack.popPose();
             }
 
-            //RenderSystem.enableTexture();
+            // RenderSystem.enableTexture();
 
             RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE,
                 GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
@@ -762,10 +762,10 @@ public class MenuWorldRenderer {
             poseStack.mulPose(Axis.YP.rotationDegrees(-90.0f));
             Matrix4f modelView = poseStack.last().pose();
 
-            //if (OptifineHelper.isOptifineLoaded()) {
+            // if (OptifineHelper.isOptifineLoaded()) {
             // needs a full Level
-            //CustomSky.renderSky(this.world, poseStack, ClientUtils.getCurrentPartialTick());
-            //}
+            // CustomSky.renderSky(this.world, poseStack, ClientUtils.getCurrentPartialTick());
+            // }
 
             poseStack.mulPose(Axis.XP.rotationDegrees(this.getTimeOfDay() * 360.0f));
 
@@ -799,7 +799,7 @@ public class MenuWorldRenderer {
                 BufferUploader.drawWithShader(bufferBuilder.end());
             }
 
-            //GlStateManager.disableTexture();
+            // GlStateManager.disableTexture();
 
             float starBrightness = this.getStarBrightness() * f10;
 
@@ -820,7 +820,7 @@ public class MenuWorldRenderer {
             RenderSystem.defaultBlendFunc();
 
             poseStack.popPose();
-            //RenderSystem.disableTexture();
+            // RenderSystem.disableTexture();
 
             double horizonDistance = position.y - this.blockAccess.getHorizon();
 
@@ -1259,7 +1259,7 @@ public class MenuWorldRenderer {
                     );
                     yOffset = ae + af;
 
-                    //snow is brighter
+                    // snow is brighter
                     skyLight = (skyLight * 3 + 240) / 4;
                     blockLight = (blockLight * 3 + 240) / 4;
                 } else {
@@ -1595,9 +1595,9 @@ public class MenuWorldRenderer {
                         finalColor.add(new Vector3f(skylightColor).mul(skyBrightness));
                         finalColor.lerp(new Vector3f(0.75f, 0.75f, 0.75f), 0.04f);
                         // no darkening from bosses
-//						if (getDarkenWorldAmount() > 0.0f) {
-//							finalColor.lerp(new Vector3f(finalColor).mul(0.7f, 0.6f, 0.6f), getDarkenWorldAmount());
-//						}
+                        // if (getDarkenWorldAmount() > 0.0f) {
+                        // 	finalColor.lerp(new Vector3f(finalColor).mul(0.7f, 0.6f, 0.6f), getDarkenWorldAmount());
+                        // }
                     }
 
 					/* no night vision, no player

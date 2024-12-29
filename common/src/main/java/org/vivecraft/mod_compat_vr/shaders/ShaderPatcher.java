@@ -8,7 +8,6 @@ import java.util.Set;
 public class ShaderPatcher {
 
     private static final Set<Patch> PATCHES = Set.of(
-        //new ProjMadPatch(),
         new ProjDiag4ZPatch(),
         new SuperDuperMadPatch(),
         new ProjDiag4Patch(),

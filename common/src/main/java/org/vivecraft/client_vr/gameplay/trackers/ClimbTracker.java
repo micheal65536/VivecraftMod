@@ -224,7 +224,7 @@ public class ClimbTracker extends Tracker {
                     block instanceof VineBlock ||
                     blockState.is(BlockTags.VIVECRAFT_CLIMBABLE);
 
-                if (!ok) { //check other end of controllerBB.
+                if (!ok) { // check other end of controllerBB.
                     BlockPos blockPos2 = BlockPos.containing(controllerPosNear);
                     BlockState blockState2 = this.mc.level.getBlockState(blockPos2);
                     Block block2 = blockState2.getBlock();
@@ -266,8 +266,11 @@ public class ClimbTracker extends Tracker {
                         this.box[c] = new AABB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D);
 
                         // Not vanilla-y to allow climbing on top vines.
-                        //if (blockState.getValue(VineBlock.UP) && this.mc.level.getBlockState(blockPos.above()).canOcclude())
-                        //	bbs.add(upBB);
+                        // if (blockState.getValue(VineBlock.UP) &&
+                        //     this.mc.level.getBlockState(blockPos.above()).canOcclude())
+                        // {
+                        //     BBs.add(this.upBB);
+                        // }
 
                         if (blockState.getValue(VineBlock.NORTH) &&
                             this.mc.level.getBlockState(blockPos.north()).canOcclude())
@@ -458,7 +461,7 @@ public class ClimbTracker extends Tracker {
                 VivecraftVRMod.INSTANCE.keyClimbeyGrab.unpressKey(ControllerType.LEFT);
             }
             this.latchStartController = -1;
-            return; //fly u fools
+            return; // fly u fools
         }
 
         if ((this.latched[0] || this.latched[1]) && this.rand.nextInt(20) == 10) {

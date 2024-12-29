@@ -70,7 +70,7 @@ public class RadialHandler {
     public static void orientOverlay(ControllerType controller) {
         if (!isShowing()) return;
 
-        VRData.VRDevicePose roomPose = DH.vrPlayer.vrdata_room_pre.hmd; //normal menu.
+        VRData.VRDevicePose roomPose = DH.vrPlayer.vrdata_room_pre.hmd; // normal menu.
         float distance = 2.0F;
         int id = 0;
 

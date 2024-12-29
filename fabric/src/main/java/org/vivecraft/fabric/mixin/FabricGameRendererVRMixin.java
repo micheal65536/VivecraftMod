@@ -30,7 +30,7 @@ public class FabricGameRendererVRMixin {
         }
     }
 
-    //optifabric only
+    // optifabric only
     @WrapOperation(method = "renderLevel", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;mulPose(Lorg/joml/Quaternionf;)V ", ordinal = 4), expect = 0)
     private void vivecraft$removeMulPoseZ(PoseStack instance, Quaternionf quaternion, Operation<Void> original) {
         if (RenderPassType.isVanilla()) {
