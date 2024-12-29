@@ -312,6 +312,8 @@ public class RenderHelper {
     public static void drawMouseMenuQuad(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         RenderSystem.enableBlend();
         RenderSystem.disableDepthTest();
+        // Turns out all we needed was some blendFuncSeparate magic :)
+        // Also color DestFactor of ZERO produces better results with non-white crosshairs
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ZERO,
             GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
 
