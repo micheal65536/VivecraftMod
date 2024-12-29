@@ -17,23 +17,29 @@ public interface VivecraftPayloadS2C extends VivecraftPayload {
      * @return parsed VivecraftPacket
      */
     static VivecraftPayloadS2C readPacket(FriendlyByteBuf buffer) {
-        PayloadIdentifier id = PayloadIdentifier.values()[buffer.readByte()];
-        return switch (id) {
-            case VERSION -> VersionPayloadS2C.read(buffer);
-            case REQUESTDATA -> new RequestDataPayloadS2C();
-            case UBERPACKET -> UberPacketPayloadS2C.read(buffer);
-            case TELEPORT -> new TeleportPayloadS2C();
-            case CLIMBING -> ClimbingPayloadS2C.read(buffer);
-            case SETTING_OVERRIDE -> SettingOverridePayloadS2C.read(buffer);
-            case CRAWL -> new CrawlPayloadS2C();
-            case NETWORK_VERSION -> NetworkVersionPayloadS2C.read(buffer);
-            case VR_SWITCHING -> VRSwitchingPayloadS2C.read(buffer);
-            case IS_VR_ACTIVE -> VRActivePayloadS2C.read(buffer);
-            case DUAL_WIELDING -> DualWieldingPayloadS2C.read(buffer);
-            default -> {
-                VRSettings.LOGGER.error("Vivecraft: Got unknown payload identifier on client: {}", id);
-                yield null;
-            }
-        };
+        int index = buffer.readByte();
+        if (index < PayloadIdentifier.values().length) {
+            PayloadIdentifier id = PayloadIdentifier.values()[index];
+            return switch (id) {
+                case VERSION -> VersionPayloadS2C.read(buffer);
+                case REQUESTDATA -> new RequestDataPayloadS2C();
+                case UBERPACKET -> UberPacketPayloadS2C.read(buffer);
+                case TELEPORT -> new TeleportPayloadS2C();
+                case CLIMBING -> ClimbingPayloadS2C.read(buffer);
+                case SETTING_OVERRIDE -> SettingOverridePayloadS2C.read(buffer);
+                case CRAWL -> new CrawlPayloadS2C();
+                case NETWORK_VERSION -> NetworkVersionPayloadS2C.read(buffer);
+                case VR_SWITCHING -> VRSwitchingPayloadS2C.read(buffer);
+                case IS_VR_ACTIVE -> VRActivePayloadS2C.read(buffer);
+                case DUAL_WIELDING -> DualWieldingPayloadS2C.read(buffer);
+                default -> {
+                    VRSettings.LOGGER.error("Vivecraft: Got unexpected payload identifier on client: {}", id);
+                    yield UnknownPayloadS2C.read(buffer);
+                }
+            };
+        } else {
+            VRSettings.LOGGER.error("Vivecraft: Got unknown payload identifier on client: {}", index);
+            return UnknownPayloadS2C.read(buffer);
+        }
     }
 }

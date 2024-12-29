@@ -233,7 +233,7 @@ public class ClientNetworking {
     }
 
     public static void handlePacket(VivecraftPayloadS2C s2cPayload) {
-        if (s2cPayload == null) return;
+        if (s2cPayload instanceof UnknownPayloadS2C) return;
         ClientDataHolderVR dataholder = ClientDataHolderVR.getInstance();
         Minecraft mc = Minecraft.getInstance();
         switch (s2cPayload.payloadId()) {

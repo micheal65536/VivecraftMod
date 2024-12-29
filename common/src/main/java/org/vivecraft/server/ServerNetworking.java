@@ -53,7 +53,7 @@ public class ServerNetworking {
     public static void handlePacket(
         VivecraftPayloadC2S c2sPayload, ServerPlayer player, Consumer<VivecraftPayloadS2C> packetConsumer)
     {
-        if (c2sPayload == null) return;
+        if (c2sPayload instanceof UnknownPayloadC2S) return;
         ServerVivePlayer vivePlayer = ServerVRPlayers.getVivePlayer(player);
 
         // clients are expected to send a VERSION packet first
