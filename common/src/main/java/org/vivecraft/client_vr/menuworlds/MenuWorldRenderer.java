@@ -717,8 +717,11 @@ public class MenuWorldRenderer {
                 GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
                 GlStateManager.DestFactor.ZERO);
 
-            float[] sunriseColor = this.dimensionInfo.getSunriseColor(this.getTimeOfDay(),
-                0); // calcSunriseSunsetColors
+            float[] sunriseColor = null;
+            try {
+                sunriseColor = this.dimensionInfo.getSunriseColor(this.getTimeOfDay(),
+                    0); // calcSunriseSunsetColors
+            } catch (Exception ignore) {}
 
             if (sunriseColor != null && (!OptifineHelper.isOptifineLoaded() || OptifineHelper.isSunMoonEnabled())) {
                 // RenderSystem.disableTexture();
@@ -1842,14 +1845,17 @@ public class MenuWorldRenderer {
                 }
 
                 if (f5 > 0.0F) {
-                    float[] afloat = this.menuWorldRenderer.dimensionInfo.getSunriseColor(
-                        this.menuWorldRenderer.getTimeOfDay(), 0);
+                    float[] sunriseColor = null;
+                    try {
+                        sunriseColor = this.menuWorldRenderer.dimensionInfo.getSunriseColor(
+                            this.menuWorldRenderer.getTimeOfDay(), 0);
+                    } catch (Exception ignore) {}
 
-                    if (afloat != null) {
-                        f5 = f5 * afloat[3];
-                        this.fogRed = this.fogRed * (1.0F - f5) + afloat[0] * f5;
-                        this.fogGreen = this.fogGreen * (1.0F - f5) + afloat[1] * f5;
-                        this.fogBlue = this.fogBlue * (1.0F - f5) + afloat[2] * f5;
+                    if (sunriseColor != null) {
+                        f5 = f5 * sunriseColor[3];
+                        this.fogRed = this.fogRed * (1.0F - f5) + sunriseColor[0] * f5;
+                        this.fogGreen = this.fogGreen * (1.0F - f5) + sunriseColor[1] * f5;
+                        this.fogBlue = this.fogBlue * (1.0F - f5) + sunriseColor[2] * f5;
                     }
                 }
             }
