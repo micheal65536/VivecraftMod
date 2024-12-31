@@ -1,5 +1,6 @@
 package org.vivecraft.mixin.client_vr;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import net.minecraft.client.KeyMapping;
@@ -64,11 +65,11 @@ public class KeyboardInputVRMixin extends Input {
         }
     }
 
-    @Inject(method = "tick", at = @At("TAIL"))
-    private void vivecraft$analogInput(CallbackInfo ci, @Share("climbing") LocalBooleanRef climbing) {
-        if (!VRState.VR_RUNNING) {
-            return;
-        }
+    @Inject(method = "tick", at = @At(value = "FIELD", target = "Lnet/minecraft/client/player/KeyboardInput;shiftKeyDown:Z", shift = At.Shift.AFTER))
+    private void vivecraft$analogInput(
+        CallbackInfo ci, @Local(argsOnly = true) boolean isSneaking, @Share("climbing") LocalBooleanRef climbing)
+    {
+        if (!VRState.VR_RUNNING) return;
 
         ClientDataHolderVR dataHolder = ClientDataHolderVR.getInstance();
 
@@ -148,7 +149,7 @@ public class KeyboardInputVRMixin extends Input {
                 VRInputAction.setKeyBindState(this.options.keyLeft, this.left);
                 VRInputAction.setKeyBindState(this.options.keyRight, this.right);
 
-                if (dataHolder.vrSettings.autoSprint) {
+                if (dataHolder.vrSettings.autoSprint && !isSneaking) {
                     // Sprint only works for walk forwards obviously
                     if (forwardAxis >= dataHolder.vrSettings.autoSprintThreshold) {
                         Minecraft.getInstance().player.setSprinting(true);
