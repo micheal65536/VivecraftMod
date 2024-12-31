@@ -416,7 +416,8 @@ public class RenderHelper {
     public static void drawSizedQuadFullbrightSolid(
         float displayWidth, float displayHeight, float size, float[] color, Matrix4f matrix)
     {
-        drawSizedQuadWithLightmap(displayWidth, displayHeight, size, LightTexture.pack(15, 15), color, matrix,
+        RenderSystem.disableBlend();
+        drawSizedQuadWithLightmap(displayWidth, displayHeight, size, LightTexture.FULL_BRIGHT, color, matrix,
             GameRenderer::getRendertypeEntitySolidShader, false);
     }
 
