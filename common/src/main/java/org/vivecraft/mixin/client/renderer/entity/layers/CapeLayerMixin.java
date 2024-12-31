@@ -110,7 +110,7 @@ public abstract class CapeLayerMixin extends RenderLayer<AbstractClientPlayer, P
         return xRot;
     }
 
-    @ModifyVariable(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/AbstractClientPlayer;isCrouching()Z"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/player/AbstractClientPlayer;FFFFFF)V", ordinal = 8)
+    @ModifyVariable(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/player/AbstractClientPlayer;FFFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/AbstractClientPlayer;isCrouching()Z"), ordinal = 8)
     private float vivecraft$limitSpeedRot(
         float speedRot, @Local(argsOnly = true) AbstractClientPlayer player,
         @Share("xRot") LocalFloatRef xRotation)

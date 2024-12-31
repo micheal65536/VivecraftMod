@@ -191,7 +191,7 @@ public class VRPlayerRenderer extends PlayerRenderer {
                 hideHand(HumanoidArm.RIGHT, ClientDataHolderVR.getInstance().vrSettings.modelArmsMode ==
                     VRSettings.ModelArmsMode.OFF);
             } else {
-                boolean leftHanded = ClientVRPlayers.getInstance().isVRAndLeftHanded(player.getUUID());
+                boolean leftHanded = ClientDataHolderVR.getInstance().vrSettings.reverseHands;
                 if (ClientDataHolderVR.getInstance().menuHandOff) {
                     hideHand(leftHanded ? HumanoidArm.RIGHT : HumanoidArm.LEFT, false);
                 }

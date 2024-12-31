@@ -99,17 +99,17 @@ public class IrisNewWorldRenderingPipelineVRMixin {
      */
     @Group(name = "reroute shadowRenderTargets", min = 6)
     @ModifyArg(method = {
-        "addGbufferOrShadowSamplers",
-        "lambda$new$2",// iris 1.4
-        "lambda$new$3",// iris 1.3.1, 1.4
-        "lambda$new$4",// iris 1.3.1
-        "lambda$new$5",// iris 1.4, 1.5
-        "lambda$new$6",// iris 1.3.1, 1.5, 1.6
-        "lambda$new$7",// iris 1.4, 1.6
-        "lambda$new$8",// iris 1.3.1, 1.5
-        "lambda$new$9",// iris 1.6
-        "lambda$new$10",// iris 1.5
-        "lambda$new$11"// iris 1.6
+        "addGbufferOrShadowSamplers*",
+        "lambda$new$2*",// iris 1.4
+        "lambda$new$3*",// iris 1.3.1, 1.4
+        "lambda$new$4*",// iris 1.3.1
+        "lambda$new$5*",// iris 1.4, 1.5
+        "lambda$new$6*",// iris 1.3.1, 1.5, 1.6
+        "lambda$new$7*",// iris 1.4, 1.6
+        "lambda$new$8*",// iris 1.3.1, 1.5
+        "lambda$new$9*",// iris 1.6
+        "lambda$new$10*",// iris 1.5
+        "lambda$new$11*"// iris 1.6
     }, at = @At(value = "INVOKE", target = "Ljava/util/Objects;requireNonNull(Ljava/lang/Object;)Ljava/lang/Object;"), remap = false, expect = 0)
     private Object vivecraft$rerouteShadowTarget(Object obj) {
         // make sure we only change ShadowRenderTargets, since this might also inject into other lambdas

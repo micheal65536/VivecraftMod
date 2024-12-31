@@ -91,10 +91,10 @@ public class IrisRenderingPipelineVRMixin {
      */
     @Group(name = "reroute shadowRenderTargets", max = 4)
     @ModifyArg(method = {
-        "lambda$new$6",
-        "lambda$new$7",
-        "lambda$new$9",
-        "lambda$new$11"
+        "lambda$new$6*",
+        "lambda$new$7*",
+        "lambda$new$9*",
+        "lambda$new$11*"
     }, at = @At(value = "INVOKE", target = "Ljava/util/Objects;requireNonNull(Ljava/lang/Object;)Ljava/lang/Object;"), remap = false, expect = 0)
     private Object vivecraft$rerouteShadowTarget(Object obj) {
         // make sure we only change ShadowRenderTargets, since this might also inject into other lambdas
