@@ -14,7 +14,7 @@ public class AutoCalibration {
         Minecraft minecraft = Minecraft.getInstance();
         ClientDataHolderVR dataHolder = ClientDataHolderVR.getInstance();
 
-        dataHolder.vrSettings.manualCalibration = (float) dataHolder.vr.hmdPivotHistory.averagePosition(0.5D).y;
+        dataHolder.vrSettings.manualCalibration = dataHolder.vr.hmdPivotHistory.averagePosition(0.5D).y;
         // round to nearest %
         int percentHeight = Math.round(100.0F * getPlayerHeight() / DEFAULT_HEIGHT);
 

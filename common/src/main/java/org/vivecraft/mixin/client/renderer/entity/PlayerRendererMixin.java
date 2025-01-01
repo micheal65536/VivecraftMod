@@ -55,7 +55,9 @@ public abstract class PlayerRendererMixin extends LivingEntityRendererMixin<Abst
         // also check that the VRPlayerRenderers were created, this method also gets called in the constructor,
         // those default Layers already are added to the VRPlayerRenderer there
         EntityRenderDispatcherExtension renderExtension = (EntityRenderDispatcherExtension) this.entityRenderDispatcher;
-        if ((Object) this.getClass() == PlayerRenderer.class && !renderExtension.vivecraft$getSkinMapVRVanilla().isEmpty()) {
+        if ((Object) this.getClass() == PlayerRenderer.class &&
+            !renderExtension.vivecraft$getSkinMapVRVanilla().isEmpty())
+        {
 
             // try to find a suitable constructor, so we can create a new Object without issues
             Constructor<RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>>> constructor = null;

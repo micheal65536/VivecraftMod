@@ -21,11 +21,11 @@ public class jkatvr implements Library {
     private static double POWER;
     private static int DIRECTION;
     private static int IS_MOVING;
-    private static IntByReference Y = new IntByReference();
-    private static IntByReference M = new IntByReference();
-    private static IntByReference IS = new IntByReference();
-    private static DoubleByReference POW = new DoubleByReference();
-    private static FloatByReference FL = new FloatByReference();
+    private static final IntByReference Y = new IntByReference();
+    private static final IntByReference M = new IntByReference();
+    private static final IntByReference IS = new IntByReference();
+    private static final DoubleByReference POW = new DoubleByReference();
+    private static final FloatByReference FL = new FloatByReference();
 
     public static native void Init(int var0);
 

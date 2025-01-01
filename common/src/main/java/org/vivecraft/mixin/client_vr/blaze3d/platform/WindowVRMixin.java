@@ -27,7 +27,7 @@ public abstract class WindowVRMixin implements WindowExtension {
     // TODO: this doesn't disable sodium extras adaptive sync
     @ModifyVariable(method = "updateVsync", at = @At("HEAD"), ordinal = 0, argsOnly = true)
     private boolean vivecraft$overwriteVsync(boolean vsync) {
-        return VRState.VR_RUNNING ? false : vsync;
+        return !VRState.VR_RUNNING && vsync;
     }
 
     @Inject(method = "getWidth", at = @At("HEAD"), cancellable = true)

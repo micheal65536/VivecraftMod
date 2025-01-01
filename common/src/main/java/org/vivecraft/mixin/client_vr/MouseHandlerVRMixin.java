@@ -44,7 +44,7 @@ public class MouseHandlerVRMixin {
             // call the tutorial before canceling
             // controller movement
             int mainController = ClientDataHolderVR.getInstance().vrSettings.reverseHands ? 1 : 0;
-            float deltaMovement = (float) MCVR.get().controllerForwardHistory[mainController].averagePosition(0.2)
+            float deltaMovement = MCVR.get().controllerForwardHistory[mainController].averagePosition(0.2)
                 .normalize().dot(MCVR.get().controllerForwardHistory[mainController].averagePosition(1.0).normalize());
 
             this.minecraft.getTutorial().onMouse(1F - deltaMovement, 0);
