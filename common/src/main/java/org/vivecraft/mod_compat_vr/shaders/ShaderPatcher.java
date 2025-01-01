@@ -15,7 +15,8 @@ public class ShaderPatcher {
         new RreProjInvPatch(),
         new SuperDuperProjInvPatch(),
         new EbinProjInvPatch(),
-        new SuperDuperProjPatch(),
+        new SuperDuperProj2Patch(),
+        new SuperDuperProj3Patch(),
         new EbinProjPatch(),
         new ProjDiag3Patch()
     );
