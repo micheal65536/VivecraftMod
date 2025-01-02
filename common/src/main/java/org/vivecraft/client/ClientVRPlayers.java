@@ -375,6 +375,8 @@ public class ClientVRPlayers {
         rotInfo.leftHanded = ClientDataHolderVR.getInstance().vrSettings.reverseHands;
         rotInfo.fbtMode = data.fbtMode;
 
+        rotInfo.hmd = INSTANCE.donors.getOrDefault(player.getUUID(), 0);
+
         rotInfo.heightScale = AutoCalibration.getPlayerHeight() / AutoCalibration.DEFAULT_HEIGHT;
         rotInfo.worldScale = ClientDataHolderVR.getInstance().vrPlayer.worldScale;
 
