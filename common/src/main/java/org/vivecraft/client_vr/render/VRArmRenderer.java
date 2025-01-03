@@ -69,7 +69,8 @@ public class VRArmRenderer extends PlayerRenderer {
         playerModel.swimAmount = 0.0F;
 
         // in case some mod messes with it
-        rendererArm.resetPose();
+        playerModel.setupAnim(player, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+        rendererArm.xRot = 0.0F;
 
         // make sure they have the same state
         rendererArmwear.copyFrom(rendererArm);

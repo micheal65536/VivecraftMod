@@ -3,7 +3,7 @@ package org.vivecraft.client_vr.provider.openvr_lwjgl;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Tuple;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11C;
@@ -82,10 +82,10 @@ public class OpenVRStereoRenderer extends VRRenderer {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             if (eyeType == VR.EVREye_Eye_Left) {
                 return OpenVRUtil.Matrix4fFromOpenVR(
-                    VRSystem_GetProjectionMatrix(VR.EVREye_Eye_Left, nearClip, farClip, HmdMatrix44.calloc(stack)));
+                    VRSystem_GetProjectionMatrix(VR.EVREye_Eye_Left, nearClip, farClip, HmdMatrix44.callocStack(stack)));
             } else {
                 return OpenVRUtil.Matrix4fFromOpenVR(
-                    VRSystem_GetProjectionMatrix(VR.EVREye_Eye_Right, nearClip, farClip, HmdMatrix44.calloc(stack)));
+                    VRSystem_GetProjectionMatrix(VR.EVREye_Eye_Right, nearClip, farClip, HmdMatrix44.callocStack(stack)));
             }
         }
     }
@@ -129,8 +129,8 @@ public class OpenVRStereoRenderer extends VRRenderer {
         VRCompositor_PostPresentHandoff();
 
         if (leftError + rightError > VR.EVRCompositorError_VRCompositorError_None) {
-            throw new RenderConfigException(Component.literal("Compositor Error"),
-                Component.literal("Texture submission error: Left/Right " +
+            throw new RenderConfigException(new TextComponent("Compositor Error"),
+                new TextComponent("Texture submission error: Left/Right " +
                     getCompositorError(leftError) + "/" + getCompositorError(rightError)));
         }
 

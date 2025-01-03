@@ -12,7 +12,8 @@ import net.minecraft.client.resources.language.ClientLanguage;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.resources.language.LanguageInfo;
 import net.minecraft.locale.Language;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Mth;
 import org.apache.commons.lang3.tuple.Triple;
 import org.joml.*;
@@ -74,6 +75,18 @@ public class MCOpenVR extends MCVR {
     private static final String ACTION_LEFT_HAPTIC = "/actions/global/out/lefthaptic";
     private static final String ACTION_RIGHT_HAND = "/actions/global/in/righthand";
     private static final String ACTION_RIGHT_HAPTIC = "/actions/global/out/righthaptic";
+
+    // these are missing in lwjgl 3.2.2 so that is why they are here like that
+    public static final String k_pchPathUserHandRight = "/user/hand/right";
+    public static final String k_pchPathUserHandLeft = "/user/hand/left";
+    public static final String k_pchPathUserFootLeft = "/user/foot/left";
+    public static final String k_pchPathUserFootRight = "/user/foot/right";
+    public static final String k_pchPathUserElbowLeft = "/user/elbow/left";
+    public static final String k_pchPathUserElbowRight = "/user/elbow/right";
+    public static final String k_pchPathUserKneeLeft = "/user/knee/left";
+    public static final String k_pchPathUserKneeRight = "/user/knee/right";
+    public static final String k_pchPathUserWaist = "/user/waist";
+    public static final String k_pchPathUserCamera = "/user/camera";
 
     private final Map<VRInputActionSet, Long> actionSetHandles = new EnumMap<>(VRInputActionSet.class);
     private VRActiveActionSet.Buffer activeActionSetsBuffer;
@@ -186,7 +199,7 @@ public class MCOpenVR extends MCVR {
         OME = this;
         // make sure the lwjgl version is the right one
         // check that the right lwjgl version is loaded that we ship the OpenVR part of, or stuff breaks
-        final String[] lwjglVersions = new String[]{"3.3.1", "3.3.2"};
+        final String[] lwjglVersions = new String[]{"3.2.2"};
         if (Arrays.stream(lwjglVersions).noneMatch(v -> Version.getVersion().startsWith(v))) {
             String suppliedJar = "";
             try {
@@ -196,8 +209,8 @@ public class MCOpenVR extends MCVR {
                 VRSettings.LOGGER.error("Vivecraft: couldn't check lwjgl source:", e);
             }
 
-            throw new RenderConfigException(Component.translatable("vivecraft.messages.vriniterror"),
-                Component.translatable("vivecraft.messages.rendersetupfailed",
+            throw new RenderConfigException(new TranslatableComponent("vivecraft.messages.vriniterror"),
+                new TranslatableComponent("vivecraft.messages.rendersetupfailed",
                     I18n.get("vivecraft.messages.invalidlwjgl", Version.getVersion(),
                         lwjglVersions.length == 1 ? lwjglVersions[0] :
                             (lwjglVersions[0] + " - " + lwjglVersions[lwjglVersions.length - 1]), suppliedJar),
@@ -912,9 +925,9 @@ public class MCOpenVR extends MCVR {
                         continue;
                     }
 
-                    var renderModelComponentState = RenderModelComponentState.calloc(stack);
+                    var renderModelComponentState = RenderModelComponentState.callocStack(stack);
                     boolean valid = VRRenderModels_GetComponentStateForDevicePath(renderModelName, componentName,
-                        sourceHandle, RenderModelControllerModeState.calloc(stack), renderModelComponentState);
+                        sourceHandle, RenderModelControllerModeState.callocStack(stack), renderModelComponentState);
 
                     if (!valid) {
                         failed = true;
@@ -1045,11 +1058,11 @@ public class MCOpenVR extends MCVR {
         if (hasInvalidChars || alwaysThrow) {
             String error = knownError + (hasInvalidChars ? "\nInvalid characters in path: \n" : "\n");
             if (hasInvalidChars) {
-                throw new RenderConfigException(Component.translatable("vivecraft.messages.vriniterror"),
-                    Component.translatable("vivecraft.messages.steamvrInvalidCharacters", pathFormatted));
+                throw new RenderConfigException(new TranslatableComponent("vivecraft.messages.vriniterror"),
+                    new TranslatableComponent("vivecraft.messages.steamvrInvalidCharacters", pathFormatted));
             } else {
-                throw new RenderConfigException(Component.translatable("vivecraft.messages.vriniterror"),
-                    Component.empty().append(error).append(pathFormatted));
+                throw new RenderConfigException(new TranslatableComponent("vivecraft.messages.vriniterror"),
+                    new TextComponent(error).append(pathFormatted));
             }
         }
     }
@@ -1187,8 +1200,8 @@ public class MCOpenVR extends MCVR {
         int error = VRInput_SetActionManifestPath(actionsPath);
 
         if (error != EVRInputError_VRInputError_None) {
-            throw new RenderConfigException(Component.translatable("vivecraft.messages.vriniterror"),
-                Component.literal("Failed to load action manifest: " + getInputErrorName(error)));
+            throw new RenderConfigException(new TranslatableComponent("vivecraft.messages.vriniterror"),
+                new TextComponent("Failed to load action manifest: " + getInputErrorName(error)));
         }
     }
 
@@ -1372,7 +1385,7 @@ public class MCOpenVR extends MCVR {
      * @throws RuntimeException if OpenVR gives an error
      */
     private void readPoseData(long poseHandle) {
-        int error = VRInput_GetPoseActionDataForNextFrame(poseHandle, ETrackingUniverseOrigin_TrackingUniverseStanding,
+        int error = VRInput_GetPoseActionData(poseHandle, ETrackingUniverseOrigin_TrackingUniverseStanding, 0F,
             this.poseData, InputPoseActionData.SIZEOF, k_ulInvalidInputValueHandle);
 
         if (error != EVRInputError_VRInputError_None) {
@@ -1494,7 +1507,7 @@ public class MCOpenVR extends MCVR {
 
         // eye transforms
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            HmdMatrix34 temp = HmdMatrix34.calloc(stack);
+            HmdMatrix34 temp = HmdMatrix34.callocStack(stack);
             OpenVRUtil.convertSteamVRMatrix3ToMatrix4f(VRSystem_GetEyeToHeadTransform(EVREye_Eye_Left, temp),
                 this.hmdPoseLeftEye);
             OpenVRUtil.convertSteamVRMatrix3ToMatrix4f(VRSystem_GetEyeToHeadTransform(EVREye_Eye_Right, temp),
