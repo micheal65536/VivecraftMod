@@ -497,6 +497,7 @@
   "vivecraft.options.VR_HOTSWITCH": "Hotswitching",
   "vivecraft.options.VR_ENABLED": "VR Enabled",
   "vivecraft.options.VR_REMEMBER_ENABLED": "Remember VR State",
+  "vivecraft.options.VR_CLOSE_WITH_RUNTIME": "Close Game With Runtime",
   "vivecraft.options.VR_PLUGIN": "VR Plugin",
   "vivecraft.options.VR_TOGGLE_BUTTON_VISIBLE": "VR Toggle Button Visible",
   "vivecraft.options.VR_SETTINGS_BUTTON_VISIBLE": "VR Settings Button Visible",

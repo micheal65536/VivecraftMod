@@ -542,6 +542,8 @@ public class VRSettings {
     public boolean showChatMessageStencil = true;
     @SettingField(value = VrOptions.VR_ENABLED, config = "vrEnabled")
     public boolean vrEnabled = false;
+    @SettingField(VrOptions.VR_CLOSE_WITH_RUNTIME)
+    public boolean closeWithRuntime = true;
     @SettingField(VrOptions.VR_REMEMBER_ENABLED)
     public boolean rememberVr = true;
     @SettingField(VrOptions.VR_HOTSWITCH)
@@ -1287,6 +1289,7 @@ public class VRSettings {
                 VRState.VR_ENABLED = ClientDataHolderVR.getInstance().vrSettings.vrEnabled;
             }
         },
+        VR_CLOSE_WITH_RUNTIME(false, true), // closes the game when getting the quit/close event
         VR_REMEMBER_ENABLED(false, true), // restore vr state on startup
         HUD_SCALE(true, false, 0.35f, 2.5f, 0.01f, -1), // Head HUD Size
         HUD_DISTANCE(true, false, 0.25f, 5.0f, 0.01f, 2) { // Head HUD Distance

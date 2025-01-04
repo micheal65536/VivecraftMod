@@ -26,6 +26,7 @@ public class VivecraftMainSettings extends GuiListScreen {
 
         entries.add(SettingsList.vrOptionToEntry(VRSettings.VrOptions.VR_REMEMBER_ENABLED));
         entries.add(SettingsList.vrOptionToEntry(VRSettings.VrOptions.VR_PLUGIN));
+        entries.add(SettingsList.vrOptionToEntry(VRSettings.VrOptions.VR_CLOSE_WITH_RUNTIME));
 
         entries.add(new SettingsList.WidgetEntry(
             Component.translatable("vivecraft.options.screen.main"),

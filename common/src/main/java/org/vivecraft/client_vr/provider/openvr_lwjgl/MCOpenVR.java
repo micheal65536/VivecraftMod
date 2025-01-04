@@ -1321,10 +1321,15 @@ public class MCOpenVR extends MCVR {
                          EVREventType_VREvent_ModelSkinSettingsHaveChanged -> this.getXforms = true;
                     // OpenVR closed / told the app to exit
                     case EVREventType_VREvent_Quit -> {
-                        // this.mc.stop();
-                        VRState.VR_ENABLED = !VRState.VR_ENABLED;
-                        ClientDataHolderVR.getInstance().vrSettings.vrEnabled = VRState.VR_ENABLED;
-                        ClientDataHolderVR.getInstance().vrSettings.saveOptions();
+                        if (ClientDataHolderVR.getInstance().vrSettings.closeWithRuntime) {
+                            VRSettings.LOGGER.info("Vivecraft: SteamVR closed, closing the game with it");
+                            this.mc.stop();
+                        } else {
+                            VRSettings.LOGGER.info("Vivecraft: SteamVR closed, disabling VR");
+                            VRState.VR_ENABLED = !VRState.VR_ENABLED;
+                            ClientDataHolderVR.getInstance().vrSettings.vrEnabled = VRState.VR_ENABLED;
+                            ClientDataHolderVR.getInstance().vrSettings.saveOptions();
+                        }
                     }
                 }
             }
