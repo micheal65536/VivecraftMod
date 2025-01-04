@@ -68,7 +68,8 @@ public class VRArmRenderer extends PlayerRenderer {
         playerModel.crouching = false;
         playerModel.swimAmount = 0.0F;
 
-        rendererArm.xRot = 0.0F;
+        // in case some mod messes with it
+        rendererArm.resetPose();
 
         // make sure they have the same state
         rendererArmwear.copyFrom(rendererArm);

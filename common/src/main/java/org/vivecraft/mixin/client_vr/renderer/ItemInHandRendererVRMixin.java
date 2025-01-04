@@ -182,8 +182,6 @@ public abstract class ItemInHandRendererVRMixin {
                     ItemDisplayContext.FIRST_PERSON_RIGHT_HAND : ItemDisplayContext.FIRST_PERSON_LEFT_HAND;
             }
 
-            ClientDataHolderVR.IS_FP_HAND = true;
-
             if (transformType == VivecraftItemRendering.VivecraftItemTransformType.Map) {
                 RenderSystem.disableCull();
                 this.renderMap(poseStack, buffer, combinedLight, itemStack);
@@ -221,7 +219,6 @@ public abstract class ItemInHandRendererVRMixin {
                     poseStack, buffer, combinedLight);
             }
 
-            ClientDataHolderVR.IS_FP_HAND = false;
             poseStack.popPose();
         }
 
