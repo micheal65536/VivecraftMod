@@ -1167,133 +1167,139 @@ public class MenuWorldRenderer {
         RenderSystem.getModelViewStack().mulPoseMatrix(poseStack.last().pose());
         RenderSystem.applyModelViewMatrix();
 
-        int xFloor = Mth.floor(inX);
-        int yFloor = Mth.floor(inY);
-        int zFloor = Mth.floor(inZ);
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = tesselator.getBuilder();
-        RenderSystem.disableCull();
-        RenderSystem.enableBlend();
-        RenderSystem.enableDepthTest();
-        int rainDistance = 5;
-        if (Minecraft.useFancyGraphics()) {
-            rainDistance = 10;
-        }
-        RenderSystem.depthMask(true);
-        int count = -1;
-        float rainAnimationTime = this.ticks + ClientUtils.getCurrentPartialTick();
-        RenderSystem.setShader(GameRenderer::getParticleShader);
-        turnOnLightLayer();
-        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
-        for (int rainZ = zFloor - rainDistance; rainZ <= zFloor + rainDistance; ++rainZ) {
-            for (int rainX = xFloor - rainDistance; rainX <= xFloor + rainDistance; ++rainX) {
-                int q = (rainZ - zFloor + 16) * 32 + rainX - xFloor + 16;
-                double r = (double) this.rainSizeX[q] * 0.5;
-                double s = (double) this.rainSizeZ[q] * 0.5;
-                mutableBlockPos.set(rainX, inY, rainZ);
-                Biome biome = this.blockAccess.getBiome(mutableBlockPos).value();
-                if (!biome.hasPrecipitation()) {
-                    continue;
-                }
-
-                int blockingHeight = this.blockAccess.getHeightBlocking(rainX, rainZ);
-                int lower = Math.max(yFloor - rainDistance, blockingHeight);
-                int upper = Math.max(yFloor + rainDistance, blockingHeight);
-
-                if (lower == upper) {
-                    // no rain
-                    continue;
-                }
-                int rainY = Math.max(blockingHeight, yFloor);
-
-                RandomSource randomSource = RandomSource.create(
-                    rainX * rainX * 3121L + rainX * 45238971L ^ rainZ * rainZ * 418711L + rainZ * 13761L);
-                mutableBlockPos.setY(lower);
-                Biome.Precipitation precipitation = biome.getPrecipitationAt(mutableBlockPos);
-                if (precipitation == Biome.Precipitation.NONE) {
-                    continue;
-                }
-
-                mutableBlockPos.setY(rainY);
-
-                double localX = rainX + 0.5;
-                double localZ = rainZ + 0.5;
-                float distance = (float) Math.sqrt(localX * localX + localZ * localZ) / (float) rainDistance;
-                float blend;
-                float xOffset = 0;
-                float yOffset = 0;
-
-                int skyLight = this.blockAccess.getBrightness(LightLayer.SKY, mutableBlockPos) << 4;
-                int blockLight = this.blockAccess.getBrightness(LightLayer.BLOCK, mutableBlockPos) << 4;
-
-                if (precipitation == Biome.Precipitation.RAIN) {
-                    if (count != 0) {
-                        if (count >= 0) {
-                            tesselator.end();
-                        }
-                        count = 0;
-                        RenderSystem.setShaderTexture(0, RAIN_LOCATION);
-                        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
-                    }
-
-                    blend = ((1.0f - distance * distance) * 0.5f + 0.5f);
-                    int x =
-                        this.ticks + rainX * rainX * 3121 + rainX * 45238971 + rainZ * rainZ * 418711 + rainZ * 13761 &
-                            0x1F;
-                    yOffset =
-                        -((float) x + ClientUtils.getCurrentPartialTick()) / 32.0f * (3.0f + randomSource.nextFloat());
-                } else if (precipitation == Biome.Precipitation.SNOW) {
-                    if (count != 1) {
-                        if (count >= 0) {
-                            tesselator.end();
-                        }
-                        count = 1;
-                        RenderSystem.setShaderTexture(0, SNOW_LOCATION);
-                        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
-                    }
-
-                    blend = ((1.0f - distance * distance) * 0.3f + 0.5f);
-                    xOffset = (float) (randomSource.nextDouble() +
-                        (double) rainAnimationTime * 0.01 * (double) ((float) randomSource.nextGaussian())
-                    );
-                    float ae = -((float) (this.ticks & 0x1FF) + ClientUtils.getCurrentPartialTick()) / 512.0f;
-                    float af = (float) (randomSource.nextDouble() +
-                        (double) (rainAnimationTime * (float) randomSource.nextGaussian()) * 0.001
-                    );
-                    yOffset = ae + af;
-
-                    // snow is brighter
-                    skyLight = (skyLight * 3 + 240) / 4;
-                    blockLight = (blockLight * 3 + 240) / 4;
-                } else {
-                    continue;
-                }
-                bufferBuilder
-                    .vertex(localX - r, (double) upper - inY, localZ - s)
-                    .uv(0.0f + xOffset, (float) lower * 0.25f + yOffset)
-                    .color(1.0f, 1.0f, 1.0f, blend).uv2(blockLight, skyLight).endVertex();
-                bufferBuilder
-                    .vertex(localX + r, (double) upper - inY, localZ + s)
-                    .uv(1.0f + xOffset, (float) lower * 0.25f + yOffset)
-                    .color(1.0f, 1.0f, 1.0f, blend).uv2(blockLight, skyLight).endVertex();
-                bufferBuilder
-                    .vertex(localX + r, (double) lower - inY, localZ + s)
-                    .uv(1.0f + xOffset, (float) upper * 0.25f + yOffset)
-                    .color(1.0f, 1.0f, 1.0f, blend).uv2(blockLight, skyLight).endVertex();
-                bufferBuilder
-                    .vertex(localX - r, (double) lower - inY, localZ - s)
-                    .uv(0.0f + xOffset, (float) upper * 0.25f + yOffset)
-                    .color(1.0f, 1.0f, 1.0f, blend).uv2(blockLight, skyLight).endVertex();
+        try {
+            int xFloor = Mth.floor(inX);
+            int yFloor = Mth.floor(inY);
+            int zFloor = Mth.floor(inZ);
+            Tesselator tesselator = Tesselator.getInstance();
+            BufferBuilder bufferBuilder = tesselator.getBuilder();
+            RenderSystem.disableCull();
+            RenderSystem.enableBlend();
+            RenderSystem.enableDepthTest();
+            int rainDistance = 5;
+            if (Minecraft.useFancyGraphics()) {
+                rainDistance = 10;
             }
+            RenderSystem.depthMask(true);
+            int count = -1;
+            float rainAnimationTime = this.ticks + ClientUtils.getCurrentPartialTick();
+            RenderSystem.setShader(GameRenderer::getParticleShader);
+            turnOnLightLayer();
+            BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+            for (int rainZ = zFloor - rainDistance; rainZ <= zFloor + rainDistance; ++rainZ) {
+                for (int rainX = xFloor - rainDistance; rainX <= xFloor + rainDistance; ++rainX) {
+                    int q = (rainZ - zFloor + 16) * 32 + rainX - xFloor + 16;
+                    double r = (double) this.rainSizeX[q] * 0.5;
+                    double s = (double) this.rainSizeZ[q] * 0.5;
+                    mutableBlockPos.set(rainX, inY, rainZ);
+                    Biome biome = this.blockAccess.getBiome(mutableBlockPos).value();
+                    if (!biome.hasPrecipitation()) {
+                        continue;
+                    }
+
+                    int blockingHeight = this.blockAccess.getHeightBlocking(rainX, rainZ);
+                    int lower = Math.max(yFloor - rainDistance, blockingHeight);
+                    int upper = Math.max(yFloor + rainDistance, blockingHeight);
+
+                    if (lower == upper) {
+                        // no rain
+                        continue;
+                    }
+                    int rainY = Math.max(blockingHeight, yFloor);
+
+                    RandomSource randomSource = RandomSource.create(
+                        rainX * rainX * 3121L + rainX * 45238971L ^ rainZ * rainZ * 418711L + rainZ * 13761L);
+                    mutableBlockPos.setY(lower);
+                    Biome.Precipitation precipitation = biome.getPrecipitationAt(mutableBlockPos);
+                    if (precipitation == Biome.Precipitation.NONE) {
+                        continue;
+                    }
+
+                    mutableBlockPos.setY(rainY);
+
+                    double localX = rainX + 0.5;
+                    double localZ = rainZ + 0.5;
+                    float distance = (float) Math.sqrt(localX * localX + localZ * localZ) / (float) rainDistance;
+                    float blend;
+                    float xOffset = 0;
+                    float yOffset = 0;
+
+                    int skyLight = this.blockAccess.getBrightness(LightLayer.SKY, mutableBlockPos) << 4;
+                    int blockLight = this.blockAccess.getBrightness(LightLayer.BLOCK, mutableBlockPos) << 4;
+
+                    if (precipitation == Biome.Precipitation.RAIN) {
+                        if (count != 0) {
+                            if (count >= 0) {
+                                tesselator.end();
+                            }
+                            count = 0;
+                            RenderSystem.setShaderTexture(0, RAIN_LOCATION);
+                            bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
+                        }
+
+                        blend = ((1.0f - distance * distance) * 0.5f + 0.5f);
+                        int x =
+                            this.ticks + rainX * rainX * 3121 + rainX * 45238971 + rainZ * rainZ * 418711 +
+                                rainZ * 13761 &
+                                0x1F;
+                        yOffset =
+                            -((float) x + ClientUtils.getCurrentPartialTick()) / 32.0f *
+                                (3.0f + randomSource.nextFloat());
+                    } else if (precipitation == Biome.Precipitation.SNOW) {
+                        if (count != 1) {
+                            if (count >= 0) {
+                                tesselator.end();
+                            }
+                            count = 1;
+                            RenderSystem.setShaderTexture(0, SNOW_LOCATION);
+                            bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
+                        }
+
+                        blend = ((1.0f - distance * distance) * 0.3f + 0.5f);
+                        xOffset = (float) (randomSource.nextDouble() +
+                            (double) rainAnimationTime * 0.01 * (double) ((float) randomSource.nextGaussian())
+                        );
+                        float ae = -((float) (this.ticks & 0x1FF) + ClientUtils.getCurrentPartialTick()) / 512.0f;
+                        float af = (float) (randomSource.nextDouble() +
+                            (double) (rainAnimationTime * (float) randomSource.nextGaussian()) * 0.001
+                        );
+                        yOffset = ae + af;
+
+                        // snow is brighter
+                        skyLight = (skyLight * 3 + 240) / 4;
+                        blockLight = (blockLight * 3 + 240) / 4;
+                    } else {
+                        continue;
+                    }
+                    bufferBuilder
+                        .vertex(localX - r, (double) upper - inY, localZ - s)
+                        .uv(0.0f + xOffset, (float) lower * 0.25f + yOffset)
+                        .color(1.0f, 1.0f, 1.0f, blend).uv2(blockLight, skyLight).endVertex();
+                    bufferBuilder
+                        .vertex(localX + r, (double) upper - inY, localZ + s)
+                        .uv(1.0f + xOffset, (float) lower * 0.25f + yOffset)
+                        .color(1.0f, 1.0f, 1.0f, blend).uv2(blockLight, skyLight).endVertex();
+                    bufferBuilder
+                        .vertex(localX + r, (double) lower - inY, localZ + s)
+                        .uv(1.0f + xOffset, (float) upper * 0.25f + yOffset)
+                        .color(1.0f, 1.0f, 1.0f, blend).uv2(blockLight, skyLight).endVertex();
+                    bufferBuilder
+                        .vertex(localX - r, (double) lower - inY, localZ - s)
+                        .uv(0.0f + xOffset, (float) upper * 0.25f + yOffset)
+                        .color(1.0f, 1.0f, 1.0f, blend).uv2(blockLight, skyLight).endVertex();
+                }
+            }
+            if (count >= 0) {
+                tesselator.end();
+            }
+        } finally {
+            // if any stupid mod messes with level stuff there might be an exception
+            RenderSystem.getModelViewStack().popPose();
+            RenderSystem.applyModelViewMatrix();
+            RenderSystem.enableCull();
+            RenderSystem.disableBlend();
+            turnOffLightLayer();
         }
-        if (count >= 0) {
-            tesselator.end();
-        }
-        RenderSystem.getModelViewStack().popPose();
-        RenderSystem.applyModelViewMatrix();
-        RenderSystem.enableCull();
-        RenderSystem.disableBlend();
-        turnOffLightLayer();
     }
 
     public static int getLightColor(BlockAndTintGetter blockAndTintGetter, BlockPos blockPos) {
