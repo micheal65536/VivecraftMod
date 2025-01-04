@@ -213,9 +213,15 @@ public class ClientVRPlayers {
                         Vector3f look;
                         if (rotInfo != null) {
                             look = MathUtils.FORWARD.rotateY(-rotInfo.getBodyYawRad(), new Vector3f());
-                            if (player.isVisuallySwimming()) {
+                            if (player.isVisuallySwimming() && (player.isInWater() || rotInfo.fbtMode == FBTMode.ARMS_ONLY)) {
                                 yOffset = 0.3F * rotInfo.heightScale;
                                 xzOffset = 14f * rotInfo.heightScale;
+
+                                if (player.isInWater()) {
+                                    Vector3f pivot = rotInfo.headQuat.transform(0F, -0.2F, 0.1F, new Vector3f())
+                                        .add(rotInfo.headPos);
+                                    pos = pos.add(pivot.x, pivot.y, pivot.z);
+                                }
                             } else {
                                 if (rotInfo.fbtMode != FBTMode.ARMS_ONLY) {
                                     // use waist
@@ -228,13 +234,13 @@ public class ClientVRPlayers {
                                     if (ClientDataHolderVR.getInstance().vrSettings.playerModelType ==
                                         VRSettings.PlayerModelType.SPLIT_ARMS_LEGS)
                                     {
-                                        yOffset = (1F - bend) * 0.8F * rotInfo.heightScale;
+                                        yOffset = -0.7F * Mth.cos(bend*Mth.HALF_PI) * rotInfo.heightScale;
                                         xzOffset = bend * 14f * rotInfo.heightScale;
                                     } else {
-                                        yOffset = 0.8F * rotInfo.heightScale;
+                                        yOffset = -0.7F * Mth.cos(bend*Mth.PI) * rotInfo.heightScale;
                                         xzOffset = 14f * rotInfo.heightScale * Mth.sin(bend * Mth.PI);
                                     }
-                                    player.getEyePosition();
+                                    pos = pos.add(pivot.x, pivot.y, pivot.z);
                                 }
                             }
                         } else {

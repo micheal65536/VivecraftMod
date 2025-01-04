@@ -143,7 +143,7 @@ public class VRPlayerModel_WithArmsLegs<T extends LivingEntity> extends VRPlayer
             // left leg
             Vector3fc kneePos;
             if (this.rotInfo.fbtMode == FBTMode.ARMS_ONLY) {
-                this.footPos.set(this.leftLeg.x, 24, this.leftLeg.z);
+                this.footPos.set(this.leftLeg.x, 24 + Math.min(this.body.y, 0F), this.leftLeg.z);
                 ModelUtils.modelToWorld(player, this.footPos, this.rotInfo, this.bodyYaw, true, this.isMainPlayer,
                     this.footPos);
                 this.footQuat.identity().rotateY(Mth.PI - this.bodyYaw);
@@ -175,7 +175,7 @@ public class VRPlayerModel_WithArmsLegs<T extends LivingEntity> extends VRPlayer
 
             // right leg
             if (this.rotInfo.fbtMode == FBTMode.ARMS_ONLY) {
-                this.footPos.set(this.rightLeg.x, 24, this.rightLeg.z);
+                this.footPos.set(this.rightLeg.x, 24 + Math.min(this.body.y, 0F), this.rightLeg.z);
                 ModelUtils.modelToWorld(player, this.footPos, this.rotInfo, this.bodyYaw, true, this.isMainPlayer,
                     this.footPos);
                 if (player.isAutoSpinAttack()) {

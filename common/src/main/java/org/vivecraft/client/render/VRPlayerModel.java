@@ -186,7 +186,7 @@ public class VRPlayerModel<T extends LivingEntity> extends PlayerModel<T> {
         }
 
         // move head and body with bend
-        model.head.setPos(tempV.x, heightOffset, tempV.z);
+        model.head.setPos(tempV.x, tempV.y, tempV.z);
         model.body.setPos(model.head.x, model.head.y, model.head.z);
 
         // rotate body
@@ -198,7 +198,7 @@ public class VRPlayerModel<T extends LivingEntity> extends PlayerModel<T> {
         } else if (noLowerBodyAnimation) {
             // with only arms simply rotate the body in place
             model.body.setRotation(
-                Mth.PI * (model.body.y / 22F) * (model instanceof VRPlayerModel_WithArmsLegs ? 0.5F : 1F), 0F, 0F);
+                Mth.PI * Math.max(0F, model.body.y / 22F) * (model instanceof VRPlayerModel_WithArmsLegs ? 0.5F : 1F), 0F, 0F);
             if (laying) {
                 float bodyXRot;
                 if (swimming) {
@@ -209,6 +209,8 @@ public class VRPlayerModel<T extends LivingEntity> extends PlayerModel<T> {
                 }
                 // lerp body rotation when swimming, to keep the model connected
                 model.body.xRot = Mth.lerp(layAmount, model.body.xRot, bodyXRot);
+                model.head.y -= 2F * layAmount;
+                model.body.y -= 2F * layAmount;
             }
         } else {
             // body/arm position with waist tracker
@@ -295,7 +297,7 @@ public class VRPlayerModel<T extends LivingEntity> extends PlayerModel<T> {
         // regular positioning
         if (!model.riding && layAmount < 1.0F && rotInfo.fbtMode == FBTMode.ARMS_ONLY) {
             // move legs back with bend
-            float newLegY = 12F;
+            float newLegY = 12F + Math.min(model.body.y, 0F);
             float newLegZ = model.body.z + 10F * Mth.sin(model.body.xRot);
             if (model instanceof VRPlayerModel_WithArmsLegs) {
                 newLegY += 10F * Mth.sin(model.body.xRot);
