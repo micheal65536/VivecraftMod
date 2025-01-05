@@ -23,7 +23,7 @@ import org.vivecraft.client_vr.settings.VRSettings;
 import org.vivecraft.common.CommonDataHolder;
 import org.vivecraft.common.VRServerPerms;
 import org.vivecraft.common.network.CommonNetworkHelper;
-import org.vivecraft.common.network.Limb;
+import org.vivecraft.common.network.BodyPart;
 import org.vivecraft.common.network.VrPlayerState;
 import org.vivecraft.common.network.packet.c2s.*;
 import org.vivecraft.common.network.packet.s2c.*;
@@ -51,7 +51,7 @@ public class ClientNetworking {
     private static float CAPTURED_YAW;
     private static float CAPTURED_PITCH;
     private static boolean OVERRIDE_ACTIVE;
-    public static Limb LAST_SENT_LIMB = Limb.MAIN_HAND;
+    public static BodyPart LAST_SENT_BODY_PART = BodyPart.MAIN_HAND;
 
     public static boolean NEEDS_RESET = true;
 
@@ -118,9 +118,11 @@ public class ClientNetworking {
         } else {
             sendLegacyPackets(vrPlayerState);
         }
-        ClientVRPlayers.getInstance()
-            .update(Minecraft.getInstance().player.getGameProfile().getId(), vrPlayerState, worldScale,
-                userHeight / AutoCalibration.DEFAULT_HEIGHT, true);
+        if (ClientDataHolderVR.getInstance().vrSettings.mainPlayerDataSource != VRSettings.DataSource.SERVER) {
+            ClientVRPlayers.getInstance()
+                .update(Minecraft.getInstance().player.getGameProfile().getId(), vrPlayerState, worldScale,
+                    userHeight / AutoCalibration.DEFAULT_HEIGHT, true);
+        }
     }
 
     /**
@@ -191,16 +193,16 @@ public class ClientNetworking {
 
     public static void sendActiveHand(InteractionHand hand) {
         if (SERVER_WANTS_DATA) {
-            sendActiveLimb(hand == InteractionHand.MAIN_HAND ? Limb.MAIN_HAND : Limb.OFF_HAND);
+            sendActiveBodyPart(hand == InteractionHand.MAIN_HAND ? BodyPart.MAIN_HAND : BodyPart.OFF_HAND);
         }
     }
 
-    public static void sendActiveLimb(Limb limb) {
+    public static void sendActiveBodyPart(BodyPart bodyPart) {
         if (SERVER_WANTS_DATA) {
             // only send if the hand is different from last time, don't need to spam packets
-            if (limb != LAST_SENT_LIMB) {
-                sendServerPacket(new ActiveLimbPayloadC2S(limb));
-                LAST_SENT_LIMB = limb;
+            if (bodyPart != LAST_SENT_BODY_PART) {
+                sendServerPacket(new ActiveBodyPartPayloadC2S(bodyPart));
+                LAST_SENT_BODY_PART = bodyPart;
             }
         }
     }

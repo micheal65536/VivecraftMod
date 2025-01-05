@@ -19,7 +19,7 @@ public class ThrownTridentMixin {
         if (instance instanceof ServerPlayer player) {
             ServerVivePlayer serverVivePlayer = ServerVRPlayers.getVivePlayer(player);
             if (serverVivePlayer != null && serverVivePlayer.isVR()) {
-                return serverVivePlayer.getLimbPos(serverVivePlayer.activeLimb);
+                return serverVivePlayer.getBodyPartPos(serverVivePlayer.activeBodyPart);
             }
         }
         return original.call(instance);

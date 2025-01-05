@@ -61,8 +61,8 @@ public class AimFixHandler extends ChannelInboundHandlerAdapter {
             Vec3 aimPos = null;
             // Check again in case of race condition
             if (vivePlayer != null && vivePlayer.isVR()) {
-                aimPos = vivePlayer.getLimbPos(vivePlayer.activeLimb, true);
-                Vec3 dir = vivePlayer.getLimbDir(vivePlayer.activeLimb);
+                aimPos = vivePlayer.getBodyPartPos(vivePlayer.activeBodyPart, true);
+                Vec3 dir = vivePlayer.getBodyPartDir(vivePlayer.activeBodyPart);
 
                 // Inject our custom orientation data
                 serverPlayer.setPosRaw(aimPos.x, aimPos.y, aimPos.z);

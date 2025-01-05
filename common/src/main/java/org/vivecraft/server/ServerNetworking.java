@@ -19,7 +19,7 @@ import org.vivecraft.client.Xplat;
 import org.vivecraft.common.CommonDataHolder;
 import org.vivecraft.common.network.CommonNetworkHelper;
 import org.vivecraft.common.network.FBTMode;
-import org.vivecraft.common.network.Limb;
+import org.vivecraft.common.network.BodyPart;
 import org.vivecraft.common.network.VrPlayerState;
 import org.vivecraft.common.network.packet.PayloadIdentifier;
 import org.vivecraft.common.network.packet.c2s.*;
@@ -194,11 +194,11 @@ public class ServerNetworking {
                 player.connection.aboveGroundTickCount = 0;
             }
             case ACTIVEHAND -> {
-                Limb newLimb = vivePlayer.isSeated() ? Limb.MAIN_HAND : ((ActiveLimbPayloadC2S) c2sPayload).limb();
-                if (vivePlayer.activeLimb != newLimb) {
+                BodyPart newBodyPart = vivePlayer.isSeated() ? BodyPart.MAIN_HAND : ((ActiveBodyPartPayloadC2S) c2sPayload).bodyPart();
+                if (vivePlayer.activeBodyPart != newBodyPart) {
                     // handle equipment changes
                     ItemStack oldItem = player.getItemBySlot(EquipmentSlot.MAINHAND);
-                    vivePlayer.activeLimb = newLimb;
+                    vivePlayer.activeBodyPart = newBodyPart;
                     ItemStack newItem = player.getItemBySlot(EquipmentSlot.MAINHAND);
 
                     // attribute modification, based on vanilla code: LivingEntity#collectEquipmentChanges
@@ -337,6 +337,12 @@ public class ServerNetworking {
                 continue;
             }
             trackedPlayer.send(packetProvider.apply(vivePlayer.networkVersion));
+        }
+        if (ServerConfig.SEND_DATA_TO_OWNER.get() || Xplat.isModLoaded("replaymod") ||
+            Xplat.isModLoaded("reforgedplaymod") || Xplat.isModLoaded("flashback"))
+        {
+            // force on when a replay mod is loaded
+            vivePlayer.player.connection.send(packetProvider.apply(vivePlayer.networkVersion));
         }
     }
 }

@@ -19,7 +19,7 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionfc;
 import org.joml.Vector3f;
 import org.vivecraft.client.utils.UpdateChecker;
-import org.vivecraft.common.network.Limb;
+import org.vivecraft.common.network.BodyPart;
 import org.vivecraft.common.utils.MathUtils;
 import org.vivecraft.server.config.ConfigBuilder;
 import org.vivecraft.server.config.ServerConfig;
@@ -338,15 +338,14 @@ public class ServerUtil {
      */
     public static void debugParticleAxes(ServerVivePlayer vivePlayer) {
         if (vivePlayer.isVR() && vivePlayer.vrPlayerState != null) {
-            debugParticleAxes(
-                vivePlayer.player.serverLevel(),
-                vivePlayer.getLimbPos(Limb.MAIN_HAND),
-                vivePlayer.vrPlayerState.mainHand().orientation());
-
-            debugParticleAxes(
-                vivePlayer.player.serverLevel(),
-                vivePlayer.getLimbPos(Limb.OFF_HAND),
-                vivePlayer.vrPlayerState.offHand().orientation());
+            for(BodyPart bodyPart : BodyPart.values()) {
+                if (bodyPart.isValid(vivePlayer.vrPlayerState.fbtMode())) {
+                    debugParticleAxes(
+                        vivePlayer.player.serverLevel(),
+                        vivePlayer.getBodyPartPos(bodyPart),
+                        vivePlayer.vrPlayerState.getBodyPartPose(bodyPart).orientation());
+                }
+            }
 
             if (ServerConfig.DEBUG_PARTICLES_HEAD.get()) {
                 debugParticleAxes(

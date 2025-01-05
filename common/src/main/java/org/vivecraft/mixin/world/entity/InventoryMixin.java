@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.vivecraft.client.network.ClientNetworking;
 import org.vivecraft.client_vr.VRState;
 import org.vivecraft.common.network.CommonNetworkHelper;
-import org.vivecraft.common.network.Limb;
+import org.vivecraft.common.network.BodyPart;
 import org.vivecraft.server.ServerVRPlayers;
 import org.vivecraft.server.ServerVivePlayer;
 import org.vivecraft.server.config.ServerConfig;
@@ -44,26 +44,26 @@ public class InventoryMixin {
 
     @Unique
     private ItemStack vivecraft$activeItem(ItemStack original) {
-        Limb limb = null;
+        BodyPart bodyPart = null;
         // server side
         if (this.player instanceof ServerPlayer serverPlayer && ServerConfig.DUAL_WIELDING.get()) {
             if (ServerVRPlayers.isVRPlayer(serverPlayer)) {
                 ServerVivePlayer vivePlayer = ServerVRPlayers.getVivePlayer(serverPlayer);
                 // older clients don't reset the active hand
                 if (vivePlayer.networkVersion >= CommonNetworkHelper.NETWORK_VERSION_DUAL_WIELDING) {
-                    limb = vivePlayer.activeLimb;
+                    bodyPart = vivePlayer.activeBodyPart;
                 }
             }
         }
         // client side
         else if (this.player.isLocalPlayer() && VRState.VR_RUNNING && ClientNetworking.SERVER_ALLOWS_DUAL_WIELDING) {
-            limb = ClientNetworking.LAST_SENT_LIMB;
+            bodyPart = ClientNetworking.LAST_SENT_BODY_PART;
         }
 
-        if (limb != null) {
-            if (limb == Limb.OFF_HAND) {
+        if (bodyPart != null) {
+            if (bodyPart == BodyPart.OFF_HAND) {
                 return this.offhand.get(0);
-            } else if (limb != Limb.MAIN_HAND) {
+            } else if (bodyPart != BodyPart.MAIN_HAND) {
                 // feet
                 return ItemStack.EMPTY;
             }

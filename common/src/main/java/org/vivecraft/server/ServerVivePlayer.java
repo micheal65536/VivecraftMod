@@ -18,7 +18,7 @@ public class ServerVivePlayer {
     public float draw;
     public float worldScale = 1.0F;
     public float heightScale = 1.0F;
-    public Limb activeLimb = Limb.MAIN_HAND;
+    public BodyPart activeBodyPart = BodyPart.MAIN_HAND;
     public boolean crawling;
     // if the player has VR active
     private boolean isVR = false;
@@ -34,37 +34,31 @@ public class ServerVivePlayer {
     }
 
     /**
-     * transforms the local {@code direction} vector on limb {@code limb} into world space
+     * transforms the local {@code direction} vector on BodyPart {@code bodyPart} into world space
      *
-     * @param limb      limb to get the direction on, if not available, will use the MAIN_HAND
+     * @param bodyPart  BodyPart to get the custom direction on, if not available, will use the MAIN_HAND
      * @param direction local direction to transform
      * @return direction in world space
      */
-    public Vec3 getLimbVectorCustom(Limb limb, Vector3fc direction) {
+    public Vec3 getBodyPartVectorCustom(BodyPart bodyPart, Vector3fc direction) {
         if (this.vrPlayerState != null) {
-            if (this.isSeated() || (this.vrPlayerState.fbtMode() == FBTMode.ARMS_ONLY && limb.ordinal() > 1)) {
-                limb = Limb.MAIN_HAND;
+            if (this.isSeated() || !bodyPart.isValid(this.vrPlayerState.fbtMode())) {
+                bodyPart = BodyPart.MAIN_HAND;
             }
 
-            Pose limbPose = switch (limb) {
-                case OFF_HAND -> this.vrPlayerState.offHand();
-                case LEFT_FOOT -> this.vrPlayerState.leftFoot();
-                case RIGHT_FOOT -> this.vrPlayerState.rightFoot();
-                default -> this.vrPlayerState.mainHand();
-            };
-
-            return new Vec3(limbPose.orientation().transform(direction, new Vector3f()));
+            return new Vec3(
+                this.vrPlayerState.getBodyPartPose(bodyPart).orientation().transform(direction, new Vector3f()));
         } else {
             return this.player.getLookAngle();
         }
     }
 
     /**
-     * @param limb limb to get the direction from, if not available, will use the MAIN_HAND
-     * @return forward direction of the given controller
+     * @param bodyPart BodyPart to get the direction from, if not available, will use the MAIN_HAND
+     * @return forward direction of the given BodyPart
      */
-    public Vec3 getLimbDir(Limb limb) {
-        return this.getLimbVectorCustom(limb, MathUtils.BACK);
+    public Vec3 getBodyPartDir(BodyPart bodyPart) {
+        return this.getBodyPartVectorCustom(bodyPart, MathUtils.BACK);
     }
 
     /**
@@ -72,10 +66,10 @@ public class ServerVivePlayer {
      */
     public Vec3 getAimDir() {
         if (!this.isSeated() && this.draw > 0.0F) {
-            return this.getLimbPos(this.activeLimb.opposite())
-                .subtract(this.getLimbPos(this.activeLimb)).normalize();
+            return this.getBodyPartPos(this.activeBodyPart.opposite())
+                .subtract(this.getBodyPartPos(this.activeBodyPart)).normalize();
         } else {
-            return this.getLimbDir(this.activeLimb);
+            return this.getBodyPartDir(this.activeBodyPart);
         }
     }
 
@@ -106,21 +100,21 @@ public class ServerVivePlayer {
     }
 
     /**
-     * @param limb         limb to get the position for, if not available, will use the MAIN_HAND
+     * @param bodyPart     BodyPart to get the position for, if not available, will use the MAIN_HAND
      * @param realPosition if true disables the seated override
-     * @return controller position in world space
+     * @return BodyPart position in world space
      */
-    public Vec3 getLimbPos(Limb limb, boolean realPosition) {
+    public Vec3 getBodyPartPos(BodyPart bodyPart, boolean realPosition) {
         if (this.vrPlayerState != null) {
-            if (this.vrPlayerState.fbtMode() == FBTMode.ARMS_ONLY && limb.ordinal() > 1) {
-                limb = Limb.MAIN_HAND;
+            if (!bodyPart.isValid(this.vrPlayerState.fbtMode())) {
+                bodyPart = BodyPart.MAIN_HAND;
             }
 
             // in seated the realPosition is at the head,
             // so reconstruct the seated position when wanting the visual position
             if (this.isSeated() && !realPosition) {
                 Vec3 dir = this.getHMDDir();
-                dir = dir.yRot(Mth.DEG_TO_RAD * (limb == Limb.MAIN_HAND ? -35.0F : 35.0F));
+                dir = dir.yRot(Mth.DEG_TO_RAD * (bodyPart == BodyPart.MAIN_HAND ? -35.0F : 35.0F));
                 dir = new Vec3(dir.x, 0.0D, dir.z);
                 dir = dir.normalize();
                 return this.getHMDPos().add(
@@ -129,12 +123,7 @@ public class ServerVivePlayer {
                     dir.z * 0.3F * this.worldScale);
             }
 
-            Vector3fc conPos = switch (limb) {
-                case OFF_HAND -> this.vrPlayerState.offHand().position();
-                case LEFT_FOOT -> this.vrPlayerState.leftFoot().position();
-                case RIGHT_FOOT -> this.vrPlayerState.rightFoot().position();
-                default -> this.vrPlayerState.mainHand().position();
-            };
+            Vector3fc conPos = this.vrPlayerState.getBodyPartPose(bodyPart).position();
 
             return this.player.position().add(
                 this.offset.x + conPos.x(),
@@ -146,11 +135,11 @@ public class ServerVivePlayer {
     }
 
     /**
-     * @param limb to get the position for, if not available, will use the MAIN_HAND
-     * @return controller position in world space
+     * @param bodyPart BodyPart to get the position for, if not available, will use the MAIN_HAND
+     * @return BodyPart position in world space
      */
-    public Vec3 getLimbPos(Limb limb) {
-        return getLimbPos(limb, false);
+    public Vec3 getBodyPartPos(BodyPart bodyPart) {
+        return getBodyPartPos(bodyPart, false);
     }
 
     /**

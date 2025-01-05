@@ -177,6 +177,12 @@ public class VRSettings {
         COMPLETE
     }
 
+    public enum DataSource implements OptionEnum<DataSource> {
+        REALTIME,
+        LOCAL,
+        SERVER
+    }
+
     @SettingField
     public int version = UNKNOWN_VERSION;
 
@@ -385,6 +391,8 @@ public class VRSettings {
     public boolean displayMirrorUseScreenshotCamera = false;
     @SettingField(VrOptions.SHOW_PLAYER_MODEL)
     public boolean shouldRenderSelf = false;
+    @SettingField(VrOptions.MAIN_PLAYER_DATA)
+    public DataSource mainPlayerDataSource = DataSource.REALTIME;
     @SettingField(VrOptions.PLAYER_MODEL_TYPE)
     public PlayerModelType playerModelType = PlayerModelType.VANILLA;
     @SettingField(VrOptions.SHOW_PLAYER_MODEL_ARMS)
@@ -1946,6 +1954,7 @@ public class VRSettings {
         THIRDPERSON_ITEMTRANSFORMS(false, true), // 3rd person items
         THIRDPERSON_ITEMTRANSFORMS_CUSTOM(false, true), // 3rd person items, for items with custom model data
         SHOW_PLAYER_MODEL(false, true), // show the player model in first person
+        MAIN_PLAYER_DATA(false, true), // determines what data should be used for the main player model
         SHOW_PLAYER_MODEL_ARMS(false, true), // player model arms, or regular arms
         PLAYER_MODEL_ARMS_SCALE(true, false, 0.1f, 1f, 0.05f, -1), // scales the width of the first person arms
         PLAYER_MODEL_BODY_SCALE(true, false, 0.1f, 1f, 0.05f, -1), // scales the width of the first person body

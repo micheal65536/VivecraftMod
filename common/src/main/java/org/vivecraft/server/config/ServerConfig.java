@@ -28,6 +28,7 @@ public class ServerConfig {
     public static ConfigBuilder.BooleanValue ALLOW_OP;
     public static ConfigBuilder.DoubleValue MESSAGE_KICK_DELAY;
     public static ConfigBuilder.BooleanValue VR_FUN;
+    public static ConfigBuilder.BooleanValue SEND_DATA_TO_OWNER;
 
     public static ConfigBuilder.BooleanValue MESSAGES_ENABLED;
     public static ConfigBuilder.StringValue MESSAGES_WELCOME_VR;
@@ -155,6 +156,10 @@ public class ServerConfig {
             .push("vrFun")
             .comment("Gives VR Players fun cakes and drinks at random, when they respawn.")
             .define(true);
+        SEND_DATA_TO_OWNER = BUILDER
+            .push("sendDataToOwner")
+            .comment("Sends the player position data also back to the player that sent it, usually not needed.\n Enable this to when using replay mod or something similar.")
+            .define(false);
         // end general
         BUILDER.pop();
 

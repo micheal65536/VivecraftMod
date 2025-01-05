@@ -26,8 +26,8 @@ public abstract class ThrowableProjectileMixin extends Entity {
         if (shooter instanceof ServerPlayer player) {
             ServerVivePlayer serverVivePlayer = ServerVRPlayers.getVivePlayer(player);
             if (serverVivePlayer != null && serverVivePlayer.isVR()) {
-                Vec3 pos = serverVivePlayer.getLimbPos(serverVivePlayer.activeLimb);
-                Vec3 dir = serverVivePlayer.getLimbDir(serverVivePlayer.activeLimb).scale(0.6F);
+                Vec3 pos = serverVivePlayer.getBodyPartPos(serverVivePlayer.activeBodyPart);
+                Vec3 dir = serverVivePlayer.getBodyPartDir(serverVivePlayer.activeBodyPart).scale(0.6F);
                 this.setPos(pos.x + dir.x, pos.y + dir.y, pos.z + dir.z);
             }
         }

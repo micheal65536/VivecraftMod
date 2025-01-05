@@ -110,7 +110,9 @@ public class ClientVRPlayers {
     public void update(
         UUID uuid, VrPlayerState vrPlayerState, float worldScale, float heightScale, boolean localPlayer)
     {
-        if (!localPlayer && this.mc.player.getUUID().equals(uuid)) {
+        if (!localPlayer && this.mc.player.getUUID().equals(uuid) &&
+            ClientDataHolderVR.getInstance().vrSettings.mainPlayerDataSource != VRSettings.DataSource.SERVER)
+        {
             return; // Don't update local player from server packet
         }
 
@@ -281,7 +283,9 @@ public class ClientVRPlayers {
     public RotInfo getRotationsForPlayer(UUID uuid) {
         float partialTick = ClientUtils.getCurrentPartialTick();
 
-        if (VRState.VR_RUNNING && this.mc.player != null && uuid.equals(this.mc.player.getUUID())) {
+        if (VRState.VR_RUNNING && this.mc.player != null && uuid.equals(this.mc.player.getUUID()) &&
+            ClientDataHolderVR.getInstance().vrSettings.mainPlayerDataSource == VRSettings.DataSource.REALTIME)
+        {
             return getMainPlayerRotInfo(this.mc.player, partialTick);
         }
 

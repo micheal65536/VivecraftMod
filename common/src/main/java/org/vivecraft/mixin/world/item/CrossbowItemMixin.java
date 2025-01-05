@@ -19,7 +19,7 @@ public class CrossbowItemMixin {
         if (instance instanceof ServerPlayer player) {
             ServerVivePlayer serverVivePlayer = ServerVRPlayers.getVivePlayer(player);
             if (serverVivePlayer != null && serverVivePlayer.isVR()) {
-                return serverVivePlayer.getLimbDir(serverVivePlayer.activeLimb);
+                return serverVivePlayer.getBodyPartDir(serverVivePlayer.activeBodyPart);
             }
         }
         return original.call(instance, partialTick);

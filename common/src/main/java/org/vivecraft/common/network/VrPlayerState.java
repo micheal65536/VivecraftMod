@@ -154,25 +154,25 @@ public record VrPlayerState(boolean seated, Pose hmd, boolean leftHanded, Pose m
         // the rest here is only sent when the client has any fbt trackers
         FBTMode fbtMode = FBTMode.ARMS_ONLY;
         Pose waist = null;
-        Pose leftFoot = null;
         Pose rightFoot = null;
-        Pose leftKnee = null;
+        Pose leftFoot = null;
         Pose rightKnee = null;
-        Pose leftElbow = null;
+        Pose leftKnee = null;
         Pose rightElbow = null;
+        Pose leftElbow = null;
         if (buffer.readableBytes() > bytesAfter) {
             fbtMode = FBTMode.values()[buffer.readByte()];
         }
         if (fbtMode != FBTMode.ARMS_ONLY) {
             waist = Pose.deserialize(buffer);
-            leftFoot = Pose.deserialize(buffer);
             rightFoot = Pose.deserialize(buffer);
+            leftFoot = Pose.deserialize(buffer);
         }
         if (fbtMode == FBTMode.WITH_JOINTS) {
-            leftKnee = Pose.deserialize(buffer);
             rightKnee = Pose.deserialize(buffer);
-            leftElbow = Pose.deserialize(buffer);
+            leftKnee = Pose.deserialize(buffer);
             rightElbow = Pose.deserialize(buffer);
+            leftElbow = Pose.deserialize(buffer);
         }
         return new VrPlayerState(seated,
             hmd,
@@ -181,9 +181,29 @@ public record VrPlayerState(boolean seated, Pose hmd, boolean leftHanded, Pose m
             reverseHandsLegacy,
             offController,
             fbtMode, waist,
-            leftFoot, rightFoot,
-            leftKnee, rightKnee,
-            leftElbow, rightElbow);
+            rightFoot, leftFoot,
+            rightKnee, leftKnee,
+            rightElbow, leftElbow);
+    }
+
+    /**
+     * gets the Pose for the given body part
+     * @param bodyPart BodyPart to get the pose for
+     * @return Pose of the {@code bodyPart}, or {@code null} if the body part is not valid for the current FBT mode
+     */
+    @Nullable
+    public Pose getBodyPartPose(BodyPart bodyPart) {
+        return switch(bodyPart) {
+            case MAIN_HAND -> this.mainHand;
+            case OFF_HAND -> this.offHand;
+            case LEFT_FOOT -> this.leftFoot;
+            case RIGHT_FOOT -> this.rightFoot;
+            case LEFT_ELBOW -> this.leftElbow;
+            case RIGHT_ELBOW -> this.rightElbow;
+            case LEFT_KNEE -> this.leftKnee;
+            case RIGHT_KNEE -> this.rightKnee;
+            case WAIST -> this.waist;
+        };
     }
 
     /**
@@ -202,13 +222,13 @@ public record VrPlayerState(boolean seated, Pose hmd, boolean leftHanded, Pose m
         if (this.fbtMode != FBTMode.ARMS_ONLY) {
             buffer.writeByte(this.fbtMode.ordinal());
             this.waist.serialize(buffer);
-            this.leftFoot.serialize(buffer);
             this.rightFoot.serialize(buffer);
+            this.leftFoot.serialize(buffer);
             if (this.fbtMode == FBTMode.WITH_JOINTS) {
-                this.leftKnee.serialize(buffer);
                 this.rightKnee.serialize(buffer);
-                this.leftElbow.serialize(buffer);
+                this.leftKnee.serialize(buffer);
                 this.rightElbow.serialize(buffer);
+                this.leftElbow.serialize(buffer);
             }
         }
     }
