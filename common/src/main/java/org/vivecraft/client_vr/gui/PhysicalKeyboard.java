@@ -526,6 +526,8 @@ public class PhysicalKeyboard {
     }
 
     public void render(PoseStack poseStack) {
+        // no keys, don't render
+        if (this.keys.isEmpty()) return;
         poseStack.pushPose();
         Vector3f center = this.getCenterPos();
         poseStack.translate(-center.x, -center.y, -center.z);
