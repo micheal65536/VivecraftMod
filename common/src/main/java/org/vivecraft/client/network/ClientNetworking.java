@@ -220,7 +220,7 @@ public class ClientNetworking {
         CAPTURED_YAW = player.getYRot();
         float pitch = (float) Math.toDegrees(Math.asin(-view.y / view.length()));
         float yaw = (float) Math.toDegrees(Math.atan2(-view.x, view.z));
-        ((LocalPlayer) player).connection.send(new ServerboundMovePlayerPacket.Rot(yaw, pitch, player.onGround()));
+        ((LocalPlayer) player).connection.send(new ServerboundMovePlayerPacket.Rot(yaw, pitch, player.isOnGround()));
         OVERRIDE_ACTIVE = true;
     }
 
@@ -228,7 +228,7 @@ public class ClientNetworking {
         if (!SERVER_WANTS_DATA) {
             if (OVERRIDE_ACTIVE) {
                 ((LocalPlayer) player).connection.send(
-                    new ServerboundMovePlayerPacket.Rot(CAPTURED_YAW, CAPTURED_PITCH, player.onGround()));
+                    new ServerboundMovePlayerPacket.Rot(CAPTURED_YAW, CAPTURED_PITCH, player.isOnGround()));
                 OVERRIDE_ACTIVE = false;
             }
         }

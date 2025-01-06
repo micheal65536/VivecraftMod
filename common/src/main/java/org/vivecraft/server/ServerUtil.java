@@ -341,7 +341,7 @@ public class ServerUtil {
             for(BodyPart bodyPart : BodyPart.values()) {
                 if (bodyPart.isValid(vivePlayer.vrPlayerState.fbtMode())) {
                     debugParticleAxes(
-                        vivePlayer.player.serverLevel(),
+                        vivePlayer.player.getLevel(),
                         vivePlayer.getBodyPartPos(bodyPart),
                         vivePlayer.vrPlayerState.getBodyPartPose(bodyPart).orientation());
                 }
@@ -349,7 +349,7 @@ public class ServerUtil {
 
             if (ServerConfig.DEBUG_PARTICLES_HEAD.get()) {
                 debugParticleAxes(
-                    vivePlayer.player.serverLevel(),
+                    vivePlayer.player.getLevel(),
                     vivePlayer.getHMDPos(),
                     vivePlayer.vrPlayerState.hmd().orientation());
             }
