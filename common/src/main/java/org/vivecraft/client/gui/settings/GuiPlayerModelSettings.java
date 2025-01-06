@@ -16,10 +16,11 @@ public class GuiPlayerModelSettings extends GuiVROptionsBase {
         new VROptionEntry(VRSettings.VrOptions.PLAYER_MODEL_TYPE),
         new VROptionEntry(VRSettings.VrOptions.SHOW_PLAYER_MODEL_ARMS),
         new VROptionEntry(VRSettings.VrOptions.PLAYER_MODEL_ARMS_SCALE),
-        new VROptionEntry(VRSettings.VrOptions.PLAYER_LIMBS_CONNECTED),
+        new VROptionEntry(VRSettings.VrOptions.SHOW_PLAYER_HANDS),
         new VROptionEntry(VRSettings.VrOptions.PLAYER_MODEL_BODY_SCALE),
-        new VROptionEntry(VRSettings.VrOptions.PLAYER_LIMBS_LIMIT),
+        new VROptionEntry(VRSettings.VrOptions.PLAYER_LIMBS_CONNECTED),
         new VROptionEntry(VRSettings.VrOptions.PLAYER_MODEL_LEGS_SCALE),
+        new VROptionEntry(VRSettings.VrOptions.PLAYER_LIMBS_LIMIT),
         new VROptionEntry(VRSettings.VrOptions.PLAYER_WALK_ANIM),
         new VROptionEntry(VRSettings.VrOptions.PLAYER_ARM_ANIM)
     };

@@ -397,6 +397,8 @@ public class VRSettings {
     public PlayerModelType playerModelType = PlayerModelType.VANILLA;
     @SettingField(VrOptions.SHOW_PLAYER_MODEL_ARMS)
     public ModelArmsMode modelArmsMode = ModelArmsMode.COMPLETE;
+    @SettingField(VrOptions.SHOW_PLAYER_HANDS)
+    public boolean showPlayerHands = true;
     @SettingField(VrOptions.PLAYER_LIMBS_CONNECTED)
     public boolean playerLimbsConnected = true;
     @SettingField(VrOptions.PLAYER_LIMBS_LIMIT)
@@ -1956,6 +1958,7 @@ public class VRSettings {
         SHOW_PLAYER_MODEL(false, true), // show the player model in first person
         MAIN_PLAYER_DATA(false, true), // determines what data should be used for the main player model
         SHOW_PLAYER_MODEL_ARMS(false, true), // player model arms, or regular arms
+        SHOW_PLAYER_HANDS(false, true),
         PLAYER_MODEL_ARMS_SCALE(true, false, 0.1f, 1f, 0.05f, -1), // scales the width of the first person arms
         PLAYER_MODEL_BODY_SCALE(true, false, 0.1f, 1f, 0.05f, -1), // scales the width of the first person body
         PLAYER_MODEL_LEGS_SCALE(true, false, 0.1f, 1f, 0.05f, -1), // scales the width of the first person legs

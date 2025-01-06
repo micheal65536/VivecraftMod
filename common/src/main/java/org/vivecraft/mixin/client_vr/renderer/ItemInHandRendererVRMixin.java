@@ -112,6 +112,10 @@ public abstract class ItemInHandRendererVRMixin {
 
         boolean renderArm = dh.currentPass != RenderPass.THIRD || dh.vrSettings.mixedRealityRenderHands;
 
+        if (RenderPass.isFirstPerson(dh.currentPass)) {
+            renderArm &= dh.vrSettings.showPlayerHands;
+        }
+
         if (dh.currentPass == RenderPass.CAMERA) {
             renderArm = false;
         }
