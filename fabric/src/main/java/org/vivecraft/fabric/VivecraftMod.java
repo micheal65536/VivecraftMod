@@ -32,11 +32,11 @@ public class VivecraftMod implements ModInitializer {
         // use channel registers to be compatible with other mod loaders
         if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
             ClientPlayNetworking.registerGlobalReceiver(VivecraftPayloadS2C.TYPE,
-                (payload, context) -> context.client().execute(() -> ClientNetworking.handlePacket(payload)));
+                (payload, context) -> ClientNetworking.handlePacket(payload));
         }
 
-        ServerPlayNetworking.registerGlobalReceiver(VivecraftPayloadC2S.TYPE, (payload, context) -> context.server()
-            .execute(
-                () -> ServerNetworking.handlePacket(payload, context.player(), context.responseSender()::sendPacket)));
+        ServerPlayNetworking.registerGlobalReceiver(VivecraftPayloadC2S.TYPE,
+            (payload, context) -> ServerNetworking.handlePacket(payload, context.player(),
+                context.responseSender()::sendPacket));
     }
 }
