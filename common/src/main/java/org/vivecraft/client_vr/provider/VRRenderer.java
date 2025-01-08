@@ -946,6 +946,11 @@ public abstract class VRRenderer {
             this.framebufferEye1 = null;
             this.RightEyeTextureId = -1;
         }
+
+        if (this.mirrorFramebuffer != null) {
+            this.mirrorFramebuffer.destroyBuffers();
+            this.mirrorFramebuffer = null;
+        }
     }
 
     /**
