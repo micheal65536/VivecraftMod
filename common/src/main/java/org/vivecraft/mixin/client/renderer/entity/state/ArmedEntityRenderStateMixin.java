@@ -41,7 +41,7 @@ public class ArmedEntityRenderStateMixin {
         {
             ItemStack otherStack = original.call(instance, humanoidArm.getOpposite());
             if (ClimbTracker.isClaws(otherStack) &&
-                !ClientVRPlayers.getInstance().getRotationsForPlayer(instance.getUUID()).seated)
+                !ClientVRPlayers.getInstance().isVRAndSeated(instance.getUUID()))
             {
                 return otherStack;
             }
