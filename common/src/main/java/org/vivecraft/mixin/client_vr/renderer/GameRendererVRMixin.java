@@ -335,6 +335,8 @@ public abstract class GameRendererVRMixin
             RenderSystem.getModelViewStack().pushMatrix().identity();
             RenderHelper.applyVRModelView(vivecraft$DATA_HOLDER.currentPass, RenderSystem.getModelViewStack());
 
+            vivecraft$resetProjectionMatrix(partialTick);
+
             VREffectsHelper.renderGuiLayer(partialTick, true);
 
             DebugRenderHelper.renderDebug(partialTick);
