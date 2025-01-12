@@ -302,7 +302,7 @@ public abstract class LevelRendererVRMixin implements ResourceManagerReloadListe
 
     // if the gui didn't render yet, render it now.
     // or if shaders are on, and option AFTER_SHADER is selected
-    @Inject(method = "renderLevel", at = @At("RETURN"))
+    @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Ljava/util/List;clear()V"))
     private void vivecraft$renderVrStuffFinal(
         CallbackInfo ci, @Local(ordinal = 0) float partialTick, @Share("guiRendered") LocalBooleanRef guiRendered)
     {
