@@ -12,7 +12,9 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
@@ -20,6 +22,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Final;
@@ -29,6 +32,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.vivecraft.mixin.world.entity.PlayerMixin;
@@ -102,6 +106,35 @@ public abstract class ServerPlayerMixin extends PlayerMixin {
         } else {
             return original.call(instance, type, posX, posY, posZ, particleCount, xOffset, yOffset, zOffset, speed);
         }
+    }
+
+    /**
+     * inject into {@link Player#attack}
+     */
+    @Override
+    protected float vivecraft$damageModifier(float damage) {
+        // feet make more damage with boots
+        if (ServerConfig.DUAL_WIELDING.get() && ServerConfig.BOOTS_ARMOR_DAMAGE.get() > 0) {
+            ServerVivePlayer vivePlayer = vivecraft$getVivePlayer();
+            if (vivePlayer.isVR() && vivePlayer.activeBodyPart.isFoot() &&
+                !this.getItemBySlot(EquipmentSlot.FEET).isEmpty())
+            {
+                float addedDamage = 0F;
+                for (ItemAttributeModifiers.Entry entry : this.getItemBySlot(EquipmentSlot.FEET)
+                    .getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY).modifiers())
+                {
+                    if (entry.attribute().is(Attributes.ARMOR)) {
+                        float amount = (float) entry.modifier().amount();
+                        switch (entry.modifier().operation()) {
+                            case ADD_VALUE -> addedDamage += amount;
+                            case ADD_MULTIPLIED_TOTAL -> addedDamage += amount * addedDamage;
+                        }
+                    }
+                }
+                return damage + addedDamage * ServerConfig.BOOTS_ARMOR_DAMAGE.get().floatValue();
+            }
+        }
+        return damage;
     }
 
     @Inject(method = "drop(Lnet/minecraft/world/item/ItemStack;ZZ)Lnet/minecraft/world/entity/item/ItemEntity;", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;addFreshEntity(Lnet/minecraft/world/entity/Entity;)Z")

@@ -52,6 +52,13 @@ public class VRShaders {
         return RENDERTYPE_END_GATEWAY_VR_SHADER;
     }
 
+    // fabulous vr shader
+    public static final ResourceLocation VR_TRANSPARENCY_SHADER_ID = ResourceLocation.fromNamespaceAndPath("vivecraft",
+        "post/vrtransparency");
+    public static final ShaderProgram VR_TRANSPARENCY_SHADER = new ShaderProgram(
+        VR_TRANSPARENCY_SHADER_ID,
+        DefaultVertexFormat.POSITION, ShaderDefines.EMPTY);
+
     private VRShaders() {}
 
     public static void setupDepthMask() throws IOException {
