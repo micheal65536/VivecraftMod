@@ -62,7 +62,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
         {
             ItemStack otherStack = original.call(instance, humanoidArm.getOpposite());
             if (ClimbTracker.isClaws(otherStack) &&
-                !ClientVRPlayers.getInstance().getRotationsForPlayer(instance.getUUID()).seated)
+                !ClientVRPlayers.getInstance().isVRAndSeated(instance.getUUID()))
             {
                 return otherStack;
             }
