@@ -293,6 +293,10 @@ public class ClientVRPlayers {
         return this.donors.containsKey(uuid);
     }
 
+    public int getHMD(UUID uuid) {
+        return this.donors.getOrDefault(uuid, 0);
+    }
+
     /**
      * gets the latest clientside player data, use this when not rendering, i.e. on tick
      * @param uuid uuid of the player to get the data for

@@ -50,7 +50,7 @@ public abstract class PlayerMixin extends LivingEntity {
     /**
      * dummy to be overridden in {@link ServerPlayerMixin}
      */
-    @ModifyArg(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;hurtOrSimulate(Lnet/minecraft/world/damagesource/DamageSource;F)Z"))
+    @ModifyArg(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z"))
     protected float vivecraft$damageModifier(float damage) {
         return damage;
     }
