@@ -2,10 +2,9 @@ package org.vivecraft.common.utils;
 
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Quaternionf;
-import org.joml.Quaternionfc;
-import org.joml.Vector3f;
-import org.joml.Vector3fc;
+import org.joml.*;
+
+import java.lang.Math;
 
 public class MathUtils {
 
@@ -181,6 +180,19 @@ public class MathUtils {
         eulerAngles.z = org.joml.Math.atan2(rot.x() * rot.y() + rot.w() * rot.z(),
             0.5f - rot.y() * rot.y() - rot.z() * rot.z());
         return eulerAngles;
+    }
+
+    /**
+     * adds the give nvector to the translation component, without doing any Matrix multiplication
+     *
+     * @param matrix      Matrix to alter
+     * @param translation Translation to add
+     * @return the supplied matrix, for chaining
+     */
+    public static Matrix4f addTranslation(Matrix4f matrix, Vector3f translation) {
+        return matrix.m30(matrix.m30() + translation.x)
+            .m31(matrix.m31() + translation.y)
+            .m32(matrix.m32() + translation.z);
     }
 
     /**

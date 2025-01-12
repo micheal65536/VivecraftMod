@@ -89,6 +89,19 @@ public class ClientVRPlayers {
     }
 
     /**
+     * checks if the given player is in VR and using seated mode, without lerping the RotInfo
+     *
+     * @param uuid UUID of the player
+     * @return if the player is in VR and using seated modes
+     */
+    public boolean isVRAndSeated(UUID uuid) {
+        return (this.vivePlayers.containsKey(uuid) && this.vivePlayers.get(uuid).seated) ||
+            (VRState.VR_RUNNING && this.mc.player != null && uuid.equals(this.mc.player.getUUID()) &&
+                ClientDataHolderVR.getInstance().vrSettings.seated
+            );
+    }
+
+    /**
      * checks if the given player is in VR and using reversed hands, without lerping the RotInfo
      *
      * @param uuid UUID of the player
@@ -281,6 +294,20 @@ public class ClientVRPlayers {
         return this.donors.containsKey(uuid);
     }
 
+    /**
+     * gets the latest clientside player data, use this when not rendering, i.e. on tick
+     * @param uuid uuid of the player to get the data for
+     * @return latest available player data
+     */
+    public RotInfo getLatestRotationsForPlayer(UUID uuid) {
+        return this.vivePlayers.containsKey(uuid) ? this.vivePlayers.get(uuid) : this.vivePlayersLast.get(uuid);
+    }
+
+    /**
+     * gets the clientside interpolated player data, this one should only be called during rendering
+     * @param uuid uuid of the player to get the data for
+     * @return interpolated data
+     */
     public RotInfo getRotationsForPlayer(UUID uuid) {
         float partialTick = ClientUtils.getCurrentPartialTick();
 

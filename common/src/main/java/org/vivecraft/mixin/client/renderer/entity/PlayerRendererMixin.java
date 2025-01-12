@@ -48,7 +48,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRendererMixin<Abst
         return Math.min(1.0, acos);
     }
 
-    @Inject(method = "extractRenderState(Lnet/minecraft/client/player/AbstractClientPlayer;Lnet/minecraft/client/renderer/entity/state/PlayerRenderState;F)V", at = @At("TAIL"))
+    @Inject(method = "extractRenderState(Lnet/minecraft/client/player/AbstractClientPlayer;Lnet/minecraft/client/renderer/entity/state/PlayerRenderState;F)V", at = @At("HEAD"))
     private void vivecraft$addRotInfo(
         AbstractClientPlayer entity, PlayerRenderState reusedState, float partialTick, CallbackInfo ci)
     {
