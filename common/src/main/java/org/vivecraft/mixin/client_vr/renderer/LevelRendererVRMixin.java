@@ -9,7 +9,6 @@ import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
 import com.mojang.blaze3d.framegraph.FramePass;
-import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.resource.RenderTargetDescriptor;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -50,7 +49,6 @@ import org.vivecraft.client_xr.render_pass.RenderPassType;
 import org.vivecraft.mod_compat_vr.optifine.OptifineHelper;
 import org.vivecraft.mod_compat_vr.shaders.ShadersHelper;
 
-import javax.annotation.Nullable;
 import java.util.Set;
 
 // priority 999 to inject before iris, for the vrFast rendering
@@ -61,15 +59,6 @@ public abstract class LevelRendererVRMixin implements ResourceManagerReloadListe
     private static final ResourceLocation vivecraft$VR_TRANSPARENCY_POST_CHAIN_ID = ResourceLocation.fromNamespaceAndPath(
         "vivecraft", "vrtransparency");
 
-    @Unique
-    @Nullable
-    private RenderTarget vivecraft$alphaSortVROccludedFramebuffer;
-    @Unique
-    @Nullable
-    private RenderTarget vivecraft$alphaSortVRUnoccludedFramebuffer;
-    @Unique
-    @Nullable
-    private RenderTarget vivecraft$alphaSortVRHandsFramebuffer;
     @Unique
     private Entity vivecraft$renderedEntity;
 
@@ -347,7 +336,7 @@ public abstract class LevelRendererVRMixin implements ResourceManagerReloadListe
         ShaderManager instance, ResourceLocation id, Set<ResourceLocation> externalTargets,
         Operation<PostChain> original)
     {
-        if (VRState.VR_INITIALIZED) {
+        if (VRState.VR_RUNNING) {
             return original.call(instance, vivecraft$VR_TRANSPARENCY_POST_CHAIN_ID,
                 LevelTargetBundleExtension.VR_TARGETS);
         } else {

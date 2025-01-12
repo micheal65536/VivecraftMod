@@ -10,14 +10,14 @@ import net.minecraft.resources.ResourceLocation;
 
 public class VRShaders {
     // FSAA shader and its uniforms
-    public static ShaderProgram LANCZOS_SHADER = new ShaderProgram(
+    public static final ShaderProgram LANCZOS_SHADER = new ShaderProgram(
         ResourceLocation.fromNamespaceAndPath("vivecraft", "core/lanczos_vr"),
         DefaultVertexFormat.POSITION_TEX, ShaderDefines.EMPTY);
     public static AbstractUniform LANCZOS_TEXEL_WIDTH_OFFSET_UNIFORM;
     public static AbstractUniform LANCZOS_TEXEL_HEIGHT_OFFSET_UNIFORM;
 
     // mixed reality shader and its uniforms
-    public static ShaderProgram MIXED_REALITY_SHADER = new ShaderProgram(
+    public static final ShaderProgram MIXED_REALITY_SHADER = new ShaderProgram(
         ResourceLocation.fromNamespaceAndPath("vivecraft", "core/mixedreality_vr"),
         DefaultVertexFormat.POSITION_TEX, ShaderDefines.EMPTY);
     public static AbstractUniform MIXED_REALITY_HMD_VIEW_POSITION_UNIFORM;
@@ -29,7 +29,7 @@ public class VRShaders {
     public static AbstractUniform MIXED_REALITY_ALPHA_MODE_UNIFORM;
 
     // vr post shader and its uniforms
-    public static ShaderProgram POST_PROCESSING_SHADER = new ShaderProgram(
+    public static final ShaderProgram POST_PROCESSING_SHADER = new ShaderProgram(
         ResourceLocation.fromNamespaceAndPath("vivecraft", "core/postprocessing_vr"),
         DefaultVertexFormat.POSITION_TEX, ShaderDefines.EMPTY);
     public static AbstractUniform POST_PROCESSING_FOV_REDUCTION_RADIUS_UNIFORM;
@@ -45,16 +45,23 @@ public class VRShaders {
     public static AbstractUniform POST_PROCESSING_OVERLAY_EYE_UNIFORM;
 
     // blit shader
-    public static ShaderProgram BLIT_VR_SHADER = new ShaderProgram(
+    public static final ShaderProgram BLIT_VR_SHADER = new ShaderProgram(
         ResourceLocation.fromNamespaceAndPath("vivecraft", "core/blit_vr"),
         DefaultVertexFormat.POSITION_TEX, ShaderDefines.EMPTY);
 
     // end portal shaders
-    public static ShaderProgram RENDERTYPE_END_PORTAL_VR_SHADER = new ShaderProgram(
+    public static final ShaderProgram RENDERTYPE_END_PORTAL_VR_SHADER = new ShaderProgram(
         ResourceLocation.fromNamespaceAndPath("vivecraft", "core/rendertype_end_portal_vr"),
         DefaultVertexFormat.POSITION, ShaderDefines.EMPTY);
-    public static ShaderProgram RENDERTYPE_END_GATEWAY_VR_SHADER = new ShaderProgram(
+    public static final ShaderProgram RENDERTYPE_END_GATEWAY_VR_SHADER = new ShaderProgram(
         ResourceLocation.fromNamespaceAndPath("vivecraft", "core/rendertype_end_gateway_vr"),
+        DefaultVertexFormat.POSITION, ShaderDefines.EMPTY);
+
+    // fabulous vr shader
+    public static final ResourceLocation VR_TRANSPARENCY_SHADER_ID = ResourceLocation.fromNamespaceAndPath("vivecraft",
+        "post/vrtransparency");
+    public static final ShaderProgram VR_TRANSPARENCY_SHADER = new ShaderProgram(
+        VR_TRANSPARENCY_SHADER_ID,
         DefaultVertexFormat.POSITION, ShaderDefines.EMPTY);
 
     private VRShaders() {}

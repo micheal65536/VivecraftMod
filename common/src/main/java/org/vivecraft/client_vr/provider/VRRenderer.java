@@ -520,6 +520,16 @@ public abstract class VRRenderer {
             this.reinitFrameBuffers("gfx setting changed to: " + this.previousGraphics);
         }
 
+        if (minecraft.options.graphicsMode().get() == GraphicsStatus.FABULOUS &&
+            minecraft.getShaderManager().getProgram(VRShaders.VR_TRANSPARENCY_SHADER) == null)
+        {
+            // fabulous shader didn't compile
+            minecraft.gui.getChat().addMessage(Component.translatable("vivecraft.messages.fabulousFailed"));
+            minecraft.options.graphicsMode().set(GraphicsStatus.FAST);
+            minecraft.levelRenderer.allChanged();
+            this.reinitFrameBuffers("fabulous missing");
+        }
+
         if (this.resizeFrameBuffers && !this.reinitFrameBuffers) {
             Tuple<Integer, Integer> tuple = this.getRenderTextureSizes();
             int eyew = tuple.getA();
