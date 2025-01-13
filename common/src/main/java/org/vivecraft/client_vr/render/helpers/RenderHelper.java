@@ -256,13 +256,13 @@ public class RenderHelper {
     /**
      * renders the given screen to the current main target and generates mipmaps for it
      *
-     * @param poseStack   PoseStack to render with
      * @param partialTick partial tick for the screen rendering
      * @param screen      the Screen to render
      * @param maxGuiScale if set, renders the screen at max gui scale
      */
-    public static void drawScreen(PoseStack poseStack, float partialTick, Screen screen, boolean maxGuiScale) {
+    public static void drawScreen(float partialTick, Screen screen, boolean maxGuiScale) {
         // setup modelview for screen rendering
+        PoseStack poseStack = RenderSystem.getModelViewStack();
         poseStack.pushPose();
         poseStack.setIdentity();
         poseStack.translate(0.0F, 0.0F, -2000.0F);
@@ -286,7 +286,7 @@ public class RenderHelper {
             GlStateManager.SourceFactor.ONE,
             GlStateManager.DestFactor.ONE);
 
-        screen.render(poseStack, 0, 0, partialTick);
+        screen.render(new PoseStack(), 0, 0, partialTick);
 
         RenderSystem.blendFuncSeparate(
             GlStateManager.SourceFactor.SRC_ALPHA,
