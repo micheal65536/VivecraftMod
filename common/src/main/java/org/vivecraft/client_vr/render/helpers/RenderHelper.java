@@ -270,6 +270,10 @@ public class RenderHelper {
 
         double guiScale = maxGuiScale ? GuiHandler.GUI_SCALE_FACTOR_MAX : MC.getWindow().getGuiScale();
 
+        // set gui scale to make the scissor work, that checks the window gui scale
+        int backupGuiScale = GuiHandler.GUI_SCALE_FACTOR;
+        GuiHandler.GUI_SCALE_FACTOR = (int) guiScale;
+
         Matrix4f guiProjection = Matrix4f.orthographic(
             0.0F, (float) (MC.getMainRenderTarget().width / guiScale),
             0.0F, (float) (MC.getMainRenderTarget().height / guiScale),
@@ -290,6 +294,8 @@ public class RenderHelper {
             GlStateManager.SourceFactor.ONE,
             GlStateManager.DestFactor.ONE);
 
+        // reset gui scale
+        GuiHandler.GUI_SCALE_FACTOR = backupGuiScale;
         poseStack.popPose();
         RenderSystem.applyModelViewMatrix();
 
