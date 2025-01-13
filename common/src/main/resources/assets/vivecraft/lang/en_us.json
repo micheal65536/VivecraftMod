@@ -594,6 +594,7 @@
   "vivecraft.messages.openSettings": "Click to open settings",
   "vivecraft.messages.blocklist.title": "Server is on the Vivecraft Server Blocklist",
   "vivecraft.messages.blocklist": "The selected Server '%s' is on the Vivecraft Server Blocklist.\nContinuing to join will completely disable Vivecraft.",
+  "vivecraft.messages.fabulousFailed": "§a[Vivecraft]§r §cFabulous VR shader failed to compile, check the log for the full error.",
   "vivecraft.message.kofi": "Support us on Ko-Fi",
   "vivecraft.message.overriddenbyserver": "§6Setting overridden by server.§r\n",
   "vivecraft.message.limitedbyserver": "§6Setting range limited by server (%s - %s)§r\n",
