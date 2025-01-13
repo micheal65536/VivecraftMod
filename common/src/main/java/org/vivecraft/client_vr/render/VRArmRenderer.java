@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import org.vivecraft.client.extensions.ModelPartExtension;
 import org.vivecraft.client_vr.gameplay.trackers.SwingTracker;
 import org.vivecraft.client_vr.provider.ControllerType;
 
@@ -67,7 +68,7 @@ public class VRArmRenderer extends PlayerRenderer {
         // in case some mod messes with it
         rendererArm.setPos(side == ControllerType.LEFT ? 5F : -5F, 2F, 0F);
         rendererArm.setRotation(0F, 0F, 0F);
-        rendererArm.xScale = rendererArm.yScale = rendererArm.zScale = 1F;
+        ((ModelPartExtension) (Object) rendererArm).vivecraft$setScale(1F, 1F, 1F);
 
         // make sure they have the same state
         rendererArmwear.copyFrom(rendererArm);
