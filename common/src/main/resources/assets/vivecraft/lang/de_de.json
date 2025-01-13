@@ -592,6 +592,7 @@
   "vivecraft.messages.openSettings": "Klicken um die Einstellungen zu öffnen.",
   "vivecraft.messages.blocklist.title": "Server ist auf der Vivecraft Serverblockliste",
   "vivecraft.messages.blocklist": "Der ausgewählte Server '%s' ist auf der Vivecraft Serverblockliste.\nDas Fortsetzen wird Vivecraft komplett deaktivieren.",
+  "vivecraft.messages.fabulousFailed": "§a[Vivecraft]§r §cFabelhaft VR Shader konnte nicht kompiliert werden, prüfe den Log für den kompletten Fehler.",
   "vivecraft.message.kofi": "Unterstütze uns auf Ko-Fi",
   "vivecraft.message.overriddenbyserver": "§6Einstellung überschrieben vom Server.§r\n",
   "vivecraft.message.limitedbyserver": "§6Einstellungsbereich vom Server limitiert (%s - %s)§r\n",
