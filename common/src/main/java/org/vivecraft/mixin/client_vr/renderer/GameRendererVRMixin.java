@@ -202,7 +202,7 @@ public abstract class GameRendererVRMixin
     private Matrix4f vivecraft$customProjectionMatrix(
         Matrix4f instance, float fovy, float aspect, float zNear, float zFar, Operation<Matrix4f> original)
     {
-        if (VRState.VR_RUNNING) {
+        if (!RenderPassType.isVanilla()) {
             zNear = vivecraft$MIN_CLIP_DISTANCE;
             if (MethodHolder.isInMenuRoom()) {
                 // use 16 Chunks as minimum, to have no issues with clipping in the menuworld
@@ -277,7 +277,7 @@ public abstract class GameRendererVRMixin
         GameRenderer instance, float partialTick, long finishTimeNano, PoseStack poseStack, Operation<Void> original)
     {
         original.call(instance, partialTick, finishTimeNano, poseStack);
-        if (VRState.VR_RUNNING && vivecraft$DATA_HOLDER.currentPass != RenderPass.THIRD &&
+        if (!RenderPassType.isVanilla() && vivecraft$DATA_HOLDER.currentPass != RenderPass.THIRD &&
             vivecraft$DATA_HOLDER.currentPass != RenderPass.CAMERA)
         {
             VREffectsHelper.renderFaceOverlay(partialTick, poseStack);
