@@ -365,6 +365,9 @@ public abstract class MinecraftVRMixin implements MinecraftExtension {
             this.mainRenderTarget.clear(Minecraft.ON_OSX);
             this.mainRenderTarget.bindWrite(true);
 
+            // somehow without this it causes issues with the lightmap sometimes
+            this.mainRenderTarget.unbindRead();
+
             // draw screen/gui to buffer
             // push pose so we can pop it later
             RenderSystem.getModelViewStack().pushPose();

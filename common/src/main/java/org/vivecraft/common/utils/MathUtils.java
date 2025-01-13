@@ -222,6 +222,19 @@ public class MathUtils {
     }
 
     /**
+     * adds the give nvector to the translation component, without doing any Matrix multiplication
+     *
+     * @param matrix      Matrix to alter
+     * @param translation Translation to add
+     * @return the supplied matrix, for chaining
+     */
+    public static Matrix4f addTranslation(Matrix4f matrix, Vector3f translation) {
+        return matrix.m30(matrix.m30() + translation.x)
+            .m31(matrix.m31() + translation.y)
+            .m32(matrix.m32() + translation.z);
+    }
+
+    /**
      * calculates the body yaw based on the two controller positions and the head direction
      *
      * @param rightHand right controller position
