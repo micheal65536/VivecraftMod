@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
@@ -322,22 +323,13 @@ public class RenderHelper {
 
         float size = 15.0F * Math.max(ClientDataHolderVR.getInstance().vrSettings.menuCrosshairScale,
             1.0F / (float) MC.getWindow().getGuiScale());
-        float halfSize = size * 0.5F;
 
         int x = (int) (mouseX - size * 0.5F + 1);
         int y = (int) (mouseY - size * 0.5F + 1);
 
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, Gui.GUI_ICONS_LOCATION);
 
-        BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        bufferBuilder.vertex(x - halfSize, y - halfSize, 0).uv(0, 0).endVertex();
-        bufferBuilder.vertex(x - halfSize, y + halfSize, 0).uv(0, 15F / 265F).endVertex();
-        bufferBuilder.vertex(x + halfSize, y + halfSize, 0).uv(15F / 265F, 15F / 265F).endVertex();
-        bufferBuilder.vertex(x + halfSize, y - halfSize, 0).uv(15F / 265F, 0).endVertex();
-        BufferUploader.drawWithShader(bufferBuilder.end());
+        GuiComponent.blit(poseStack, x, y, (int) size, (int) size, 0, 0, 15, 15, 256, 256);
 
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();

@@ -143,7 +143,7 @@ public class VRPassHelper {
                 MC.mouseHandler.ypos() * (double) MC.getWindow().getGuiScaledHeight() /
                     (double) MC.getWindow().getScreenHeight()
             );
-            RenderHelper.drawMouseMenuQuad(poseStack, x, y);
+            RenderHelper.drawMouseMenuQuad(new PoseStack(), x, y);
 
             poseStack.popPose();
             RenderSystem.applyModelViewMatrix();
