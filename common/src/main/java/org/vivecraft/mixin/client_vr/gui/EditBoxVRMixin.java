@@ -53,7 +53,7 @@ public abstract class EditBoxVRMixin extends AbstractWidget {
         if (VRState.VR_RUNNING && !ClientDataHolderVR.getInstance().vrSettings.seated && !KeyboardHandler.SHOWING &&
             content.isEmpty())
         {
-            if ((this.hint == null && (this.suggestion == null || this.suggestion.isEmpty())) || this.isFocused()) {
+            if ((this.value.isEmpty() && (this.suggestion == null || this.suggestion.isEmpty())) || this.isFocused()) {
                 // limit text to field size
                 String fullString = I18n.get("vivecraft.message.openKeyboard");
                 String cutString = this.font.plainSubstrByWidth(fullString, this.getInnerWidth());

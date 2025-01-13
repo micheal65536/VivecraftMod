@@ -1,7 +1,6 @@
 package org.vivecraft.client_vr.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.resources.language.I18n;
@@ -108,9 +107,7 @@ public class GuiRadial extends TwoHandedScreen {
         // second half of buttons should be on the left side
         x *= index > numButtons / 2 ? -1 : 1;
 
-        return new Button.Builder(Component.translatable(label), action)
-            .size(buttonWidth, 20)
-            .pos(centerX + x - buttonWidth / 2, centerY + y - 10)
-            .build();
+        return new Button(centerX + x - buttonWidth / 2, centerY + y - 10, buttonWidth, 20,
+            Component.translatable(label), action);
     }
 }
