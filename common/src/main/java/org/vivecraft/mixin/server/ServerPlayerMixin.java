@@ -13,6 +13,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -21,7 +22,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
-import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Final;
@@ -31,7 +31,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.vivecraft.mixin.world.entity.PlayerMixin;
@@ -121,19 +120,13 @@ public abstract class ServerPlayerMixin extends PlayerMixin {
                 !this.getItemBySlot(EquipmentSlot.FEET).isEmpty())
             {
                 float addedDamage = 0F;
-                ItemStack boots = this.getItemBySlot(EquipmentSlot.FEET);
-                ItemAttributeModifiers modifiers = boots.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
-                if (modifiers.modifiers().isEmpty()) {
-                    modifiers = boots.getItem().getDefaultAttributeModifiers();
-                }
 
-                for (ItemAttributeModifiers.Entry entry : modifiers.modifiers()) {
-                    if (entry.attribute().is(Attributes.ARMOR)) {
-                        float amount = (float) entry.modifier().amount();
-                        switch (entry.modifier().operation()) {
-                            case ADD_VALUE -> addedDamage += amount;
-                            case ADD_MULTIPLIED_TOTAL -> addedDamage += amount * addedDamage;
-                        }
+                for (AttributeModifier modifier : this.getItemBySlot(EquipmentSlot.FEET).getItem()
+                    .getDefaultAttributeModifiers(EquipmentSlot.FEET).get(Attributes.ARMOR)) {
+                    float amount = (float) modifier.getAmount();
+                    switch (modifier.getOperation()) {
+                        case ADDITION -> addedDamage += amount;
+                        case MULTIPLY_TOTAL -> addedDamage += amount * addedDamage;
                     }
                 }
                 return damage + addedDamage * ServerConfig.BOOTS_ARMOR_DAMAGE.get().floatValue();

@@ -137,7 +137,8 @@ public abstract class GameRendererVRMixin
             RenderPassManager.setVanillaRenderPass();
         }
     }
-    @WrapMethod(method = "pick(F)V")
+
+    @WrapMethod(method = "pick")
     private void vivecraft$vrPick(float partialTick, Operation<Void> original) {
         if (VRState.VR_RUNNING) {
             // skip when data not available yet
@@ -161,7 +162,7 @@ public abstract class GameRendererVRMixin
         }
     }
 
-    @ModifyArg(method = "pick(Lnet/minecraft/world/entity/Entity;DDF)Lnet/minecraft/world/phys/HitResult;", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;pick(DFZ)Lnet/minecraft/world/phys/HitResult;"), index = 0)
+    @ModifyArg(method = "pick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;pick(DFZ)Lnet/minecraft/world/phys/HitResult;"), index = 0)
     private double vivecraft$getCrossVec(double hitDistance) {
         if (VRState.VR_RUNNING) {
             // get the end of the reach point here, to have the correct reach distance
@@ -332,14 +333,12 @@ public abstract class GameRendererVRMixin
 
             PoseStack poseStack = new PoseStack();
             RenderHelper.applyVRModelView(vivecraft$DATA_HOLDER.currentPass, poseStack);
-            VREffectsHelper.renderGuiLayer(partialTick, true, poseStack);
-            DebugRenderHelper.renderDebug(poseStack, partialTick);
 
             vivecraft$resetProjectionMatrix(partialTick);
 
-            VREffectsHelper.renderGuiLayer(partialTick, true);
+            VREffectsHelper.renderGuiLayer(partialTick, true, poseStack);
 
-            DebugRenderHelper.renderDebug(partialTick);
+            DebugRenderHelper.renderDebug(poseStack, partialTick);
 
             if (KeyboardHandler.SHOWING) {
                 if (vivecraft$DATA_HOLDER.vrSettings.physicalKeyboard) {
